@@ -3,4 +3,51 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+
+    <!-- Custom Color : Basic -->
+    <color name="basicWhite">#ffffff</color>
+    <color name="basicBlack">#000000</color>
+    <color name="transparent">#00000000</color>
+
+    <!-- Custom Color : More Lightness -->
+    <color name="lightnessAshblue">#e4e6e7</color>
+
+    <!-- Custom Color : Light -->
+    <color name="lightRed">#f094a3</color>
+    <color name="lightOrange">#fab6a1</color>
+    <color name="lightYellow">#fbdb9e</color>
+    <color name="lightLemon">#f9ffb2</color>
+    <color name="lightGrass">#d3ffa2</color>
+    <color name="lightLime">#c0e3c1</color>
+    <color name="lightMint">#92fde5</color>
+    <color name="lightViolet">#bd99b8</color>
+    <color name="lightPurple">#a294a3</color>
+    <color name="lightIndigo">#878d9d</color>
+    <color name="lightAshblue">#93999c</color>
+
+    <!-- Custom Color : Medium -->
+    <color name="mediumRed">#e02947</color>
+    <color name="mediumOrange">#f46c42</color>
+    <color name="mediumYellow">#f7b73c</color>
+    <color name="mediumLemon">#f3fe65</color>
+    <color name="mediumGrass">#a6fe45</color>
+    <color name="mediumLime">#80c783</color>
+    <color name="mediumMint">#64d9a3</color>
+    <color name="mediumViolet">#7a3271</color>
+    <color name="mediumPurple">#452847</color>
+    <color name="mediumIndigo">#0e1b3b</color>
+    <color name="mediumAshblue">#273238</color>
+
+    <!-- Custom Color : Dark -->
+    <color name="darkRed">#59101c</color>
+    <color name="darkOrange">#612b1a</color>
+    <color name="darkYellow">#624918</color>
+    <color name="darkLemon">#616528</color>
+    <color name="darkGrass">#42651b</color>
+    <color name="darkLime">#334f34</color>
+    <color name="darkMint">#0e6450</color>
+    <color name="darkViolet">#30141d</color>
+    <color name="darkPurple">#1b101c</color>
+    <color name="darkIndigo">#050a17</color>
+    <color name="darkAshblue">#0f1416</color>
 </resources>

@@ -1,6 +1,8 @@
 package com.example.bookseeker
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.TextView
@@ -33,5 +35,11 @@ class MainActivity : AppCompatActivity() {
 
         textMessage = findViewById(R.id.message)
         navView.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener)
+
+        val login: Button = findViewById(R.id.login)
+        login.setOnClickListener {
+            val nextIntent = Intent(this, LoginActivity::class.java)
+            startActivity(nextIntent)
+        }
     }
 }
