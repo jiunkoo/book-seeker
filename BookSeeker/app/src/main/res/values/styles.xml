@@ -7,5 +7,8 @@
         <item name="colorPrimaryDark">@color/lightAshblue</item>
         <item name="colorAccent">@color/mediumLime</item>
     </style>
-
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
 </resources>

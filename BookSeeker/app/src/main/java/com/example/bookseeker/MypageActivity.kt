@@ -1,11 +1,12 @@
 package com.example.bookseeker
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class MainActivity : AppCompatActivity() {
+class MypageActivity : AppCompatActivity(){
     private val onNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.btmnavmenu_itm_search -> {
@@ -31,12 +32,15 @@ class MainActivity : AppCompatActivity() {
         }
         false
     }
-
+    internal fun BottomNavigationView.checkItem(actionId: Int) {
+        menu.findItem(actionId)?.isChecked = true
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_mypage)
 
-        val navView: BottomNavigationView = findViewById(R.id.main_btmnavview_menu)
+        val navView: BottomNavigationView = findViewById(R.id.mypage_btmnavview_menu)
         navView.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener)
+        navView.checkItem(R.id.btmnavmenu_itm_mypage)
     }
 }
