@@ -11,7 +11,7 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
         <activity
-                android:name=".SlashActivity"
+                android:name=".view.SlashActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -21,27 +21,27 @@
             </intent-filter>
         </activity>
         <activity
-                android:name=".LoginActivity"
+                android:name=".view.LoginActivity"
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
-                android:name=".MainActivity"
+                android:name=".view.MainActivity"
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
-                android:name=".SearchActivity"
+                android:name=".view.SearchActivity"
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
-                android:name=".RecommendActivity"
+                android:name=".view.RecommendActivity"
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
-                android:name=".RatingActivity"
+                android:name=".view.RatingActivity"
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
-                android:name=".MypageActivity"
+                android:name=".view.MypageActivity"
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>
     </application>

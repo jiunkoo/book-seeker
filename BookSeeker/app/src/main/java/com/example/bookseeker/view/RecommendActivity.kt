@@ -1,9 +1,9 @@
-package com.example.bookseeker
+package com.example.bookseeker.view
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.example.bookseeker.R
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class RecommendActivity : AppCompatActivity() {

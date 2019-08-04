@@ -1,10 +1,11 @@
-package com.example.bookseeker
+package com.example.bookseeker.view
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.Toast
 import android.content.Intent
 import android.os.Handler
+import com.example.bookseeker.R
 
 class SlashActivity : AppCompatActivity(){
     private val FINISH_INTERVAL_TIME: Long = 2000 //2초의 시간 간격을 둠

@@ -2,7 +2,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-
         android:background="@color/mediumAshblue"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -49,6 +48,7 @@
             app:layout_constraintStart_toStartOf="@id/login_etxt_email"/>
     <EditText
             android:id="@+id/login_etxt_email"
+            android:textColor="@color/basicWhite"
             android:ems="10"
             android:inputType="textEmailAddress"
             android:layout_width="300dp"
@@ -75,6 +75,7 @@
             app:layout_constraintStart_toStartOf="@id/login_etxt_password"/>
     <EditText
             android:id="@+id/login_etxt_password"
+            android:textColor="@color/basicWhite"
             android:ems="10"
             android:inputType="textPassword"
             android:layout_width="300dp"
@@ -143,5 +144,4 @@
             app:layout_constraintTop_toBottomOf="@id/login_btn_login"
             app:layout_constraintLeft_toRightOf="@id/login_txtv_newuser"
             app:layout_constraintRight_toRightOf="parent"/>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
