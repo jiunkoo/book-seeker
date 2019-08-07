@@ -37,14 +37,14 @@ class LoginActivity : BaseActivity(), LoginContract.View {
             when(loginResult){
                 0 -> Toast.makeText(this@LoginActivity, "존재하지 않는 사용자입니다.", Toast.LENGTH_SHORT).show()
                 1 -> Toast.makeText(this@LoginActivity, "아이디 혹은 비밀번호가 틀립니다.", Toast.LENGTH_SHORT).show()
-                2 -> startMainActivity()
+                2 -> startSearchActivity()
             }
             println("loginResult $loginResult")
         }
     }
 
     // startMainActivity : LoginActivity에서 MainActivity로 넘어가는 함수
-    override fun startMainActivity() {
+    override fun startSearchActivity() {
         val nextIntent = Intent(this, SearchActivity::class.java)
         startActivity(nextIntent)
     }

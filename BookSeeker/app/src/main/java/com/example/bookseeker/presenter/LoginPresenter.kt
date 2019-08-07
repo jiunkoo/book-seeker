@@ -1,6 +1,5 @@
 package com.example.bookseeker.presenter
 
-import android.widget.EditText
 import com.example.bookseeker.contract.LoginContract
 
 class LoginPresenter : LoginContract.Presenter {

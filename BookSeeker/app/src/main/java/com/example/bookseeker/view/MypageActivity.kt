@@ -11,21 +11,25 @@ class MypageActivity : AppCompatActivity(){
         when (item.itemId) {
             R.id.btmnavmenu_itm_search -> {
                 val nextIntent = Intent(baseContext, SearchActivity::class.java)
+                nextIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 startActivity(nextIntent)
                 overridePendingTransition(0, 0)
             }
             R.id.btmnavmenu_itm_recommend -> {
                 val nextIntent = Intent(baseContext, RecommendActivity::class.java)
+                nextIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 startActivity(nextIntent)
                 overridePendingTransition(0, 0)
             }
             R.id.btmnavmenu_itm_rating -> {
                 val nextIntent = Intent(baseContext, RatingActivity::class.java)
+                nextIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 startActivity(nextIntent)
                 overridePendingTransition(0, 0)
             }
             R.id.btmnavmenu_itm_mypage -> {
                 val nextIntent = Intent(baseContext, MypageActivity::class.java)
+                nextIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 startActivity(nextIntent)
                 overridePendingTransition(0, 0)
             }

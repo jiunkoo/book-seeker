@@ -6,7 +6,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.bookseeker.R
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
     private val onNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.btmnavmenu_itm_search -> {
@@ -39,5 +39,9 @@ class MainActivity : AppCompatActivity() {
 
         val navView: BottomNavigationView = findViewById(R.id.main_btmnavview_menu)
         navView.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener)
+    }
+
+    override fun initPresenter() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
