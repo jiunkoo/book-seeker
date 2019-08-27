@@ -6,7 +6,11 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 29
+<<<<<<< HEAD
     buildToolsVersion "29.0.2"
+=======
+    buildToolsVersion "29.0.1"
+>>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
     defaultConfig {
         applicationId "com.example.bookseeker"
         minSdkVersion 15
@@ -27,6 +31,10 @@ dependencies {
     //kotlin
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+<<<<<<< HEAD
+=======
+
+>>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
     //androidx
     implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'androidx.core:core-ktx:1.0.2'
@@ -34,6 +42,7 @@ dependencies {
     implementation 'androidx.vectordrawable:vectordrawable:1.0.1'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+<<<<<<< HEAD
     //junit
     testImplementation 'junit:junit:4.12'
     //material
@@ -41,4 +50,12 @@ dependencies {
     //retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+=======
+
+    //junit
+    testImplementation 'junit:junit:4.12'
+
+    //material
+    implementation 'com.google.android.material:material:1.0.0'
+>>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
 }

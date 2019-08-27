@@ -106,11 +106,18 @@
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="@color/mediumAshblue"
+<<<<<<< HEAD
             android:background="@color/lightLime"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:enabled="false"
+=======
+            android:background="@color/mediumLime"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+>>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
 
             app:layout_constraintTop_toBottomOf="@id/login_txtv_forgotpw"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -141,8 +148,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+<<<<<<< HEAD
             android:clickable="true"
             android:focusable="true"
+=======
+>>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
 
             app:layout_constraintTop_toBottomOf="@id/login_btn_login"
             app:layout_constraintLeft_toRightOf="@id/login_txtv_newuser"

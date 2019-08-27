@@ -3,11 +3,16 @@
 
     <item
             android:id="@+id/btmnavmenu_itm_search"
+<<<<<<< HEAD
             android:icon="@drawable/icon_search"
+=======
+            android:icon="@drawable/ic_home_black_24dp"
+>>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
             android:title="검색"/>
 
     <item
             android:id="@+id/btmnavmenu_itm_recommend"
+<<<<<<< HEAD
             android:icon="@drawable/icon_recommend"
             android:title="추천"/>
     <item
@@ -17,5 +22,16 @@
     <item
             android:id="@+id/btmnavmenu_itm_mypage"
             android:icon="@drawable/icon_mypage"
+=======
+            android:icon="@drawable/ic_dashboard_black_24dp"
+            android:title="추천"/>
+    <item
+            android:id="@+id/btmnavmenu_itm_rating"
+            android:icon="@drawable/ic_notifications_black_24dp"
+            android:title="평가"/>
+    <item
+            android:id="@+id/btmnavmenu_itm_mypage"
+            android:icon="@drawable/ic_notifications_black_24dp"
+>>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
             android:title="마이페이지"/>
 </menu>

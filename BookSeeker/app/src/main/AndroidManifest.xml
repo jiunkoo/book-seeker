@@ -2,23 +2,37 @@
 <manifest
         xmlns:android="http://schemas.android.com/apk/res/android"
         package="com.example.bookseeker">
+<<<<<<< HEAD
     <uses-permission android:name="android.permission.INTERNET"/>
+=======
+
+>>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
     <application
             android:allowBackup="true"
             android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name"
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
+<<<<<<< HEAD
             android:theme="@style/AppTheme"
             android:name=".view.BaseApplication">
+=======
+            android:theme="@style/AppTheme">
+>>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
         <activity
                 android:name=".view.SlashActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
+<<<<<<< HEAD
                 <action android:name="android.intent.action.VIEW"/>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
+=======
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+>>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
             </intent-filter>
         </activity>
         <activity
@@ -26,7 +40,11 @@
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
+<<<<<<< HEAD
                 android:name=".view.SignUpActivity"
+=======
+                android:name=".view.MainActivity"
+>>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity

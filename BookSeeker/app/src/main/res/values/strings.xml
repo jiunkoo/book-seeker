@@ -1,5 +1,9 @@
 <resources>
+<<<<<<< HEAD
     <string name="app_name">Book Seeker</string>
+=======
+    <string name="app_name">BookSeeker</string>
+>>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>

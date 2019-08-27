@@ -52,6 +52,7 @@
                     android:layout_height="match_parent"
                     android:alpha="1"
                     android:background="@color/mediumAshblue"/>
+<<<<<<< HEAD
 
             <LinearLayout
                     android:orientation="vertical"
@@ -59,6 +60,14 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_margin="0dp">
+=======
+            <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_weight="1">
+
+>>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
                 <ImageView
                         android:src="@drawable/icon_heart"
                         android:layout_gravity="center"
@@ -75,12 +84,16 @@
                         android:layout_width="match_parent"
                         android:layout_height="0dp"/>
             </LinearLayout>
+<<<<<<< HEAD
 
+=======
+>>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
             <View
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
                     android:alpha="1"
                     android:background="@color/mediumAshblue"/>
+<<<<<<< HEAD
 
             <LinearLayout
                     android:orientation="vertical"
@@ -88,6 +101,14 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_margin="0dp">
+=======
+            <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_weight="1">
+
+>>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
                 <ImageView
                         android:src="@drawable/icon_fantasy"
                         android:layout_gravity="center"
@@ -106,6 +127,7 @@
             </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
+<<<<<<< HEAD
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/recommend_constraintlayout_content"
             android:layout_width="match_parent"
@@ -135,6 +157,28 @@
     <!--android:layout_width="wrap_content"-->
     <!--android:layout_height="wrap_content"/>-->
     <!--</androidx.cardview.widget.CardView>-->
+=======
+    <androidx.cardview.widget.CardView
+            android:id="@+id/search_cardv_content"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="@dimen/activity_margin"
+
+            app:cardCornerRadius="8dp"
+            app:cardElevation="1dp"
+            app:cardBackgroundColor="@color/basicWhite"
+            app:layout_constraintVertical_weight="1"
+            app:layout_constraintTop_toBottomOf="@id/search_cardv_category"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/recommend_btmnavview_menu">
+        <ImageView
+                android:src="@drawable/img_logo_bookseeker_aw"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+    </androidx.cardview.widget.CardView>
+>>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
     <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/recommend_btmnavview_menu"
             android:layout_width="0dp"
