@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+
+        android:background="@color/mediumAshblue"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <TextView
+            android:id="@+id/signup_txtv_email"
+            android:text="Email"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/mediumLime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/signup_etxt_email"
+            app:layout_constraintStart_toStartOf="@id/signup_etxt_password"
+            app:layout_constraintVertical_chainStyle="packed"/>
+    <EditText
+            android:id="@+id/signup_etxt_email"
+            android:ems="10"
+            android:textColor="@color/basicWhite"
+            android:inputType="textEmailAddress"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+
+            app:layout_constraintTop_toBottomOf="@id/signup_txtv_email"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/signup_txtv_name"/>
+    <TextView
+            android:id="@+id/signup_txtv_name"
+            android:text="Name"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/mediumLime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+
+            app:layout_constraintTop_toBottomOf="@id/signup_etxt_email"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/signup_etxt_name"
+            app:layout_constraintStart_toStartOf="@id/signup_etxt_email"/>
+    <EditText
+            android:id="@+id/signup_etxt_name"
+            android:ems="10"
+            android:textColor="@color/basicWhite"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+
+            app:layout_constraintTop_toBottomOf="@id/signup_txtv_name"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/signup_txtv_password"/>
+    <TextView
+            android:id="@+id/signup_txtv_password"
+            android:text="Password"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/mediumLime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+
+            app:layout_constraintTop_toBottomOf="@id/signup_etxt_name"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/signup_etxt_password"
+            app:layout_constraintStart_toStartOf="@id/signup_etxt_password"/>
+    <EditText
+            android:id="@+id/signup_etxt_password"
+            android:ems="10"
+            android:textColor="@color/basicWhite"
+            android:inputType="textPassword"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+
+            app:layout_constraintTop_toBottomOf="@id/signup_txtv_password"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/signup_txtv_passwordconfirm"/>
+    <TextView
+            android:id="@+id/signup_txtv_passwordconfirm"
+            android:text="Retype Password"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/mediumLime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+
+            app:layout_constraintTop_toBottomOf="@id/signup_etxt_password"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/signup_etxt_passwordconfirm"
+            app:layout_constraintStart_toStartOf="@id/signup_etxt_passwordconfirm"/>
+    <EditText
+            android:id="@+id/signup_etxt_passwordconfirm"
+            android:ems="10"
+            android:textColor="@color/basicWhite"
+            android:inputType="textPassword"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+
+            app:layout_constraintTop_toBottomOf="@id/signup_txtv_passwordconfirm"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/signup_btn_signup"/>
+    <Button
+            android:id="@+id/signup_btn_signup"
+            android:text="Sign Up"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/mediumAshblue"
+            android:background="@color/lightLime"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:enabled="false"
+
+            app:layout_constraintTop_toBottomOf="@id/signup_etxt_passwordconfirm"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/signup_txtv_already"
+            app:layout_constraintStart_toStartOf="@id/signup_etxt_passwordconfirm"
+            app:layout_constraintEnd_toEndOf="@id/signup_etxt_passwordconfirm"/>
+    <TextView
+            android:id="@+id/signup_txtv_already"
+            android:text="Already have an account? "
+            android:textSize="20sp"
+            android:textColor="@color/lightAshblue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+
+            app:layout_constraintTop_toBottomOf="@id/signup_btn_signup"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/signup_txtv_signin"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_chainStyle="packed"/>
+    <TextView
+            android:id="@+id/signup_txtv_signin"
+            android:text="Sign In"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/mediumLime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+
+            app:layout_constraintTop_toBottomOf="@id/signup_btn_signup"
+            app:layout_constraintLeft_toRightOf="@id/signup_txtv_already"
+            app:layout_constraintRight_toRightOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

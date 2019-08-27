@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+            android:id="@+id/btmnavmenu_itm_search"
+            android:icon="@drawable/icon_search"
+            android:title="검색"/>
+
+    <item
+            android:id="@+id/btmnavmenu_itm_recommend"
+            android:icon="@drawable/icon_recommend"
+            android:title="추천"/>
+    <item
+            android:id="@+id/btmnavmenu_itm_rating"
+            android:icon="@drawable/icon_rating"
+            android:title="평가"/>
+    <item
+            android:id="@+id/btmnavmenu_itm_mypage"
+            android:icon="@drawable/icon_mypage"
+            android:title="마이페이지"/>
+</menu>

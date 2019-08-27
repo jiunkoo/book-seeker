@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+
+        android:id="@+id/loading_layout_constraint"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+    <ImageView
+            android:id="@+id/loading_imgv_frame"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:background="@drawable/item_frame_loading"
+
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/loading_txtv_message"
+            app:layout_constraintVertical_chainStyle="packed"/>
+    <TextView
+            android:id="@+id/loading_txtv_message"
+            android:text="Loading.."
+            android:textColor="@color/basicWhite"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_margin"
+
+            app:layout_constraintTop_toBottomOf="@id/loading_imgv_frame"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+</androidx.constraintlayout.widget.ConstraintLayout>
