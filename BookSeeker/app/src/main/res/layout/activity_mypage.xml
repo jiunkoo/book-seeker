@@ -119,7 +119,6 @@
                     android:layout_height="match_parent"
                     android:alpha="1"
                     android:background="@color/mediumAshblue"/>
-<<<<<<< HEAD
 
             <LinearLayout
                     android:orientation="vertical"
@@ -127,14 +126,6 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_margin="0dp">
-=======
-            <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_weight="1">
-
->>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
                 <ImageView
                         android:src="@drawable/icon_heart"
                         android:layout_gravity="center"
@@ -150,11 +141,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="0dp"/>
                 <TextView
-<<<<<<< HEAD
                         android:text="300"
-=======
-                        android:text="100"
->>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
                         android:textSize="24sp"
                         android:textColor="@color/mediumAshblue"
                         android:textStyle="bold"
@@ -163,16 +150,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="0dp"/>
             </LinearLayout>
-<<<<<<< HEAD
 
-=======
->>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
             <View
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
                     android:alpha="1"
                     android:background="@color/mediumAshblue"/>
-<<<<<<< HEAD
 
             <LinearLayout
                     android:orientation="vertical"
@@ -180,14 +163,6 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_margin="0dp">
-=======
-            <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_weight="1">
-
->>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
                 <ImageView
                         android:src="@drawable/icon_fantasy"
                         android:layout_gravity="center"
@@ -203,11 +178,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="0dp"/>
                 <TextView
-<<<<<<< HEAD
                         android:text="250"
-=======
-                        android:text="70"
->>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
                         android:textSize="24sp"
                         android:textColor="@color/mediumAshblue"
                         android:textStyle="bold"

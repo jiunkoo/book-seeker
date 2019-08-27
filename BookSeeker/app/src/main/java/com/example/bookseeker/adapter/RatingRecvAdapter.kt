@@ -1,4 +1,4 @@
-package com.example.bookseeker.Adapter
+package com.example.bookseeker.adapter
 
 import android.view.LayoutInflater
 import android.view.View

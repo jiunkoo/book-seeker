@@ -1,6 +1,5 @@
 package com.example.bookseeker.presenter
 
-<<<<<<< HEAD
 import android.util.Log
 import com.example.bookseeker.contract.LoginContract
 import com.example.bookseeker.model.data.SignUpData
@@ -14,19 +13,12 @@ import java.util.regex.Pattern
 class LoginPresenter : LoginContract.Presenter {
     private var loginView: LoginContract.View? = null
     private val retrofitInterface = RetrofitClient.retrofitInterface
-=======
-import com.example.bookseeker.contract.LoginContract
-
-class LoginPresenter : LoginContract.Presenter {
-    private var loginView: LoginContract.View? = null
->>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
 
     // takeView : View가 Create, Bind 될 때 Presenter에 전달하는 함수
     override fun takeView(view: LoginContract.View) {
         loginView = view
     }
 
-<<<<<<< HEAD
     // checkRegEx : LoginPresenter에서 EditText의 RegEx를 검사하는 함수
     override fun checkRegEx(txtv: String, etxt: String): String {
         var checkRegExResult = "NONE"
@@ -87,45 +79,15 @@ class LoginPresenter : LoginContract.Presenter {
                 executionLog("SELECT", "Select One SignUp Data Failure!")
             }
         })
-=======
-    // loginCheck : View에서 Email과 Password를 받아와 일치 여부를 비교하는 함수
-    override fun loginCheck(inputEmail: String?, inputPassword: String?): Int {
-        var inputMatchConfirm = -1
-
-        println("inputEmail: $inputEmail and inputPassword: $inputPassword")
-        // 이메일과 비밀번호가 둘 다 일치하지 않을 경우
-        if (inputEmail != "admin" && inputPassword != "1111") {
-            inputMatchConfirm = 0
-            println("둘 다 불일치")
-        }
-        // 이메일과 비밀번호 중 하나가 일치하는 경우
-        else if (inputEmail == "admin" && inputPassword != "1111" || inputEmail != "admin" && inputPassword == "1111") {
-            inputMatchConfirm = 1
-            println("하나는 일치")
-        } 
-        // 이메일과 비밀번호 둘 다 일치하는 경우
-        else if (inputEmail == "admin" && inputPassword == "1111"){
-            inputMatchConfirm = 2
-            println("둘 다 일치")
-        } 
-        // 그 외의 경우
-        else {
-            inputMatchConfirm = -1
-        }
-        return inputMatchConfirm
->>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
     }
 
     // dropView : View가 delete, unBind 될 때 Presenter에 전달하는 함수
     override fun dropView() {
         loginView = null
     }
-<<<<<<< HEAD
 
     // executionLog : 공통으로 사용하는 Log 출력 부분을 생성하는 함수
     override fun executionLog(tag: String, msg: String) {
         Log.e(tag, msg)
     }
-=======
->>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
 }

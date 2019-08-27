@@ -2,18 +2,10 @@ package com.example.bookseeker.view
 
 import android.content.Intent
 import android.os.Bundle
-<<<<<<< HEAD
 import android.util.Log
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.bookseeker.adapter.RatingRecvAdapter
-=======
-import android.widget.LinearLayout
-import android.widget.Toast
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.bookseeker.Adapter.RatingRecvAdapter
->>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
 import com.example.bookseeker.R
 import com.example.bookseeker.contract.RatingContract
 import com.example.bookseeker.item.RatingRecvItem
@@ -56,11 +48,7 @@ class RatingActivity : BaseActivity(), RatingContract.View {
             RatingRecvItem("NONE", "나의 히어로 아카데미아", "호리코시 요헤이", "소년 점프", 4.5f),
             RatingRecvItem("NONE", "드래곤볼", "토리야마 아키라", "소년 점프", 5f)
         )
-<<<<<<< HEAD
 
-=======
-        
->>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
         // 레이아웃 매니저 설정
         rating_recyclerview_booklist.layoutManager = LinearLayoutManager(this)
         rating_recyclerview_booklist.setHasFixedSize(true)
@@ -105,15 +93,10 @@ class RatingActivity : BaseActivity(), RatingContract.View {
 
     override fun onDestroy() {
         super.onDestroy()
-<<<<<<< HEAD
-=======
-
->>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
         // View가 Delete(Unbind) 되었다는 걸 Presenter에 전달
         ratingPresenter.dropView()
     }
 
-<<<<<<< HEAD
     // setProgressON :  공통으로 사용하는 Progress Bar의 시작을 정의하는 함수
     override fun setProgressON(msg: String){
         progressON(msg)
@@ -132,11 +115,5 @@ class RatingActivity : BaseActivity(), RatingContract.View {
     // executionLog : 공통으로 사용하는 Log 출력 부분을 생성하는 함수
     override fun executionLog(tag: String, msg: String){
         Log.e(tag, msg)
-=======
-    // showError : 공통으로 쓰이는 error 출력 부분을 생성하는 함수
-    override fun showError(error: String) {
-        println("RatingActivity에서 Error가 발생하였습니다.")
-        Toast.makeText(this@RatingActivity, error, Toast.LENGTH_SHORT).show()
->>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
     }
 }

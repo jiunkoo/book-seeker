@@ -7,13 +7,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
     <TextView
-<<<<<<< HEAD
             android:id="@+id/signup_txtv_email"
             android:text="Email"
-=======
-            android:id="@+id/signup_txtv_name"
-            android:text="Name"
->>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="@color/mediumLime"
@@ -24,7 +19,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-<<<<<<< HEAD
             app:layout_constraintBottom_toTopOf="@id/signup_etxt_email"
             app:layout_constraintStart_toStartOf="@id/signup_etxt_password"
             app:layout_constraintVertical_chainStyle="packed"/>
@@ -43,24 +37,6 @@
     <TextView
             android:id="@+id/signup_txtv_name"
             android:text="Name"
-=======
-            app:layout_constraintBottom_toTopOf="@id/signup_etxt_name"
-            app:layout_constraintStart_toStartOf="@id/signup_etxt_name"
-            app:layout_constraintVertical_chainStyle="packed"/>
-    <EditText
-            android:id="@+id/signup_etxt_name"
-            android:ems="10"
-            android:layout_width="300dp"
-            android:layout_height="wrap_content"
-
-            app:layout_constraintTop_toBottomOf="@id/signup_txtv_name"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/signup_txtv_email"/>
-    <TextView
-            android:id="@+id/signup_txtv_email"
-            android:text="Email"
->>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="@color/mediumLime"
@@ -68,7 +44,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
 
-<<<<<<< HEAD
             app:layout_constraintTop_toBottomOf="@id/signup_etxt_email"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -82,21 +57,6 @@
             android:layout_height="wrap_content"
 
             app:layout_constraintTop_toBottomOf="@id/signup_txtv_name"
-=======
-            app:layout_constraintTop_toBottomOf="@id/signup_etxt_name"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/signup_etxt_email"
-            app:layout_constraintStart_toStartOf="@id/signup_etxt_email"/>
-    <EditText
-            android:id="@+id/signup_etxt_email"
-            android:ems="10"
-            android:inputType="textEmailAddress"
-            android:layout_width="300dp"
-            android:layout_height="wrap_content"
-
-            app:layout_constraintTop_toBottomOf="@id/signup_txtv_email"
->>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintBottom_toTopOf="@id/signup_txtv_password"/>
@@ -110,11 +70,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
 
-<<<<<<< HEAD
             app:layout_constraintTop_toBottomOf="@id/signup_etxt_name"
-=======
-            app:layout_constraintTop_toBottomOf="@id/signup_etxt_email"
->>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintBottom_toTopOf="@id/signup_etxt_password"
@@ -122,10 +78,7 @@
     <EditText
             android:id="@+id/signup_etxt_password"
             android:ems="10"
-<<<<<<< HEAD
             android:textColor="@color/basicWhite"
-=======
->>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
             android:inputType="textPassword"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
@@ -152,12 +105,8 @@
     <EditText
             android:id="@+id/signup_etxt_passwordconfirm"
             android:ems="10"
-<<<<<<< HEAD
             android:textColor="@color/basicWhite"
             android:inputType="textPassword"
-=======
-            android:inputType="textEmailAddress"
->>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
             android:layout_width="300dp"
             android:layout_height="wrap_content"
 
@@ -171,18 +120,11 @@
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="@color/mediumAshblue"
-<<<<<<< HEAD
             android:background="@color/lightLime"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:enabled="false"
-=======
-            android:background="@color/mediumLime"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
->>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
 
             app:layout_constraintTop_toBottomOf="@id/signup_etxt_passwordconfirm"
             app:layout_constraintLeft_toLeftOf="parent"

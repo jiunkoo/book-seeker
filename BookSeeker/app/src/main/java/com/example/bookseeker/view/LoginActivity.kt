@@ -1,16 +1,11 @@
 package com.example.bookseeker.view
 
 import android.content.Intent
-<<<<<<< HEAD
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-=======
-import android.os.Bundle
-import android.widget.EditText
->>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
 import android.widget.Toast
 import com.example.bookseeker.R
 import com.example.bookseeker.contract.LoginContract
@@ -28,7 +23,6 @@ class LoginActivity : BaseActivity(), LoginContract.View {
         // View가 Create(Bind) 되었다는 걸 Presenter에 전달
         loginPresenter.takeView(this)
 
-<<<<<<< HEAD
         // Button Event 처리
         setButtonEventListener()
 
@@ -37,10 +31,6 @@ class LoginActivity : BaseActivity(), LoginContract.View {
 
         //Edit Text Event 처리
         setEditTextEventListener()
-=======
-        // 로그인 버튼 이벤트 처리
-        setLoginButton()
->>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
     }
 
     // initPresenter : View와 상호작용할 Presenter를 주입하기 위한 함수
@@ -48,7 +38,6 @@ class LoginActivity : BaseActivity(), LoginContract.View {
         loginPresenter = LoginPresenter()
     }
 
-<<<<<<< HEAD
     // setButtonEventListener : LoginActivity에서 Button Event를 처리하는 함수
     override fun setButtonEventListener() {
         // Login Button Event를 처리하는 함수
@@ -127,29 +116,11 @@ class LoginActivity : BaseActivity(), LoginContract.View {
     }
 
     // startSearchActivity : LoginActivity에서 SearchActivity로 넘어가는 함수
-=======
-    // setLoginButton : 로그인 버튼 이벤트를 처리하는 함수
-    private fun setLoginButton(){
-        login_btn_login.setOnClickListener {
-            var loginResult = loginPresenter.loginCheck(login_etxt_email.text.toString(), login_etxt_password.text.toString())
-
-            when(loginResult){
-                0 -> Toast.makeText(this@LoginActivity, "존재하지 않는 사용자입니다.", Toast.LENGTH_SHORT).show()
-                1 -> Toast.makeText(this@LoginActivity, "아이디 혹은 비밀번호가 틀립니다.", Toast.LENGTH_SHORT).show()
-                2 -> startSearchActivity()
-            }
-            println("loginResult $loginResult")
-        }
-    }
-
-    // startMainActivity : LoginActivity에서 MainActivity로 넘어가는 함수
->>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
     override fun startSearchActivity() {
         val nextIntent = Intent(this, SearchActivity::class.java)
         startActivity(nextIntent)
     }
 
-<<<<<<< HEAD
     // startSignUpActivity : LoginActivity에서 SignUpActivity로 넘어가는 함수
     override fun startSignUpActivity() {
         val nextIntent = Intent(this@LoginActivity, SignUpActivity::class.java)
@@ -158,16 +129,10 @@ class LoginActivity : BaseActivity(), LoginContract.View {
 
     override fun onDestroy() {
         super.onDestroy()
-=======
-    override fun onDestroy() {
-        super.onDestroy()
-
->>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
         // View가 Delete(Unbind) 되었다는 걸 Presenter에 전달
         loginPresenter.dropView()
     }
 
-<<<<<<< HEAD
     // setProgressON :  공통으로 사용하는 Progress Bar의 시작을 정의하는 함수
     override fun setProgressON(msg: String) {
         progressON(msg)
@@ -186,11 +151,5 @@ class LoginActivity : BaseActivity(), LoginContract.View {
     // executionLog : 공통으로 사용하는 Log 출력 부분을 생성하는 함수
     override fun executionLog(tag: String, msg: String) {
         Log.e(tag, msg)
-=======
-    // showError : 공통으로 쓰이는 error 출력 부분을 생성하는 함수
-    override fun showError(error: String) {
-        println("LoginActivity에서 Error가 발생하였습니다.")
-        Toast.makeText(this@LoginActivity, error, Toast.LENGTH_SHORT).show()
->>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
     }
 }

@@ -10,7 +10,6 @@ abstract class BaseActivity : AppCompatActivity(){
     }
     // initPresenter : View와 상호작용할 Presenter를 주입하기 위한 함수
     abstract fun initPresenter()
-<<<<<<< HEAD
 
     fun progressON() {
         BaseApplication.instance.progressON(this, null!!)
@@ -23,6 +22,4 @@ abstract class BaseActivity : AppCompatActivity(){
     fun progressOFF() {
         BaseApplication.instance.progressOFF()
     }
-=======
->>>>>>> 17feb1f3afe9a5d4ca132a30ace1d53c1d8d1cae
 }
