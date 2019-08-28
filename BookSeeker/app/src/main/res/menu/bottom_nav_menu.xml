@@ -4,18 +4,17 @@
     <item
             android:id="@+id/btmnavmenu_itm_search"
             android:icon="@drawable/icon_search"
-            android:title="검색"/>
-
+            android:title="도서 검색"/>
     <item
             android:id="@+id/btmnavmenu_itm_recommend"
             android:icon="@drawable/icon_recommend"
-            android:title="추천"/>
+            android:title="도서 추천"/>
     <item
             android:id="@+id/btmnavmenu_itm_rating"
             android:icon="@drawable/icon_rating"
-            android:title="평가"/>
+            android:title="도서 평가"/>
     <item
             android:id="@+id/btmnavmenu_itm_mypage"
             android:icon="@drawable/icon_mypage"
-            android:title="마이페이지"/>
+            android:title="내 설정"/>
 </menu>

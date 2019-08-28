@@ -48,10 +48,10 @@
         <EditText
                 android:id="@+id/search_etxt_search"
                 android:hint="Type some text..."
-                android:padding="10dp"
-                android:drawablePadding="22dp"
-                android:drawableLeft="@android:drawable/ic_menu_camera"
-                android:drawableRight="@android:drawable/ic_menu_search"
+                android:padding="@dimen/activity_margin"
+                android:drawablePadding="24dp"
+                android:drawableLeft="@drawable/icon_camera"
+                android:drawableRight="@drawable/icon_search"
                 android:textColorHint="@color/mediumAshblue"
 
                 android:gravity="left|center"

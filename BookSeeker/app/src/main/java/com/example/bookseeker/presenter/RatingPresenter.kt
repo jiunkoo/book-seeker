@@ -20,4 +20,5 @@ class RatingPresenter : RatingContract.Presenter {
     override fun executionLog(tag: String, msg: String){
         Log.e(tag, msg)
     }
+
 }

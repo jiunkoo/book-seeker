@@ -25,7 +25,7 @@
     <EditText
             android:id="@+id/signup_etxt_email"
             android:ems="10"
-            android:textColor="@color/basicWhite"
+            android:textColor="@color/lightAshblue"
             android:inputType="textEmailAddress"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
@@ -52,7 +52,7 @@
     <EditText
             android:id="@+id/signup_etxt_name"
             android:ems="10"
-            android:textColor="@color/basicWhite"
+            android:textColor="@color/lightAshblue"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
 
@@ -78,7 +78,7 @@
     <EditText
             android:id="@+id/signup_etxt_password"
             android:ems="10"
-            android:textColor="@color/basicWhite"
+            android:textColor="@color/lightAshblue"
             android:inputType="textPassword"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
@@ -105,7 +105,7 @@
     <EditText
             android:id="@+id/signup_etxt_passwordconfirm"
             android:ems="10"
-            android:textColor="@color/basicWhite"
+            android:textColor="@color/lightAshblue"
             android:inputType="textPassword"
             android:layout_width="300dp"
             android:layout_height="wrap_content"

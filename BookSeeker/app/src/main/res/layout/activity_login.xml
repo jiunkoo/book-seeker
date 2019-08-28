@@ -36,7 +36,7 @@
             android:text="UserEmail"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:textColor="@color/lightAshblue"
+            android:textColor="@color/mediumLime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -48,7 +48,7 @@
             app:layout_constraintStart_toStartOf="@id/login_etxt_email"/>
     <EditText
             android:id="@+id/login_etxt_email"
-            android:textColor="@color/basicWhite"
+            android:textColor="@color/lightAshblue"
             android:ems="10"
             android:inputType="textEmailAddress"
             android:layout_width="300dp"
@@ -63,7 +63,7 @@
             android:text="Password"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:textColor="@color/lightAshblue"
+            android:textColor="@color/mediumLime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -75,7 +75,7 @@
             app:layout_constraintStart_toStartOf="@id/login_etxt_password"/>
     <EditText
             android:id="@+id/login_etxt_password"
-            android:textColor="@color/basicWhite"
+            android:textColor="@color/lightAshblue"
             android:ems="10"
             android:inputType="textPassword"
             android:layout_width="300dp"
