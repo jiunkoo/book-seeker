@@ -13,7 +13,6 @@ import com.example.bookseeker.presenter.SlashPresenter
 class SlashActivity : BaseActivity(), SlashContract.View {
     // SlashActivity와 함께 생성될 SlashPresenter를 지연 초기화
     private lateinit var slashPresenter: SlashPresenter
-
     private val FINISH_INTERVAL_TIME: Long = 2000 //2초의 시간 간격을 둠
     private var backPressedTime: Long = 0 //뒤로가기 버튼을 두 번 누르면 종료
     private var handler: Handler? = null //슬래시 화면에서 몇 초 쉬어갈 핸들러 작성
@@ -28,11 +27,11 @@ class SlashActivity : BaseActivity(), SlashContract.View {
         //별도 thread로 실행하기 위해 handler 객체 생성
         handler = Handler()
         //대기 시간(2초)이 지난 뒤 LoginActivity를 실행하고 SlashActivity를 종료
-        handler!!.postDelayed({
+        Handler().postDelayed({
             startLoginActivity() //SlashActivity 실행
             //fade-in, fade-out 효과
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-        }, 2000)
+        }, FINISH_INTERVAL_TIME)
     }
 
     // initPresenter : View와 상호작용할 Presenter를 주입하기 위한 함수
@@ -42,7 +41,7 @@ class SlashActivity : BaseActivity(), SlashContract.View {
 
     // startLoginActivity : SlashActivity에서 LoginActivity로 넘어가는 함수
     override fun startLoginActivity() {
-        startActivity(Intent(this@SlashActivity, LoginActivity::class.java))
+        startActivity(Intent(this@SlashActivity, RecommendActivity::class.java))
         finish()
     }
 

@@ -1,82 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
+<FrameLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
 
+        android:id="@+id/cardv_recommend_layout_frame"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="@dimen/activity_margin"
-
-        app:cardCornerRadius="8dp"
-        app:cardElevation="1dp"
-        app:cardBackgroundColor="@color/basicWhite">
-    <!--<ImageView-->
-            <!--android:src="@drawable/img_logo_bookseeker_aw"-->
-            <!--android:layout_gravity="center"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"/>-->
-    <RelativeLayout
-            android:id="@+id/relative_container"
+        android:layout_height="match_parent">
+    <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="vertical">
+            android:layout_height="match_parent"
+
+            app:cardCornerRadius="8dp"
+            app:cardElevation="1dp">
+        <ImageView
+                android:id="@+id/cardv_recommend_item_imgv_bookimage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"/>
         <LinearLayout
+                android:orientation="vertical"
+                android:background="#F2ffffff"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-            <ImageView
-                    android:id="@+id/userIMG"
-                    android:layout_width="match_parent"
-                    android:layout_height="400dp"
-                    android:background="@drawable/img_logo_bookseeker_aw"
-                    android:scaleType="centerCrop"/>
-
-            <LinearLayout
-                    android:layout_width="match_parent"
+                android:layout_gravity="bottom"
+                android:gravity="center">
+            <TextView
+                    android:id="@+id/cardv_recommend_item_txtv_booktitle"
+                    android:text="BOOK TITLE"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/mediumAshblue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            <TextView
+                    android:id="@+id/cardv_recommend_item_txtv_bookauthor"
+                    android:text="AUTHOR"
+                    android:textSize="16sp"
+                    android:textColor="@color/mediumAshblue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            <TextView
+                    android:id="@+id/cardv_recommend_item_txtv_bookpublisher"
+                    android:text="PUBLISHER"
+                    android:textSize="16sp"
+                    android:textColor="@color/mediumAshblue"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="5dp">
 
-                <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                    <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Name : "
-                            android:textColor="#000"/>
-
-                    <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Likes : "
-                            android:textColor="#000"/>
-                </LinearLayout>
-
-                <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                    <TextView
-                            android:id="@+id/tvName"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="title"
-                            android:textColor="#000"/>
-
-                    <TextView
-                            android:id="@+id/tvTotalLikes"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="10K"
-                            android:textColor="#000"/>
-                </LinearLayout>
-            </LinearLayout>
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/cardv_recommend_item_ratingbar_bookrating"/>
+            <RatingBar
+                    android:id="@+id/cardv_recommend_item_ratingbar_bookrating"
+                    android:numStars="5"
+                    android:stepSize="0.5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
         </LinearLayout>
-    </RelativeLayout>
-</androidx.cardview.widget.CardView>
+    </androidx.cardview.widget.CardView>
+</FrameLayout>

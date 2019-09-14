@@ -11,6 +11,9 @@ class RecommendPresenter : RecommendContract.Presenter{
         recommendView = view
     }
 
+    fun test(){
+    }
+
     // dropView : View가 delete, unBind 될 때 Presenter에 전달하는 함수
     override fun dropView() {
         recommendView = null

@@ -24,8 +24,7 @@ class RatingRecvAdapter(val bookRatingRecvList: ArrayList<RatingRecvItem>): Recy
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
         fun bindItems(data : RatingRecvItem){
 //            //이미지표시
-//            Glide.with(itemView.context).load(data.photo)
-//                .into(itemView.imageView_photo)
+//            Glide.with(itemView.context).load(data.photo).into(itemView.imageView_photo)
 //            //itemView.imageView_photo.setImageBitmap(data.photo)
             itemView.recv_rating_item_txtv_booktitle.text = data.bookTitle
             itemView.recv_rating_item_txtv_author.text = data.author

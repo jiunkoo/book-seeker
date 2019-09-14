@@ -1,0 +1,107 @@
+[
+  {
+    "bookImageUrl":"https://image.aladin.co.kr/product/1314/73/cover500/8925285649_1.jpg",
+    "bookTitle":"원피스",
+    "bookAuthor":"오다 에이이치로",
+    "bookPublisher":"소년 점프",
+    "bookRating":5
+  },
+  {
+    "bookImageUrl":"https://image.aladin.co.kr/product/1462/94/cover500/8925285010_1.jpg",
+    "bookTitle":"나루토",
+    "bookAuthor":"키시모토 마사시",
+    "bookPublisher":"소년 점프",
+    "bookRating":4.0
+  },
+  {
+    "bookImageUrl":"https://image.aladin.co.kr/product/250/71/cover500/8953288304_1.jpg",
+    "bookTitle":"블리치",
+    "bookAuthor":"쿠보 타이토",
+    "bookPublisher":"소년 점프",
+    "bookRating":3.5
+  },
+  {
+    "bookImageUrl":"https://image.aladin.co.kr/product/2808/79/cover500/8968311528_1.jpg",
+    "bookTitle":"헌터x헌터",
+    "bookAuthor":"토가시 요시히로",
+    "bookPublisher":"소년 점프",
+    "bookRating":4.0
+  },
+  {
+    "bookImageUrl":"https://image.aladin.co.kr/product/1385/77/cover500/8925280914_2.jpg",
+    "bookTitle":"슬램덩크",
+    "bookAuthor":"이노우에 타케히코",
+    "bookPublisher":"소년 점프",
+    "bookRating":5
+  },
+  {
+    "bookImageUrl":"https://image.aladin.co.kr/product/17684/65/cover500/k972534725_1.jpg",
+    "bookTitle":"드래곤볼",
+    "bookAuthor":"토리야마 아키라",
+    "bookPublisher":"소년 점프",
+    "bookRating":5
+  },
+  {
+    "bookImageUrl":"https://image.aladin.co.kr/product/1810/93/cover500/8925886863_1.jpg",
+    "bookTitle":"강철의 연금술사",
+    "bookAuthor":"아리카와 히로무",
+    "bookPublisher":"소년 강강",
+    "bookRating":5
+  },
+  {
+    "bookImageUrl":"https://image.aladin.co.kr/product/295/2/cover500/8953292417_1.jpg",
+    "bookTitle":"명탐정 코난",
+    "bookAuthor":"아오야마 고쇼",
+    "bookPublisher":"소년 선데이",
+    "bookRating":3.5
+  },
+  {
+    "bookImageUrl":"https://image.aladin.co.kr/product/18950/35/cover500/k142635480_1.jpg",
+    "bookTitle":"귀멸의 칼날",
+    "bookAuthor":"고토게 코요하루",
+    "bookPublisher":"소년 점프",
+    "bookRating":5
+  },
+  {
+    "bookImageUrl":"https://image.aladin.co.kr/product/10102/28/cover500/8926360288_1.jpg",
+    "bookTitle":"나의 히어로 아카데미아",
+    "bookAuthor":"호리코시 코헤이",
+    "bookPublisher":"소년 점프",
+    "bookRating":4.0
+  },
+  {
+    "bookImageUrl":"https://image.aladin.co.kr/product/3428/55/cover500/896831814x_1.jpg",
+    "bookTitle":"이누야샤",
+    "bookAuthor":"다카하시 루미코",
+    "bookPublisher":"소년 선데이",
+    "bookRating":4.5
+  },
+  {
+    "bookImageUrl":"https://image.aladin.co.kr/product/3014/57/cover500/8968312869_1.jpg",
+    "bookTitle":"가정교사 히트맨 리본",
+    "bookAuthor":"아마노 아키라",
+    "bookPublisher":"소년 점프",
+    "bookRating":2.5
+  },
+  {
+    "bookImageUrl":"https://image.aladin.co.kr/product/1402/92/cover500/8925284898_1.jpg",
+    "bookTitle":"H2",
+    "bookAuthor":"아다치 미츠루",
+    "bookPublisher":"소년 점프",
+    "bookRating":5
+  },
+  {
+    "bookImageUrl":"https://image.aladin.co.kr/product/4045/77/cover500/8925890771_1.jpg",
+    "bookTitle":"인어의 숲",
+    "bookAuthor":"다카하시 루미코",
+    "bookPublisher":"소년 강강",
+    "bookRating":5
+  },
+  {
+    "bookImageUrl":"https://image.aladin.co.kr/product/1994/93/cover500/8967250959_1.jpg",
+    "bookTitle":"터치",
+    "bookAuthor":"아다치 미츠루",
+    "bookPublisher":"소년 점프",
+    "bookRating":5
+  }
+]

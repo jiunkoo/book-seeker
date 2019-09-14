@@ -22,7 +22,8 @@
     <color name="lightLemon">#f9ffb2</color>
     <color name="lightGrass">#d3ffa2</color>
     <color name="lightLime">#c0e3c1</color>
-    <color name="lightMint">#92fde5</color>
+    <color name="lightMint">#81b9c6</color>
+    <!--<color name="lightMint">#92fde5</color>-->
     <color name="lightViolet">#bd99b8</color>
     <color name="lightPurple">#a294a3</color>
     <color name="lightIndigo">#878d9d</color>
@@ -35,7 +36,8 @@
     <color name="mediumLemon">#f3fe65</color>
     <color name="mediumGrass">#a6fe45</color>
     <color name="mediumLime">#80c783</color>
-    <color name="mediumMint">#64d9a3</color>
+    <color name="mediumMint">#03738c</color>
+    <!--<color name="mediumMint">#64d9a3</color>-->
     <color name="mediumViolet">#7a3271</color>
     <color name="mediumPurple">#452847</color>
     <color name="mediumIndigo">#0e1b3b</color>
@@ -48,7 +50,8 @@
     <color name="darkLemon">#616528</color>
     <color name="darkGrass">#42651b</color>
     <color name="darkLime">#334f34</color>
-    <color name="darkMint">#0e6450</color>
+    <color name="darkMint">#012e38</color>
+    <!--<color name="darkMint">#0e6450</color>-->
     <color name="darkViolet">#30141d</color>
     <color name="darkPurple">#1b101c</color>
     <color name="darkIndigo">#050a17</color>

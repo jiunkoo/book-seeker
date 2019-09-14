@@ -1,231 +1,269 @@
 package com.example.bookseeker.view
 
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.Point
 import android.os.Bundle
-import android.content.Context
 import android.view.*
-import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.bookseeker.R
-import java.util.*
 import kotlin.collections.ArrayList
 import kotlinx.android.synthetic.main.activity_recommend.*
-import android.view.MotionEvent
-import android.view.View.OnTouchListener
-import androidx.core.content.ContextCompat
-import android.graphics.Typeface
-import android.view.Gravity
-import android.view.LayoutInflater
 import android.util.Log
+import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 import android.widget.*
-import android.widget.LinearLayout.*
+import com.example.bookseeker.adapter.RecommendCardvAdapter
+import com.example.bookseeker.adapter.Utils
 import com.example.bookseeker.contract.RecommendContract
 import com.example.bookseeker.model.data.RecommendData
 import com.example.bookseeker.presenter.RecommendPresenter
+import com.mindorks.placeholderview.SwipeDecor
+import com.mindorks.placeholderview.SwipeDirection
 
-class RecommendActivity : BaseActivity(), RecommendContract.View {
+class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardvAdapter.Callback {
     // RatingActivity와 함께 생성될 RatingPresenter를 지연 초기화
     private lateinit var recommendPresenter: RecommendPresenter
 
-    var windowwidth: Int = 0
-    var screenCenter: Int = 0
-    var x_cord: Int = 0
-    var y_cord: Int = 0
-    var x: Int = 0
-    var y: Int = 0
-    var Likes = 0
-    lateinit var parentView: ConstraintLayout
-    var alphaValue = 0f
-    lateinit var context: Context
-
     lateinit var recommendArrayList: ArrayList<RecommendData>
+
+    companion object {
+        val TAG = "RecommendActivity"
+    }
+
+    private val animationDuration = 300
+    private var isToUndo = false
+    private var cardX = 0
+    private var cardY = 0
+    private var xMax = 0f
+    private var yMax = 0f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requestWindowFeature(Window.FEATURE_NO_TITLE)
+//        requestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(R.layout.activity_recommend)
-
-        context = this
-        parentView = findViewById(R.id.recommend_constraintlayout_content) as ConstraintLayout
-        windowwidth = windowManager.defaultDisplay.width
-        screenCenter = windowwidth / 2
-        recommendArrayList = ArrayList()
-        getArrayData()
-
-        for (i in 0 until recommendArrayList.size) {
-            val inflate = this.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            val containerView = inflate.inflate(R.layout.item_cardv_recommend, null)
-
-            val userIMG = containerView.findViewById(R.id.userIMG) as ImageView
-            val relativeLayoutContainer = containerView.findViewById(R.id.relative_container) as RelativeLayout
-
-
-            val layoutParams = LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT
-            )
-
-            containerView.setLayoutParams(layoutParams)
-
-            containerView.setTag(i)
-            userIMG.setBackgroundResource(recommendArrayList.get(i).photo)
-
-            // m_view.setRotation(i);
-            // containerView.setPadding(0, i, 0, 0);
-
-            val layoutTvParams = LayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT
-            )
-
-
-            // ADD dynamically like TextView on image.
-            val tvLike = TextView(context)
-            tvLike.layoutParams = layoutTvParams
-            tvLike.setPadding(10, 10, 10, 10)
-            tvLike.setBackgroundDrawable(resources.getDrawable(R.drawable.abc_btn_check_material))
-            tvLike.text = "LIKE"
-            tvLike.gravity = Gravity.CENTER
-            tvLike.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD))
-            tvLike.textSize = 25f
-            tvLike.setTextColor(ContextCompat.getColor(context, R.color.mediumRed))
-            tvLike.x = 20f
-            tvLike.y = 100f
-            tvLike.rotation = -50f
-            tvLike.alpha = alphaValue
-            relativeLayoutContainer.addView(tvLike)
-
-
-            // ADD dynamically dislike TextView on image.
-            val tvUnLike = TextView(context)
-            tvUnLike.layoutParams = layoutTvParams
-            tvUnLike.setPadding(10, 10, 10, 10)
-            tvUnLike.setBackgroundDrawable(resources.getDrawable(R.drawable.abc_btn_check_material))
-            tvUnLike.text = "UNLIKE"
-            tvUnLike.gravity = Gravity.CENTER
-            tvUnLike.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD))
-            tvUnLike.textSize = 25f
-            tvUnLike.setTextColor(ContextCompat.getColor(context, R.color.mediumRed))
-            tvUnLike.x = 500f
-            tvUnLike.y = 150f
-            tvUnLike.rotation = 50f
-            tvUnLike.alpha = alphaValue
-            relativeLayoutContainer.addView(tvUnLike)
-
-
-            val tvName = containerView.findViewById(R.id.tvName) as TextView
-            val tvTotLikes = containerView.findViewById(R.id.tvTotalLikes) as TextView
-
-
-            tvName.setText(recommendArrayList.get(i).name)
-            tvTotLikes.setText(recommendArrayList.get(i).totalLikes)
-
-            // Touch listener on the image layout to swipe image right or left.
-            relativeLayoutContainer.setOnTouchListener(object : OnTouchListener {
-                override fun onTouch(v: View, event: MotionEvent): Boolean {
-                    x_cord = event.rawX.toInt()
-                    y_cord = event.rawY.toInt()
-                    containerView.setX(0f)
-                    containerView.setY(0f)
-                    when (event.action) {
-                        MotionEvent.ACTION_DOWN -> {
-                            x = event.x.toInt()
-                            y = event.y.toInt()
-                            Log.v("On touch", "$x $y")
-                        }
-                        MotionEvent.ACTION_MOVE -> {
-                            x_cord = event.rawX.toInt()
-                            // smoother animation.
-                            y_cord = event.rawY.toInt()
-                            containerView.setX((x_cord - x).toFloat())
-                            containerView.setY((y_cord - y).toFloat())
-                            if (x_cord >= screenCenter) {
-                                containerView.setRotation(((x_cord - screenCenter) * (Math.PI / 32)).toFloat())
-                                if (x_cord > screenCenter + screenCenter / 2) {
-                                    tvLike.alpha = 1f
-                                    if (x_cord > windowwidth - screenCenter / 4) {
-                                        Likes = 2
-                                    } else {
-                                        Likes = 0
-                                    }
-                                } else {
-                                    Likes = 0
-                                    tvLike.alpha = 0f
-                                }
-                                tvUnLike.alpha = 0f
-                            } else {
-                                // rotate image while moving
-                                containerView.setRotation(((x_cord - screenCenter) * (Math.PI / 32)).toFloat())
-                                if (x_cord < screenCenter / 2) {
-                                    tvUnLike.alpha = 1f
-                                    if (x_cord < screenCenter / 4) {
-                                        Likes = 1
-                                    } else {
-                                        Likes = 0
-                                    }
-                                } else {
-                                    Likes = 0
-                                    tvUnLike.alpha = 0f
-                                }
-                                tvLike.alpha = 0f
-                            }
-                        }
-                        MotionEvent.ACTION_UP -> {
-
-                            x_cord = event.rawX.toInt()
-                            y_cord = event.rawY.toInt()
-
-                            Log.e("X Point", "$x_cord , Y $y_cord")
-                            tvUnLike.alpha = 0f
-                            tvLike.alpha = 0f
-
-                            if (Likes === 0) {
-                                Toast.makeText(context, "NOTHING", Toast.LENGTH_SHORT).show()
-                                Log.e("Event_Status :-> ", "Nothing")
-                                containerView.setX(0f)
-                                containerView.setY(0f)
-                                containerView.setRotation(0f)
-                            } else if (Likes === 1) {
-                                Toast.makeText(context, "UNLIKE", Toast.LENGTH_SHORT).show()
-                                Log.e("Event_Status :-> ", "UNLIKE")
-                                parentView.removeView(containerView)
-                            } else if (Likes === 2) {
-                                Toast.makeText(context, "LIKED", Toast.LENGTH_SHORT).show()
-                                Log.e("Event_Status :-> ", "Liked")
-                                parentView.removeView(containerView)
-                            }
-                        }
-                        else -> {
-                        }
-                    }
-                    return true
-                }
-            })
-            parentView.addView(containerView)
-        }
 
         // View가 Create(Bind) 되었다는 걸 Presenter에 전달
         recommendPresenter.takeView(this)
 
         // BottomNavigationView 이벤트 처리
         switchBottomNavigationView()
+
+        // Tinder CardView 이벤트 처리
+        val activityMargin = Utils.dpToPx(16)
+        val topMargin = Utils.dpToPx(120)
+        val bottomMargin = Utils.dpToPx(60)
+        val windowSize = Utils.getDisplaySize(windowManager)
+
+        recommend_swipeview!!.builder
+            .setDisplayViewCount(3)
+            .setIsUndoEnabled(true)
+            .setSwipeVerticalThreshold(Utils.dpToPx(150))
+            .setSwipeHorizontalThreshold(Utils.dpToPx(150))
+            .setHeightSwipeDistFactor(10f)
+            .setWidthSwipeDistFactor(5f)
+            .setSwipeDecor(
+                SwipeDecor()
+                    .setViewWidth(windowSize.x - activityMargin * 2)
+                    .setViewHeight(windowSize.y - (topMargin + bottomMargin + activityMargin * 5))
+                    .setViewGravity(Gravity.TOP)
+                    .setPaddingTop(20)
+                    .setSwipeAnimTime(animationDuration)
+                    .setRelativeScale(0.01f)
+            )
+
+        val cardViewHolderSize = Point(windowSize.x, windowSize.y - bottomMargin)
+        for (recommendData in Utils.loadRecommendData(applicationContext)) {
+            recommend_swipeview!!.addView(
+                RecommendCardvAdapter(
+                    applicationContext,
+                    recommendData,
+                    cardViewHolderSize,
+                    this
+                )
+            )
+        }
+
+        recommend_cardv_category.setOnClickListener({
+            recommend_swipeview!!.doSwipe(false)
+        })
+        recommend_btmnavview_menu.setOnClickListener({
+            recommend_swipeview!!.doSwipe(false)
+        })
+
+        recommend_swipeview!!.addItemRemoveListener {
+            if (isToUndo) {
+                isToUndo = false
+                recommend_swipeview!!.undoLastSwipe()
+            }
+        }
     }
 
-    private fun getArrayData() {
-        var model = RecommendData("A", "3M", R.drawable.img_novel1)
-        recommendArrayList.add(model)
-
-        var model2 = RecommendData("B", "3M", R.drawable.img_novel2)
-        recommendArrayList.add(model2)
-
-        var model3 = RecommendData("C", "3M", R.drawable.img_novel1)
-        recommendArrayList.add(model3)
-
-        var model4 = RecommendData("D", "3M", R.drawable.img_novel2)
-        recommendArrayList.add(model4)
-
-        var model5 = RecommendData("E", "3M", R.drawable.img_novel1)
-        recommendArrayList.add(model5)
-
-        Collections.reverse(recommendArrayList)
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        cardX = recommend_swipeview.width
+        cardY = recommend_swipeview.height
+        xMax = recommend_swipeview.x
+        yMax = recommend_swipeview.y
     }
+
+    // RecommendCardvAdapter에서 Callback override
+    override fun onSwipeDirection(
+        direction: SwipeDirection,
+        xStart: Float,
+        yStart: Float,
+        xCurrent: Float,
+        yCurrent: Float
+    ) {
+//        val defaultDisplaySize = Point()
+//        windowManager.defaultDisplay.getSize(defaultDisplaySize)
+//        val xMax = defaultDisplaySize.x
+//        val yMax = defaultDisplaySize.y
+
+        if((xStart <= xCurrent && xCurrent <= xStart + Utils.dpToPx(150).toFloat()) &&
+            ( yStart - Utils.dpToPx(150) <= yCurrent && yCurrent <= yStart )){
+            onSwipeNone()
+        }
+        else {
+            when (direction.name) {
+                "TOP" -> {
+                    onSwipeTop()
+                }
+                "LEFT" -> {
+                    onSwipeLeft()
+                }
+                "RIGHT" -> {
+                    onSwipeRight()
+                }
+                "BOTTOM" -> {
+                    onSwipeBottom()
+                }
+
+                "LEFT_TOP" -> { // "a"
+                    // 직선의 기울기 및 상수
+                    var gradient = (yStart - Utils.dpToPx(150).toFloat()) / xStart
+                    var constant = 0f
+
+                    // 현재 좌표가 직선을 지나는 경우
+                    if (yCurrent == (gradient * xCurrent + constant)) {
+                        onSwipeNone()
+                    }
+                    // 현재 좌표가 직선 위를 지나는 경우
+                    else if (yCurrent > (gradient * xCurrent + constant)) { // LEFT
+                        onSwipeLeft()
+                    }
+                    // 현재 좌표가 직선 아래를 지나는 경우
+                    else { // TOP
+                        onSwipeTop()
+                    }
+                }
+
+                "LEFT_BOTTOM" -> { // "-a"
+                    // 직선의 기울기 및 상수
+                    var gradient = (yMax - yStart) / (0 - xStart)
+                    var constant = yMax
+
+                    // 현재 좌표가 직선을 지나는 경우
+                    if (yCurrent == (gradient * xCurrent + constant)) {
+                        onSwipeNone()
+                    }
+                    // 현재 좌표가 직선 위를 지나는 경우
+                    else if (yCurrent > (gradient * xCurrent + constant)) { // BOTTOM
+                        onSwipeBottom()
+                    }
+                    // 현재 좌표가 직선 아래를 지나는 경우
+                    else { // LEFT
+                        onSwipeLeft()
+                    }
+                }
+
+                "RIGHT_TOP" -> { // "-a"
+                    // 직선의 기울기 및 상수
+                    var gradient =
+                        ((yStart - Utils.dpToPx(150).toFloat()) - 0) / ((xStart + Utils.dpToPx(150).toFloat()) - xMax)
+                    var constant =
+                        (yStart - Utils.dpToPx(150).toFloat()) - (gradient * (xStart + Utils.dpToPx(150).toFloat()))
+
+                    // 현재 좌표가 직선을 지나는 경우
+                    if (yCurrent == (gradient * xCurrent + constant)) {
+                        onSwipeNone()
+                    }
+                    // 현재 좌표가 직선 위를 지나는 경우
+                    else if (yCurrent > (gradient * xCurrent + constant)) { // RIGHT
+                        onSwipeRight()
+                    }
+                    // 현재 좌표가 직선 아래를 지나는 경우
+                    else { // TOP
+                        onSwipeTop()
+                    }
+                }
+
+                "RIGHT_BOTTOM" -> { // "a"
+                    // 직선의 기울기 및 상수
+                    var gradient = (yMax - yStart) / (xMax - (xStart + Utils.dpToPx(150).toFloat()))
+                    var constant =
+                        (yStart - Utils.dpToPx(0).toFloat()) - (gradient * (xStart + Utils.dpToPx(150).toFloat()))
+
+                    // 현재 좌표가 직선을 지나는 경우
+                    if (yCurrent == (gradient * xCurrent + constant)) {
+                        onSwipeNone()
+                    }
+                    // 현재 좌표가 직선 위를 지나는 경우
+                    else if (yCurrent > (gradient * xCurrent + constant)) { // BOTTOM
+                        onSwipeBottom()
+                    }
+                    // 현재 좌표가 직선 아래를 지나는 경우
+                    else { // RIGHT
+                        onSwipeRight()
+                    }
+                }
+            }
+        }
+    }
+
+    override fun onSwipeTop() {
+        recommend_layout_linear_category.visibility = INVISIBLE
+        recommend_txtv_message.visibility = VISIBLE
+        recommend_txtv_message.text = "읽었어요"
+        recommend_cardv_category.setCardBackgroundColor(Color.parseColor("#03738c")) // mediumMint
+        isToUndo = false
+    }
+
+    override fun onSwipeLeft() {
+        recommend_layout_linear_category.visibility = INVISIBLE
+        recommend_txtv_message.visibility = VISIBLE
+        recommend_txtv_message.text = "읽는 중"
+        recommend_cardv_category.setCardBackgroundColor(Color.parseColor("#f7b73c")) // mediumYellow
+        isToUndo = false
+    }
+
+    override fun onSwipeRight() {
+        recommend_layout_linear_category.visibility = INVISIBLE
+        recommend_txtv_message.visibility = VISIBLE
+        recommend_txtv_message.text = "읽고 싶어요"
+        recommend_cardv_category.setCardBackgroundColor(Color.parseColor("#80c783")) // mediumLime
+        isToUndo = false
+    }
+
+    override fun onSwipeBottom() {
+        recommend_layout_linear_category.visibility = INVISIBLE
+        recommend_txtv_message.visibility = VISIBLE
+        recommend_txtv_message.text = "관심 없어요"
+        recommend_cardv_category.setCardBackgroundColor(Color.parseColor("#e02947")) // mediumRed
+        isToUndo = false
+    }
+
+    override fun onSwipeNone() {
+        recommend_layout_linear_category.visibility = VISIBLE
+        recommend_txtv_message.visibility = INVISIBLE
+        recommend_txtv_message.text = "MESSAGE"
+        recommend_cardv_category.setCardBackgroundColor(Color.parseColor("#ffffff")) // basicWhite
+        isToUndo = true
+    }
+
+//    override fun onSwipeCoordinate(xStart: Float, yStart: Float, xCurrent: Float, yCurrent: Float): String {
+//        var setDirection = "NONE"
+//        return setDirection
+//    }
 
     // initPresenter : View와 상호작용할 Presenter를 주입하기 위한 함수
     override fun initPresenter() {
@@ -273,7 +311,7 @@ class RecommendActivity : BaseActivity(), RecommendContract.View {
     }
 
     // setProgressON :  공통으로 사용하는 Progress Bar의 시작을 정의하는 함수
-    override fun setProgressON(msg: String){
+    override fun setProgressON(msg: String) {
         progressON(msg)
     }
 
@@ -288,7 +326,7 @@ class RecommendActivity : BaseActivity(), RecommendContract.View {
     }
 
     // executionLog : 공통으로 사용하는 Log 출력 부분을 생성하는 함수
-    override fun executionLog(tag: String, msg: String){
+    override fun executionLog(tag: String, msg: String) {
         Log.e(tag, msg)
     }
 }
