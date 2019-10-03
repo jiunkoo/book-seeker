@@ -3,14 +3,16 @@ package com.example.bookseeker.adapter
 import android.content.Context
 import android.graphics.Point
 import android.util.Log
-import android.widget.*
+import android.widget.ImageView
+import android.widget.RatingBar
+import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.example.bookseeker.R
 import com.example.bookseeker.model.data.RecommendData
 import com.mindorks.placeholderview.SwipeDirection
 import com.mindorks.placeholderview.annotations.*
 import com.mindorks.placeholderview.annotations.swipe.*
-import java.lang.Math.sqrt
+import kotlin.math.sqrt
 
 @Layout(R.layout.item_cardv_recommend)
 class RecommendCardvAdapter(
@@ -116,7 +118,6 @@ class RecommendCardvAdapter(
         )
 
         swipeView.alpha = alpha.toFloat()
-//        callback.onSwipeCoordinate(xStart, yStart, xCurrent, yCurrent)
     }
 
     interface Callback {
@@ -126,6 +127,5 @@ class RecommendCardvAdapter(
         fun onSwipeRight()
         fun onSwipeBottom()
         fun onSwipeNone()
-//        fun onSwipeCoordinate(xStart: Float, yStart: Float, xCurrent: Float, yCurrent: Float): String
     }
 }

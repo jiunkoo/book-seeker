@@ -8,8 +8,8 @@ import android.util.DisplayMetrics
 import android.util.Log
 import android.view.WindowManager
 import com.example.bookseeker.model.data.RecommendData
-import org.json.JSONArray
 import com.google.gson.GsonBuilder
+import org.json.JSONArray
 import java.io.IOException
 import java.nio.charset.Charset
 
@@ -20,7 +20,7 @@ object Utils {
         try {
             val builder = GsonBuilder()
             val gson = builder.create()
-            val array = JSONArray(loadJSONFromAsset(context, "test.json"))
+            val array = JSONArray(loadJSONFromAsset(context, "bookdata.json"))
             val recommendDataList = ArrayList<RecommendData>()
             for (i in 0 until array.length()) {
                 val recommendData = gson.fromJson(array.getString(i), RecommendData::class.java)
@@ -46,7 +46,7 @@ object Utils {
             return String(buffer, Charset.forName("UTF-8"))
         } catch (ex: IOException) {
             ex.printStackTrace()
-            return "{}";
+            return "{}"
         }
     }
 

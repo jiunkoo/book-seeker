@@ -4,31 +4,23 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.Point
 import android.os.Bundle
-import android.view.*
-import com.example.bookseeker.R
-import kotlin.collections.ArrayList
-import kotlinx.android.synthetic.main.activity_recommend.*
 import android.util.Log
-import android.view.View.INVISIBLE
-import android.view.View.VISIBLE
-import android.widget.*
+import android.view.Gravity
+import android.view.View.*
+import android.widget.Toast
+import com.example.bookseeker.R
 import com.example.bookseeker.adapter.RecommendCardvAdapter
 import com.example.bookseeker.adapter.Utils
 import com.example.bookseeker.contract.RecommendContract
-import com.example.bookseeker.model.data.RecommendData
 import com.example.bookseeker.presenter.RecommendPresenter
 import com.mindorks.placeholderview.SwipeDecor
 import com.mindorks.placeholderview.SwipeDirection
+import kotlinx.android.synthetic.main.activity_recommend.*
+
 
 class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardvAdapter.Callback {
     // RatingActivity와 함께 생성될 RatingPresenter를 지연 초기화
     private lateinit var recommendPresenter: RecommendPresenter
-
-    lateinit var recommendArrayList: ArrayList<RecommendData>
-
-    companion object {
-        val TAG = "RecommendActivity"
-    }
 
     private val animationDuration = 300
     private var isToUndo = false
@@ -39,7 +31,6 @@ class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardv
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        requestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(R.layout.activity_recommend)
 
         // View가 Create(Bind) 되었다는 걸 Presenter에 전달
@@ -72,15 +63,10 @@ class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardv
             )
 
         val cardViewHolderSize = Point(windowSize.x, windowSize.y - bottomMargin)
+
+
         for (recommendData in Utils.loadRecommendData(applicationContext)) {
-            recommend_swipeview!!.addView(
-                RecommendCardvAdapter(
-                    applicationContext,
-                    recommendData,
-                    cardViewHolderSize,
-                    this
-                )
-            )
+            recommend_swipeview!!.addView(RecommendCardvAdapter(applicationContext, recommendData, cardViewHolderSize, this))
         }
 
         recommend_cardv_category.setOnClickListener({
@@ -310,7 +296,7 @@ class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardv
         recommendPresenter.dropView()
     }
 
-    // setProgressON :  공통으로 사용하는 Progress Bar의 시작을 정의하는 함수
+    // setProressON :  공통으로 사용하는 Progress Bar의 시작을 정의하는 함수
     override fun setProgressON(msg: String) {
         progressON(msg)
     }

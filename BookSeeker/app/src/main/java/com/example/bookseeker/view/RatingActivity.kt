@@ -1,22 +1,33 @@
 package com.example.bookseeker.view
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.bookseeker.adapter.RatingRecvAdapter
 import com.example.bookseeker.R
 import com.example.bookseeker.contract.RatingContract
-import com.example.bookseeker.item.RatingRecvItem
+import com.example.bookseeker.model.data.BookData
 import com.example.bookseeker.presenter.RatingPresenter
 import kotlinx.android.synthetic.main.activity_rating.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.channels.actor
+import androidx.core.os.HandlerCompat.postDelayed
+import androidx.recyclerview.widget.RecyclerView
+import com.example.bookseeker.adapter.RatingAdapter
+import com.google.android.material.snackbar.Snackbar
+import io.reactivex.schedulers.Schedulers
+
 
 class RatingActivity : BaseActivity(), RatingContract.View {
     // RatingActivity와 함께 생성될 RatingPresenter를 지연 초기화
     private lateinit var ratingPresenter: RatingPresenter
     //recyclerview를 담을 빈 데이터 리스트 변수를 지연 초기화
-    private lateinit var bookRatingRecvList: ArrayList<RatingRecvItem>
+    var bookList = arrayListOf<BookData>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,7 +37,7 @@ class RatingActivity : BaseActivity(), RatingContract.View {
         ratingPresenter.takeView(this)
 
         // RecyclerView에 평가 데이터 불러오기
-        setRecyclerView()
+        setRecyclerView(savedInstanceState)
 
         // BottomNavigationView 이벤트 처리
         switchBottomNavigationView()
@@ -38,23 +49,26 @@ class RatingActivity : BaseActivity(), RatingContract.View {
     }
 
     // setRecyclerView : RatingActivity에서 평가할 도서 목록에 대한 RecyclerView를 초기화 및 정의하는 함수
-    override fun setRecyclerView() {
-        // 일단 급한대로 하드코딩...나중에 DB에서 긁어올 것
-        bookRatingRecvList = arrayListOf<RatingRecvItem>(
-            RatingRecvItem("NONE", "원피스", "오다 에이이치로", "소년 점프", 5f),
-            RatingRecvItem("NONE", "나루토", "키시모토 마사시", "소년 점프", 3.5f),
-            RatingRecvItem("NONE", "블리치", "쿠보 타이토", "소년 점프", 3.0f),
-            RatingRecvItem("NONE", "귀멸의 칼날", "고토게 코요하루", "소년 점프", 4.5f),
-            RatingRecvItem("NONE", "나의 히어로 아카데미아", "호리코시 요헤이", "소년 점프", 4.5f),
-            RatingRecvItem("NONE", "드래곤볼", "토리야마 아키라", "소년 점프", 5f)
-        )
-
+    override fun setRecyclerView(savedInstanceState: Bundle?) {
         // 레이아웃 매니저 설정
-        rating_recyclerview_booklist.layoutManager = LinearLayoutManager(this)
         rating_recyclerview_booklist.setHasFixedSize(true)
+        rating_recyclerview_booklist.layoutManager = LinearLayoutManager(this)
 
         //어댑터 설정
-        rating_recyclerview_booklist.adapter = RatingRecvAdapter(bookRatingRecvList)
+        if (rating_recyclerview_booklist.adapter == null) {
+            rating_recyclerview_booklist.adapter = RatingAdapter()
+        }
+
+        if (savedInstanceState == null) {
+            val subscription = ratingPresenter.getAllRomanceBookList().subscribeOn(Schedulers.io()).subscribe(
+                { retrivedBookData ->
+                    (rating_recyclerview_booklist.adapter as RatingAdapter).addBookList(retrivedBookData)
+                },
+                { e ->
+                    Snackbar.make(rating_recyclerview_booklist, e.message ?: "", Snackbar.LENGTH_LONG).show()
+                }
+            )
+        }
     }
 
     // switchBottomNavigationView : RatingActivity에서 BottomNavigationView 전환 이벤트를 처리하는 함수
@@ -98,7 +112,7 @@ class RatingActivity : BaseActivity(), RatingContract.View {
     }
 
     // setProgressON :  공통으로 사용하는 Progress Bar의 시작을 정의하는 함수
-    override fun setProgressON(msg: String){
+    override fun setProgressON(msg: String) {
         progressON(msg)
     }
 
@@ -113,7 +127,7 @@ class RatingActivity : BaseActivity(), RatingContract.View {
     }
 
     // executionLog : 공통으로 사용하는 Log 출력 부분을 생성하는 함수
-    override fun executionLog(tag: String, msg: String){
+    override fun executionLog(tag: String, msg: String) {
         Log.e(tag, msg)
     }
 }
