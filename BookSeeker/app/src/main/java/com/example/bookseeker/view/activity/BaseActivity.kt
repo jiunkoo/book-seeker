@@ -1,7 +1,8 @@
-package com.example.bookseeker.view
+package com.example.bookseeker.view.activity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.example.bookseeker.view.BaseApplication
 
 abstract class BaseActivity : AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="tabcontent_spinner_item">
+        <item>랜덤 도서</item>
+        <item>발행일이 최신인 도서</item>
+        <item>발행일이 오래된 도서</item>
+        <item>내가 평가한 도서</item>
+        <item>내가 평가하지 않은 도서</item>
+    </string-array>
+</resources>

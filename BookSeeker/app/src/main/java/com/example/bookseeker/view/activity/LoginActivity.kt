@@ -1,4 +1,4 @@
-package com.example.bookseeker.view
+package com.example.bookseeker.view.activity
 
 import android.content.Intent
 import android.graphics.Color

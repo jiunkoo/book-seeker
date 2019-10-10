@@ -20,7 +20,9 @@ class RatingAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         items.add(loadingItem)
     }
 
-    override fun getItemCount(): Int = items.size
+    override fun getItemCount(): Int{
+        return items.size
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         delegateAdapters.get(viewType)!!.onCreateViewHolder(parent)
@@ -33,30 +35,37 @@ class RatingAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     override fun getItemViewType(position: Int) = items[position].getViewType()
 
     fun addBookList(bookData: List<BookData>) {
+        println("도서 목록을 추가하였습니다.")
+        println("bookdata : $bookData")
         // first remove loading and notify
         val initPosition = items.size - 1
         items.removeAt(initPosition)
         notifyItemRemoved(initPosition)
 
-        // insert news and the loading at the end of the list
+        // insert book and the loading at the end of the list
         items.addAll(bookData)
         items.add(loadingItem)
         notifyItemRangeChanged(initPosition, items.size + 1 /* plus loading item */)
     }
 
-    fun clearAndAddBookList(news: List<BookData>) {
+    fun clearBookList(){
+        items.clear()
+        notifyItemRangeRemoved(0, getLastPosition())
+    }
+
+    fun clearAndAddBookList(bookData: List<BookData>) {
+        println("도서 목록을 삭제하고 추가하였습니다.")
         items.clear()
         notifyItemRangeRemoved(0, getLastPosition())
 
-        items.addAll(news)
+        items.addAll(bookData)
         items.add(loadingItem)
-        notifyItemRangeInserted(0, items.size)
+//        notifyItemRangeInserted(0, items.size)
+        notifyItemRangeChanged(0, items.size + 1 /* plus loading item */)
     }
 
     fun getBookList(): List<BookData> =
-        items
-            .filter { it.getViewType() == AdapterConstants.BOOKS }
-            .map { it as BookData }
+        items.filter { it.getViewType() == AdapterConstants.BOOKS }.map { it as BookData }
 
     private fun getLastPosition() = if (items.lastIndex == -1) 0 else items.lastIndex
 }

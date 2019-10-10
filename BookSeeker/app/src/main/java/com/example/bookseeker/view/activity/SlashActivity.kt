@@ -1,7 +1,6 @@
-package com.example.bookseeker.view
+package com.example.bookseeker.view.activity
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.widget.Toast
 import android.content.Intent
 import android.os.Handler

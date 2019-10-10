@@ -12,7 +12,7 @@
             android:theme="@style/AppTheme"
             android:name=".view.BaseApplication">
         <activity
-                android:name=".view.SlashActivity"
+                android:name=".view.activity.SlashActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -22,29 +22,34 @@
             </intent-filter>
         </activity>
         <activity
-                android:name=".view.LoginActivity"
+                android:name=".view.activity.LoginActivity"
+                android:screenOrientation="portrait"
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
-                android:name=".view.SignUpActivity"
+                android:name=".view.activity.SignUpActivity"
+                android:screenOrientation="portrait"
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
-                android:name=".view.SearchActivity"
+                android:name=".view.activity.SearchActivity"
+                android:screenOrientation="portrait"
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
-                android:name=".view.RecommendActivity"
+                android:name=".view.activity.RecommendActivity"
+                android:screenOrientation="portrait"
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
-                android:name=".view.RatingActivity"
+                android:name=".view.activity.RatingActivity"
+                android:screenOrientation="portrait"
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
-                android:name=".view.MypageActivity"
+                android:name=".view.activity.MypageActivity"
+                android:screenOrientation="portrait"
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>
     </application>
-
 </manifest>

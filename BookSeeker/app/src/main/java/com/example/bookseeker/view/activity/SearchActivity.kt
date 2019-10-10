@@ -1,14 +1,12 @@
-package com.example.bookseeker.view
+package com.example.bookseeker.view.activity
 
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import com.example.bookseeker.R
 import com.example.bookseeker.contract.SearchContract
 import com.example.bookseeker.presenter.SearchPresenter
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_search.*
 
 class SearchActivity : BaseActivity(), SearchContract.View {

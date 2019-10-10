@@ -1,33 +1,37 @@
-package com.example.bookseeker.view
+package com.example.bookseeker.view.activity
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.bookseeker.adapter.RatingRecvAdapter
+import androidx.viewpager.widget.ViewPager
 import com.example.bookseeker.R
 import com.example.bookseeker.contract.RatingContract
-import com.example.bookseeker.model.data.BookData
 import com.example.bookseeker.presenter.RatingPresenter
 import kotlinx.android.synthetic.main.activity_rating.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.channels.actor
-import androidx.core.os.HandlerCompat.postDelayed
-import androidx.recyclerview.widget.RecyclerView
 import com.example.bookseeker.adapter.RatingAdapter
+import com.example.bookseeker.adapter.RatingTabAdapter
+import com.example.bookseeker.adapter.listener.InfiniteScrollListener
+import com.example.bookseeker.model.data.BookList
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.tabs.TabLayout
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import android.R.id.tabs
+import android.widget.TextView
+import android.R.id.text2
+import android.R.id.text1
+import android.media.Rating
+import android.view.View
+import com.example.bookseeker.model.data.BookData
+import com.example.bookseeker.view.fragment.ComicFragment
 
 
 class RatingActivity : BaseActivity(), RatingContract.View {
     // RatingActivity와 함께 생성될 RatingPresenter를 지연 초기화
     private lateinit var ratingPresenter: RatingPresenter
-    //recyclerview를 담을 빈 데이터 리스트 변수를 지연 초기화
-    var bookList = arrayListOf<BookData>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,8 +40,8 @@ class RatingActivity : BaseActivity(), RatingContract.View {
         // View가 Create(Bind) 되었다는 걸 Presenter에 전달
         ratingPresenter.takeView(this)
 
-        // RecyclerView에 평가 데이터 불러오기
-        setRecyclerView(savedInstanceState)
+        // TabLayout 설정
+        setTabLayout()
 
         // BottomNavigationView 이벤트 처리
         switchBottomNavigationView()
@@ -48,27 +52,18 @@ class RatingActivity : BaseActivity(), RatingContract.View {
         ratingPresenter = RatingPresenter()
     }
 
-    // setRecyclerView : RatingActivity에서 평가할 도서 목록에 대한 RecyclerView를 초기화 및 정의하는 함수
-    override fun setRecyclerView(savedInstanceState: Bundle?) {
-        // 레이아웃 매니저 설정
-        rating_recyclerview_booklist.setHasFixedSize(true)
-        rating_recyclerview_booklist.layoutManager = LinearLayoutManager(this)
+    // setTabLayout : RatingActivity에서 Tab Layout을 초기화 및 정의하는 함수
+    fun setTabLayout() {
+        //Tab Layout 변수 설정
+        var tabLayout: TabLayout = findViewById(R.id.rating_tablayout)
+        var viewPager: ViewPager = findViewById(R.id.rating_viewpager)
 
-        //어댑터 설정
-        if (rating_recyclerview_booklist.adapter == null) {
-            rating_recyclerview_booklist.adapter = RatingAdapter()
-        }
+        // ViewPager Adapter 설정
+        viewPager.adapter = RatingTabAdapter(ratingPresenter, supportFragmentManager)
+        viewPager.offscreenPageLimit = 3
 
-        if (savedInstanceState == null) {
-            val subscription = ratingPresenter.getAllRomanceBookList().subscribeOn(Schedulers.io()).subscribe(
-                { retrivedBookData ->
-                    (rating_recyclerview_booklist.adapter as RatingAdapter).addBookList(retrivedBookData)
-                },
-                { e ->
-                    Snackbar.make(rating_recyclerview_booklist, e.message ?: "", Snackbar.LENGTH_LONG).show()
-                }
-            )
-        }
+        // Tab Layout에 ViewPager 연결
+        tabLayout.setupWithViewPager(viewPager)
     }
 
     // switchBottomNavigationView : RatingActivity에서 BottomNavigationView 전환 이벤트를 처리하는 함수

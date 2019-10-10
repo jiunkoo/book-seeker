@@ -24,6 +24,10 @@ android {
     }
 }
 
+androidExtensions {
+    experimental = true
+}
+
 dependencies {
     //kotlin
     implementation fileTree(dir: 'libs', include: ['*.jar'])
