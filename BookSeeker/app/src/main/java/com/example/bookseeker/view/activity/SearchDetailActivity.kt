@@ -7,17 +7,20 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.example.bookseeker.R
 import com.example.bookseeker.contract.SearchDetailContract
+import com.example.bookseeker.model.data.BookData
 import com.example.bookseeker.presenter.SearchDetailPresenter
+import com.example.bookseeker.view.fragment.BookInfoFragment
 import com.example.bookseeker.view.fragment.SearchResultFragment
 import com.example.bookseeker.view.fragment.SearchWordFragment
 import kotlinx.android.synthetic.main.activity_search_detail.*
 
 
 class SearchDetailActivity : BaseActivity(), SearchDetailContract.View {
-    // SearchDetailActivity와 함께 생성될 SearchDetailPresenter를 지연 초기화
+    // Activity와 함께 생성될 Presenter를 지연 초기화
     private lateinit var searchDetailPresenter: SearchDetailPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,7 +37,8 @@ class SearchDetailActivity : BaseActivity(), SearchDetailContract.View {
         setEditTextEventListener()
 
         // Fragment Event 처리
-        setFragmentEventListener(0)
+        val searchWordFragment = SearchWordFragment(searchDetailPresenter)
+        replaceFragment(searchWordFragment)
 
         // BottomNavigationView 이벤트 처리
         switchBottomNavigationView()
@@ -46,27 +50,29 @@ class SearchDetailActivity : BaseActivity(), SearchDetailContract.View {
     }
 
     // setButtonEventListener() : SearchDetailActivity에서 Button Event를 처리하는 함수
-    fun setButtonEventListener(){
+    fun setButtonEventListener() {
         search_detail_ibtn_back.setOnClickListener {
             // 뒤로가기 버튼을 누르면 SearchActivity로 이동함
             startSearchActivity()
         }
 
-        search_detail_ibtn_clear.setOnClickListener{
+        search_detail_ibtn_clear.setOnClickListener {
             // 클리어 버튼을 누르면 검색어 전부 삭제
             search_detail_etxt_searchword.text = null
         }
     }
 
-    // setEditTextEventListener : SearchDetailActivity에서 EditText Event를 처리하는 함수
+    // setEditTextEventListener : EditText Event를 처리하는 함수
     override fun setEditTextEventListener() {
         // Input EditText Event를 처리하는 함수
         search_detail_etxt_searchword.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                if(search_detail_etxt_searchword.text.toString().length == 0){
+                if (search_detail_etxt_searchword.text.toString().length == 0) {
                     showMessage("검색어를 입력해주세요.")
                 } else {
-                    setFragmentEventListener(1)
+                    val searchResultFragment =
+                        SearchResultFragment(searchDetailPresenter, search_detail_etxt_searchword.text.toString())
+                    replaceFragment(searchResultFragment)
                 }
             }
             true
@@ -77,29 +83,22 @@ class SearchDetailActivity : BaseActivity(), SearchDetailContract.View {
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun afterTextChanged(p0: Editable?) {
-                if(search_detail_etxt_searchword.text.toString().length == 0){
-                    setFragmentEventListener(0) // 검색이 전부 지워지면 Fragment 변경
+                if (search_detail_etxt_searchword.text.toString().length == 0) {
+                    // 검색이 전부 지워지면 Fragment 변경
+                    val searchWordFragment = SearchWordFragment(searchDetailPresenter)
+                    replaceFragment(searchWordFragment)
                 }
             }
         })
     }
 
-    fun setFragmentEventListener(position: Int) {
+    override fun replaceFragment(fragment: Fragment) {
         val fragmentManager = supportFragmentManager
-        val searchWordFragment = SearchWordFragment(searchDetailPresenter)
-        val searchResultFragment = SearchResultFragment(searchDetailPresenter, search_detail_etxt_searchword.text.toString())
         var transaction: FragmentTransaction = fragmentManager.beginTransaction()
-        when (position) {
-            0 -> {
-                transaction.replace(R.id.search_detail_layout_frame, searchWordFragment).commitAllowingStateLoss()
-            }
-            1 -> {
-                transaction.replace(R.id.search_detail_layout_frame, searchResultFragment).commitAllowingStateLoss()
-            }
-        }
+        transaction.replace(R.id.search_detail_layout_frame, fragment).commitAllowingStateLoss()
     }
 
-    // startSearchActivity : SearchDetailActivity에서 SearchActivity로 넘어가는 함수
+    // startSearchActivity : SearchActivity로 넘어가는 함수
     fun startSearchActivity() {
         val nextIntent = Intent(this, SearchActivity::class.java)
         startActivity(nextIntent)

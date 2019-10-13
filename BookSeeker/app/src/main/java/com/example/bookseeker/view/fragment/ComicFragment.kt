@@ -19,8 +19,6 @@ import com.google.android.material.snackbar.Snackbar
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
-
-
 class ComicFragment(ratingPresenter: RatingPresenter) : Fragment() {
     // 부모에게서 상속받을 RatingPresenter를 초기화
     private var ratingPresenter: RatingPresenter = ratingPresenter

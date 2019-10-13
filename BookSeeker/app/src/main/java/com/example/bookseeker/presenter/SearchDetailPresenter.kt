@@ -1,6 +1,7 @@
 package com.example.bookseeker.presenter
 
 import android.util.Log
+import androidx.fragment.app.Fragment
 import com.example.bookseeker.contract.SearchDetailContract
 import com.example.bookseeker.model.data.BookData
 import com.example.bookseeker.model.data.BookList
@@ -13,6 +14,11 @@ class SearchDetailPresenter : SearchDetailContract.Presenter {
     // takeView : View가 Create, Bind 될 때 Presenter에 전달하는 함수
     override fun takeView(view: SearchDetailContract.View) {
         searchView = view
+    }
+
+    // fragment전환
+    fun replaceFragment(fragment: Fragment){
+        searchView!!.replaceFragment(fragment)
     }
 
     // getAllSearchResultBookList : SearchDetailPresenter에서 모든 Search Result 데이터를 가져오는 함수

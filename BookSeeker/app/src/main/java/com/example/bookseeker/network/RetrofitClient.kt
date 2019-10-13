@@ -9,7 +9,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 object RetrofitClient {
     val retrofitInterface: RetrofitInterface
     //    companion object { val API_URL = "https://366f8b18.ngrok.io/" }
-    const val BASE_URL = "https://429cb439.ngrok.io"
+    const val BASE_URL = "https://fd3a6f55.ngrok.io"
 
     init {
         var retrofit = Retrofit.Builder()

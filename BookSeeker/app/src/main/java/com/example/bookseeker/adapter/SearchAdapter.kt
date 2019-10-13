@@ -1,12 +1,11 @@
-package com.example.bookseeker
+package com.example.bookseeker.adapter
 
 import android.view.ViewGroup
 import androidx.collection.SparseArrayCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.example.bookseeker.adapter.*
 import com.example.bookseeker.model.data.BookData
 
-class SearchAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class SearchAdapter(listener: SearchDelegateAdapter.onViewSelectedListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var items: ArrayList<ViewType>
     private var delegateAdapters = SparseArrayCompat<ViewTypeDelegateAdapter>()
@@ -15,7 +14,7 @@ class SearchAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     init {
-        delegateAdapters.put(AdapterConstants.BOOKS, SearchDelegateAdapter())
+        delegateAdapters.put(AdapterConstants.BOOKS, SearchDelegateAdapter(listener))
         delegateAdapters.put(AdapterConstants.LOADING, LoadingDelegateAdapter())
         items = ArrayList()
         items.add(loadingItem)

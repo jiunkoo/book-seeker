@@ -3,14 +3,17 @@ package com.example.bookseeker.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.bookseeker.R
 import com.example.bookseeker.model.data.BookData
 import kotlinx.android.synthetic.main.item_recv_searching.view.*
 
-class SearchDelegateAdapter : ViewTypeDelegateAdapter {
+class SearchDelegateAdapter(val viewActions: onViewSelectedListener) : ViewTypeDelegateAdapter {
+    interface onViewSelectedListener {
+        fun onItemSelected(bookData: BookData)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_recv_searching, parent, false)
         return RatingDelegateViewHolder(view)
@@ -29,10 +32,7 @@ class SearchDelegateAdapter : ViewTypeDelegateAdapter {
             recv_searching_item_txtv_publisher.text = bookData.publisher
             recv_searching_item_txtv_introduction.text = bookData.introduction
 
-            // 각각의 Item에 onClickListener 설정
-            itemView.setOnClickListener({
-                Toast.makeText(itemView.context, "아이템 '${bookData.title}'를 클릭했습니다.", Toast.LENGTH_LONG).show()
-            })
+            super.itemView.setOnClickListener { viewActions.onItemSelected(bookData)}
         }
     }
 }

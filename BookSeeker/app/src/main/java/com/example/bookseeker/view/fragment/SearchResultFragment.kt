@@ -10,15 +10,18 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bookseeker.R
-import com.example.bookseeker.SearchAdapter
+import com.example.bookseeker.adapter.SearchAdapter
 import com.example.bookseeker.adapter.listener.InfiniteScrollListener
 import com.example.bookseeker.model.data.BookList
 import com.example.bookseeker.presenter.SearchDetailPresenter
 import com.google.android.material.snackbar.Snackbar
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import com.example.bookseeker.adapter.SearchDelegateAdapter
+import com.example.bookseeker.model.data.BookData
 
-class SearchResultFragment(searchDetailPresenter: SearchDetailPresenter, searchWord: String) : Fragment() {
+class SearchResultFragment(searchDetailPresenter: SearchDetailPresenter, searchWord: String)
+    : Fragment(), SearchDelegateAdapter.onViewSelectedListener {
     // 부모에게서 전달받은 변수를 초기화
     private var searchDetailPresenter: SearchDetailPresenter = searchDetailPresenter
     private var searchWord: String = searchWord
@@ -27,7 +30,7 @@ class SearchResultFragment(searchDetailPresenter: SearchDetailPresenter, searchW
     // Disposable 객체 지정
     private var subscriptions = CompositeDisposable()
     // RecyclerView Adapter 설정
-    private val searchAdapter by lazy { SearchAdapter() }
+    private val searchAdapter by lazy { SearchAdapter(this) }
     // Spinner Item Change Flag 설정
     private var category = 0
     private var spinnerFlag = false
@@ -63,6 +66,12 @@ class SearchResultFragment(searchDetailPresenter: SearchDetailPresenter, searchW
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
+    }
+
+    override fun onItemSelected(bookData: BookData) {
+        // 아이템을 선택하면 해당 데이터를 가지고 BookInfoFragment로 이동하게 함
+        val bookInfoFragment = BookInfoFragment(searchDetailPresenter, bookData)
+        searchDetailPresenter.replaceFragment(bookInfoFragment)
     }
 
     // setRecyclerView : ComicFragment에서 평가할 도서 목록에 대한 RecyclerView를 초기화 및 정의하는 함수
