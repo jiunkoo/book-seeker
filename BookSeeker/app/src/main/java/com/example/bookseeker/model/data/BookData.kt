@@ -82,10 +82,14 @@ data class BookList(
 
 @Parcelize
 data class BookData(
+    val bsin: String,
     val title: String,
     val author: String,
     val publisher: String,
+    val introduction: String,
     val image: String?,
+    val link: String,
+    val keyword: String,
     val rating: Float
 ) : ViewType, Parcelable {
     override fun getViewType() = AdapterConstants.BOOKS

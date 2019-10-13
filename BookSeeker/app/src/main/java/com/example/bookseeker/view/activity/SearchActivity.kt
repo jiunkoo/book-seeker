@@ -20,6 +20,9 @@ class SearchActivity : BaseActivity(), SearchContract.View {
         // View가 Create(Bind) 되었다는 걸 Presenter에 전달
         searchPresenter.takeView(this)
 
+        // TextView Event 처리
+        setTextViewEventListener()
+
         // BottomNavigationView 이벤트 처리
         switchBottomNavigationView()
     }
@@ -27,6 +30,20 @@ class SearchActivity : BaseActivity(), SearchContract.View {
     // initPresenter : View와 상호작용할 Presenter를 주입하기 위한 함수
     override fun initPresenter() {
         searchPresenter = SearchPresenter()
+    }
+
+    // setTextViewEventListener : SearchActivity에서 TextView Event를 처리하는 함수
+    override fun setTextViewEventListener() {
+        // SignUp TextView Event를 처리하는 함수
+        search_etxt_search.setOnClickListener {
+            startSearchDetailActivity()
+        }
+    }
+
+    // startSearchDetailActivity : SearchActivity에서 SearchDetailActivity로 넘어가는 함수
+    override fun startSearchDetailActivity() {
+        val nextIntent = Intent(this, SearchDetailActivity::class.java)
+        startActivity(nextIntent)
     }
 
     // switchBottomNavigationView : SearchActivity에서 BottomNavigationView 전환 이벤트를 처리하는 함수

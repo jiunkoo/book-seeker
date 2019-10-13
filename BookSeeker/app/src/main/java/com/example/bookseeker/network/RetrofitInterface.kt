@@ -16,8 +16,12 @@ interface RetrofitInterface {
     @POST("/SignUpInfo/")
     fun insertSignUpData(@Body signUpData: SignUpData): Call<ResponseBody>
 
+    @GET("/BookInfo")
+    fun selectAllSearchResultData(@Query("category") category: Int, @Query("page") page: Int,
+                                  @Query("searchWord") searchWord: String): Call<BookList>
+
     @GET("/ComicInfo")
-    fun selectAllComicData( @Query("category") category: Int, @Query("page") page: Int,
+    fun selectAllComicData(@Query("category") category: Int, @Query("page") page: Int,
                             @Query("page_size") page_size: Int): Call<BookList>
 
     @GET("/RomanceInfo")

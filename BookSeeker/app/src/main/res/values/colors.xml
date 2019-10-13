@@ -10,6 +10,7 @@
     <!-- Custom Color : Basic -->
     <color name="basicWhite">#ffffff</color>
     <color name="basicBlack">#000000</color>
+    <color name="ridibooks">#1c86e1</color>
     <color name="transparent">#00000000</color>
 
     <!-- Custom Color : More Lightness -->

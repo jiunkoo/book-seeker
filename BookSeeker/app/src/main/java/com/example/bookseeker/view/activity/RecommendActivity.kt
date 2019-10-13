@@ -69,7 +69,7 @@ class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardv
             recommend_swipeview!!.addView(RecommendCardvAdapter(applicationContext, recommendData, cardViewHolderSize, this))
         }
 
-        recommend_cardv_category.setOnClickListener({
+        recommend_cardview_category.setOnClickListener({
             recommend_swipeview!!.doSwipe(false)
         })
         recommend_btmnavview_menu.setOnClickListener({
@@ -210,7 +210,7 @@ class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardv
         recommend_layout_linear_category.visibility = INVISIBLE
         recommend_txtv_message.visibility = VISIBLE
         recommend_txtv_message.text = "읽었어요"
-        recommend_cardv_category.setCardBackgroundColor(Color.parseColor("#03738c")) // mediumMint
+        recommend_cardview_category.setCardBackgroundColor(Color.parseColor("#03738c")) // mediumMint
         isToUndo = false
     }
 
@@ -218,7 +218,7 @@ class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardv
         recommend_layout_linear_category.visibility = INVISIBLE
         recommend_txtv_message.visibility = VISIBLE
         recommend_txtv_message.text = "읽는 중"
-        recommend_cardv_category.setCardBackgroundColor(Color.parseColor("#f7b73c")) // mediumYellow
+        recommend_cardview_category.setCardBackgroundColor(Color.parseColor("#80c783")) // mediumLime
         isToUndo = false
     }
 
@@ -226,7 +226,7 @@ class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardv
         recommend_layout_linear_category.visibility = INVISIBLE
         recommend_txtv_message.visibility = VISIBLE
         recommend_txtv_message.text = "읽고 싶어요"
-        recommend_cardv_category.setCardBackgroundColor(Color.parseColor("#80c783")) // mediumLime
+        recommend_cardview_category.setCardBackgroundColor(Color.parseColor("#f7b73c")) // mediumYellow
         isToUndo = false
     }
 
@@ -234,7 +234,7 @@ class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardv
         recommend_layout_linear_category.visibility = INVISIBLE
         recommend_txtv_message.visibility = VISIBLE
         recommend_txtv_message.text = "관심 없어요"
-        recommend_cardv_category.setCardBackgroundColor(Color.parseColor("#e02947")) // mediumRed
+        recommend_cardview_category.setCardBackgroundColor(Color.parseColor("#e02947")) // mediumRed
         isToUndo = false
     }
 
@@ -242,7 +242,7 @@ class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardv
         recommend_layout_linear_category.visibility = VISIBLE
         recommend_txtv_message.visibility = INVISIBLE
         recommend_txtv_message.text = "MESSAGE"
-        recommend_cardv_category.setCardBackgroundColor(Color.parseColor("#ffffff")) // basicWhite
+        recommend_cardview_category.setCardBackgroundColor(Color.parseColor("#ffffff")) // basicWhite
         isToUndo = true
     }
 
