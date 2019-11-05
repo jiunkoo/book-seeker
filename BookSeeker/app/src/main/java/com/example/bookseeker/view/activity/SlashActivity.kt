@@ -40,7 +40,7 @@ class SlashActivity : BaseActivity(), SlashContract.View {
 
     // startLoginActivity : SlashActivity에서 LoginActivity로 넘어가는 함수
     override fun startLoginActivity() {
-        startActivity(Intent(this@SlashActivity, SearchActivity::class.java))
+        startActivity(Intent(this@SlashActivity, LoginActivity::class.java))
         finish()
     }
 

@@ -11,9 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.example.bookseeker.R
 import com.example.bookseeker.contract.SearchDetailContract
-import com.example.bookseeker.model.data.BookData
 import com.example.bookseeker.presenter.SearchDetailPresenter
-import com.example.bookseeker.view.fragment.BookInfoFragment
 import com.example.bookseeker.view.fragment.SearchResultFragment
 import com.example.bookseeker.view.fragment.SearchWordFragment
 import kotlinx.android.synthetic.main.activity_search_detail.*

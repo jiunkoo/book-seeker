@@ -22,10 +22,10 @@ class SearchDetailPresenter : SearchDetailContract.Presenter {
     }
 
     // getAllSearchResultBookList : SearchDetailPresenter에서 모든 Search Result 데이터를 가져오는 함수
-    fun getAllSearchResultBookList(category: Int, page: Int, searchWord: String): Observable<BookList> {
+    fun getAllSearchResultBookList(category: Int, page: Int, page_size: Int, searchWord: String): Observable<BookList> {
         return Observable.create { subscriber ->
             // 데이터 생성을 위한 Create
-            val callResponse = retrofitInterface.selectAllSearchResultData(category, page, searchWord)
+            val callResponse = retrofitInterface.selectAllSearchResultData(category, page, page_size, searchWord)
             val response = callResponse.execute()
 
             if (response.isSuccessful) {

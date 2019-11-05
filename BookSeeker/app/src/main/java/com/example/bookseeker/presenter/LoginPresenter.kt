@@ -2,11 +2,11 @@ package com.example.bookseeker.presenter
 
 import android.util.Log
 import com.example.bookseeker.contract.LoginContract
-import com.example.bookseeker.model.data.SignUpData
+import com.example.bookseeker.model.data.LoginData
+import com.example.bookseeker.model.data.LoginResult
+import com.example.bookseeker.model.data.LoginUser
 import com.example.bookseeker.network.RetrofitClient
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import io.reactivex.Observable
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -48,37 +48,22 @@ class LoginPresenter : LoginContract.Presenter {
         return checkRegExResult
     }
 
-    // loginCheck : View에서 Email과 Password를 받아와 일치 여부를 비교하는 함수
-    override fun checkLoginData(inputEmail: String, inputPassword: String) {
+    // loginCheck : View에서 Login Data를 가져와 로그인 여부를 결정하는 함수
+    override fun checkLoginData(loginData : LoginData): Observable<LoginResult> {
         loginView?.setProgressON("로그인을 진행중입니다...")
 
-        var checkLoginData = retrofitInterface.selectOneSignUpDataByEmail(inputEmail)
-        checkLoginData.enqueue(object : Callback<List<SignUpData>> {
-            override fun onResponse(call: Call<List<SignUpData>>, response: Response<List<SignUpData>>) {
-                executionLog("SELECT", "Select One SignUp Data Success!")
-                if (response.isSuccessful) {
-                    var response = response.body()
-                    if (response != null) {
-                        executionLog("RESPONSE", "$response")
-                        if (response.isEmpty()) {
-                            loginView?.setProgressOFF()
-                            loginView?.showMessage("없는 이메일입니다.")
-                        } else {
-                            if(inputEmail == response.get(0).email && inputPassword == response.get(0).password){
-                                loginView?.setProgressOFF()
-                                loginView?.startSearchActivity()
-                            } else if(inputEmail == response.get(0).email && inputPassword != response.get(0).password){
-                                loginView?.setProgressOFF()
-                                loginView?.showMessage("비밀번호를 잘못 입력했습니다.")
-                            }
-                        }
-                    }
-                }
+        return Observable.create { subscriber ->
+            // 데이터 생성을 위한 Create
+            val callResponse = retrofitInterface.loginCheck(loginData)
+            val response = callResponse.execute()
+
+            if (response.isSuccessful) {
+                subscriber.onNext(response.body()!!)
+                subscriber.onComplete() // 구독자에게 모든 데이터 발행이 완료되었음을 알림
+            } else {
+                subscriber.onError(Throwable(response.message()))
             }
-            override fun onFailure(call: Call<List<SignUpData>>, t: Throwable) {
-                executionLog("SELECT", "Select One SignUp Data Failure!")
-            }
-        })
+        }
     }
 
     // dropView : View가 delete, unBind 될 때 Presenter에 전달하는 함수

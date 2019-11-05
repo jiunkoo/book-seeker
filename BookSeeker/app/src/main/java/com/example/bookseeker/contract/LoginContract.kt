@@ -1,7 +1,10 @@
 package com.example.bookseeker.contract
 
+import com.example.bookseeker.model.data.LoginData
+import com.example.bookseeker.model.data.LoginResult
 import com.example.bookseeker.presenter.BasePresenter
 import com.example.bookseeker.view.BaseView
+import io.reactivex.Observable
 
 interface LoginContract {
     interface View : BaseView {
@@ -26,6 +29,6 @@ interface LoginContract {
         fun checkRegEx(txtv: String, etxt: String): String
 
         // checkLoginData : LoginPresenter에서 Email과 Password의 일치 여부를 비교하는 함수
-        fun checkLoginData(inputEmail: String, inputPassword: String)
+        fun checkLoginData(loginData : LoginData): Observable<LoginResult>
     }
 }

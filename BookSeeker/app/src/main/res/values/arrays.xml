@@ -8,7 +8,6 @@
         <item>내가 평가하지 않은 도서</item>
     </string-array>
     <string-array name="searchresult_spinner_item">
-        <item>전체</item>
         <item>최신순</item>
         <item>오래된순</item>
         <item>가나다순</item>

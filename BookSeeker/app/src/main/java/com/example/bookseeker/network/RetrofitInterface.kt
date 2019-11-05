@@ -1,23 +1,23 @@
 package com.example.bookseeker.network
 
-import com.example.bookseeker.model.data.BookData
-import com.example.bookseeker.model.data.BookList
-import com.example.bookseeker.model.data.SignUpData
+import com.example.bookseeker.model.data.*
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*
 
 interface RetrofitInterface {
+//    @GET("/SignUpInfo")
+//    fun selectOneSignUpDataByEmail(@Query("email") email: String): Call<List<SignUpData>>
 
-    @GET("/SignUpInfo")
-    fun selectOneSignUpDataByEmail(@Query("email") email: String): Call<List<SignUpData>>
-//    fun checkEmailDuplication(@Query("email") email: String): Call<SignUpData>
+    @POST("/account/api/auth/register")
+    fun insertUserData(@Body UserData: UserData): Call<ResponseBody>
 
-    @POST("/SignUpInfo/")
-    fun insertSignUpData(@Body signUpData: SignUpData): Call<ResponseBody>
+    @POST("/account/api/auth/login")
+    fun loginCheck(@Body loginData: LoginData): Call<LoginResult>
 
-    @GET("/BookInfo")
+    @GET("/book/BookInfo")
     fun selectAllSearchResultData(@Query("category") category: Int, @Query("page") page: Int,
+                                  @Query("page_size") page_size: Int,
                                   @Query("searchWord") searchWord: String): Call<BookList>
 
     @GET("/ComicInfo")

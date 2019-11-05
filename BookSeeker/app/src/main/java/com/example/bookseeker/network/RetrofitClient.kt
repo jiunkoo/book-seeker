@@ -1,19 +1,25 @@
 package com.example.bookseeker.network
 
-import com.google.gson.Gson
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.converter.moshi.MoshiConverterFactory
 
 object RetrofitClient {
     val retrofitInterface: RetrofitInterface
     //    companion object { val API_URL = "https://366f8b18.ngrok.io/" }
-    const val BASE_URL = "https://fd3a6f55.ngrok.io"
+    const val BASE_URL = "https://50e0e511.ngrok.io"
 
     init {
+        val clientBuilder = OkHttpClient.Builder()
+        val loggingInterceptor = HttpLoggingInterceptor()
+        loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+        clientBuilder.addInterceptor(loggingInterceptor)
+
         var retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
+            .client(clientBuilder.build())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create()) // @Body Annotation을 사용하기 위해 필요
             .build()

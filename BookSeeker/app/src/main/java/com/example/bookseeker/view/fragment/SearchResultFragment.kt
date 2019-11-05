@@ -96,7 +96,7 @@ class SearchResultFragment(searchDetailPresenter: SearchDetailPresenter, searchW
 
     // requestBookData : 관찰자에게서 발행된 데이터를 가져오는 함수
     private fun requestBookData(recyclerView: RecyclerView){
-        val subscription = searchDetailPresenter.getAllSearchResultBookList(category, searchResultBookList?.page ?: 1, searchWord)
+        val subscription = searchDetailPresenter.getAllSearchResultBookList(category, searchResultBookList?.page ?: 1, 10, searchWord)
             .subscribeOn(Schedulers.io()).subscribe(
                 { retrivedBookList ->
                     searchResultBookList = retrivedBookList

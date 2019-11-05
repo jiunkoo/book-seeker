@@ -1,8 +1,9 @@
 package com.example.bookseeker.contract
 
-import com.example.bookseeker.model.data.SignUpData
+import com.example.bookseeker.model.data.UserData
 import com.example.bookseeker.presenter.BasePresenter
 import com.example.bookseeker.view.BaseView
+import io.reactivex.Observable
 
 interface SignUpContract {
     interface View : BaseView {
@@ -21,6 +22,6 @@ interface SignUpContract {
         fun checkRegEx(txtv: String, etxt: String): String
 
         // insertSignUpData : SignUpPresenter에서 SignUp Data를 저장하는 함수
-        fun insertSignUpData(signUpDdata: SignUpData)
+        fun insertSignUpData(userData: UserData): Observable<String>
     }
 }
