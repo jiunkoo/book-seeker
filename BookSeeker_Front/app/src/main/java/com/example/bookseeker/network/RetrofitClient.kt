@@ -9,7 +9,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 object RetrofitClient {
     val retrofitInterface: RetrofitInterface
     //    companion object { val API_URL = "https://366f8b18.ngrok.io/" }
-    const val BASE_URL = "https://50e0e511.ngrok.io"
+    const val BASE_URL = "https://34884112.ngrok.io"
 
     init {
         val clientBuilder = OkHttpClient.Builder()

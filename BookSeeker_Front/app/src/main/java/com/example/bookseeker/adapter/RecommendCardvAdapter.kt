@@ -8,6 +8,7 @@ import android.widget.RatingBar
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.example.bookseeker.R
+import com.example.bookseeker.model.data.BookData
 import com.example.bookseeker.model.data.RecommendData
 import com.mindorks.placeholderview.SwipeDirection
 import com.mindorks.placeholderview.annotations.*
@@ -17,7 +18,7 @@ import kotlin.math.sqrt
 @Layout(R.layout.item_cardv_recommend)
 class RecommendCardvAdapter(
     private val context: Context,
-    private val recommendData: RecommendData,
+    private val bookData: BookData,
     private val cardViewHolderSize: Point,
     private val callback: Callback
 ) {
@@ -50,11 +51,11 @@ class RecommendCardvAdapter(
 
     @Resolve
     fun onResolved() {
-        Glide.with(context).load(recommendData.bookImageUrl).into(bookImage)
-        bookTitle!!.text = recommendData.bookTitle
-        bookAuthor!!.text = recommendData.bookAuthor
-        bookPublisher!!.text = recommendData.bookPublisher
-        bookRating!!.rating = recommendData.bookRating
+        Glide.with(context).load(bookData.image).into(bookImage)
+        bookTitle!!.text = bookData.title
+        bookAuthor!!.text = bookData.author
+        bookPublisher!!.text = bookData.publisher
+        bookRating!!.rating = bookData.rating
         swipeView.alpha = 1f
     }
 

@@ -11,23 +11,8 @@ import com.example.bookseeker.R
 import com.example.bookseeker.contract.RatingContract
 import com.example.bookseeker.presenter.RatingPresenter
 import kotlinx.android.synthetic.main.activity_rating.*
-import com.example.bookseeker.adapter.RatingAdapter
 import com.example.bookseeker.adapter.RatingTabAdapter
-import com.example.bookseeker.adapter.listener.InfiniteScrollListener
-import com.example.bookseeker.model.data.BookList
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
-import android.R.id.tabs
-import android.widget.TextView
-import android.R.id.text2
-import android.R.id.text1
-import android.media.Rating
-import android.view.View
-import com.example.bookseeker.model.data.BookData
-import com.example.bookseeker.view.fragment.ComicFragment
-
 
 class RatingActivity : BaseActivity(), RatingContract.View {
     // RatingActivity와 함께 생성될 RatingPresenter를 지연 초기화

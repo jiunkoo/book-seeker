@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.Point
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
 import android.view.Gravity
 import android.view.View.*
@@ -12,15 +13,23 @@ import com.example.bookseeker.R
 import com.example.bookseeker.adapter.RecommendCardvAdapter
 import com.example.bookseeker.adapter.Utils
 import com.example.bookseeker.contract.RecommendContract
+import com.example.bookseeker.model.data.BookList
 import com.example.bookseeker.presenter.RecommendPresenter
+import com.google.android.material.snackbar.Snackbar
 import com.mindorks.placeholderview.SwipeDecor
 import com.mindorks.placeholderview.SwipeDirection
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_recommend.*
 
 
 class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardvAdapter.Callback {
     // RatingActivity와 함께 생성될 RatingPresenter를 지연 초기화
     private lateinit var recommendPresenter: RecommendPresenter
+    //recyclerview를 담을 빈 데이터 리스트 변수를 초기화
+    private var recommendBookList: BookList? = null
+    // Disposable 객체 지정
+    private var subscriptions = CompositeDisposable()
 
     private val animationDuration = 300
     private var isToUndo = false
@@ -64,10 +73,11 @@ class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardv
 
         val cardViewHolderSize = Point(windowSize.x, windowSize.y - bottomMargin)
 
-
-        for (recommendData in Utils.loadRecommendData(applicationContext)) {
-            recommend_swipeview!!.addView(RecommendCardvAdapter(applicationContext, recommendData, cardViewHolderSize, this))
-        }
+//        for (recommendData in Utils.loadRecommendData(applicationContext)) {
+//            recommend_swipeview!!.addView(RecommendCardvAdapter(applicationContext, recommendData, cardViewHolderSize, this))
+//        }
+        // 도서 데이터를 서버에서 가져옴
+        requestRecommendBookData(cardViewHolderSize)
 
         recommend_cardview_category.setOnClickListener({
             recommend_swipeview!!.doSwipe(false)
@@ -92,6 +102,29 @@ class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardv
         yMax = recommend_swipeview.y
     }
 
+    // requestBookData : 관찰자에게서 발행된 데이터를 가져오는 함수
+    private fun requestRecommendBookData(cardViewHolderSize: Point) {
+        // ShardPreference에 토큰 값 집어넣기
+        val pref = this.getPreferences(0)
+        val userToken = pref.getString("token", "None")
+
+        val subscription = recommendPresenter.getAllRecommendBookList(recommendBookList?.page ?: 1, userToken!!)
+            .subscribeOn(Schedulers.io()).subscribe(
+                { retrivedBookList ->
+                    recommendBookList = retrivedBookList
+                    for (bookData in retrivedBookList.results) {
+                        recommend_swipeview!!.addView(RecommendCardvAdapter(applicationContext, bookData, cardViewHolderSize, this))
+                    }
+                },
+                { e ->
+                    Looper.prepare()
+                    showMessage("Get Recommend Data Error!")
+                    Looper.loop()
+                }
+            )
+        subscriptions.add(subscription)
+    }
+
     // RecommendCardvAdapter에서 Callback override
     override fun onSwipeDirection(
         direction: SwipeDirection,
@@ -105,11 +138,11 @@ class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardv
 //        val xMax = defaultDisplaySize.x
 //        val yMax = defaultDisplaySize.y
 
-        if((xStart <= xCurrent && xCurrent <= xStart + Utils.dpToPx(150).toFloat()) &&
-            ( yStart - Utils.dpToPx(150) <= yCurrent && yCurrent <= yStart )){
+        if ((xStart <= xCurrent && xCurrent <= xStart + Utils.dpToPx(150).toFloat()) &&
+            (yStart - Utils.dpToPx(150) <= yCurrent && yCurrent <= yStart)
+        ) {
             onSwipeNone()
-        }
-        else {
+        } else {
             when (direction.name) {
                 "TOP" -> {
                     onSwipeTop()
