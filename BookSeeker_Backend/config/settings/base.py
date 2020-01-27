@@ -80,5 +80,5 @@ REST_FRAMEWORK = {
 
 # Authentication
 AUTHENTICATION_BACKENDS = [
-    'account_app.backend.EmailAuthBackend', # 내가 만든 AUTH를 먼저 검사
+    'user.backend.EmailAuthBackend', # 내가 만든 AUTH를 먼저 검사
 ]
