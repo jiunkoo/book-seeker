@@ -1,0 +1,13 @@
+# Log
+ignore-file*
+*.log
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+# Pycharm IDEA Folder
+BookSeeker_Backend/.idea/
+BookSeeker_Backend/venv/
+
+# Enviroment File
+BookSeeker_Backend/server_info.json
