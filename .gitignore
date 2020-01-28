@@ -11,3 +11,12 @@ BookSeeker_Backend/venv/
 
 # Enviroment File
 BookSeeker_Backend/server_info.json
+
+# Dummy data insert File
+BookSeeker_Backend/insert_data.py
+
+# Cache File
+BookSeeker_Backend/book/migrations/0001_initial.py
+
+# Data File
+BookSeeker_Backend/data/
