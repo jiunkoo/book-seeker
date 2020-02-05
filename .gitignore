@@ -1,25 +1,13 @@
-# Log
-ignore-file*
+# Logs
+logs
 *.log
 
-# Byte-compiled / optimized / DLL files
-__pycache__/
-
-# Pycharm IDEA Folder
-BookSeeker_Backend/.idea/
-BookSeeker_Backend/venv/
-
 # Enviroment File
-BookSeeker_Backend/server_info.json
+BookSeeker_Backend/config/server_info.json
 
-# Dummy data insert File
-BookSeeker_Backend/insert_data.py
-
-# Cache File
-BookSeeker_Backend/book/migrations/0001_initial.py
-
-# Data File
-BookSeeker_Backend/data/
+#node_modules
+# Enviroment File
+BookSeeker_Backend/node_modules/
 
 # Folder
 BookSeeker_Backend_Django/
