@@ -1,8 +1,10 @@
 # Logs
 logs
 *.log
+BookSeeker_Backend/log/
 
 # Enviroment File
+BookSeeker_Backend/.env
 BookSeeker_Backend/config/server_info.json
 
 #node_modules

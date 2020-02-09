@@ -1,41 +1,192 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+// 웹 프레임워크
+const express = require('express');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+// 인증
+const passport = require('passport');
+const passportConfig = require('./passport');
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
+const flash = require('connect-flash');
 
-var app = express();
+// 프로미스 기반 ORM(Objective-Relational Mapping)
+const { sequelize } = require('./models');
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
+// 에러와 로그 생성
+const createError = require('http-errors');
+const winston = require('./config/winston');
+// const path = require('path');
 
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+// 보안 강화
+const hpp = require('hpp');
+const helmet = require('helmet');
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+// 멀티코어 서버 구성
+const cluster = require('cluster');
+const os = require('os');
+const uuid = require('uuid');
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
-});
+// 설정
+require('dotenv').config();
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+// 서버 uuid 생성
+const instance_id = uuid.v4();
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
+// 워커 생성(cpu/2)
+// const cpuCount = os.cpus().length;
+const cpuCount = 1;
+const workerCount = cpuCount / 2;
 
-module.exports = app;
+// 클러스터가 마스터인 경우
+if (cluster.isMaster) {
+  winston.log('info', '[SERVER] SERVER_ID : ' + instance_id);
+  winston.log('info', '[SERVER] SERVER_CPU : ' + cpuCount + ', WORKER_COUNT : ' + workerCount);
+
+  let worker_id;
+  let worker;
+
+  // 워커 메세지 리스너
+  const workerMsgListener = function (msg) {
+    worker_id = msg.worker_id;
+
+    // 마스터 uuid 요청
+    if (msg.cmd === 'MASTER_ID') {
+      cluster.workers[worker_id].send({ cmd: 'MASTER_ID', master_id: instance_id });
+    }
+  }
+
+  // cpu 개수만큼 워커 생성
+  for (let i = 0; i < workerCount; i++) {
+    winston.log('info', "[SERVER] 워커 생성 - [" + (i + 1) + "/" + workerCount + "]");
+
+    let worker = cluster.fork();
+
+    worker.on('message', workerMsgListener);
+  }
+
+  // 워커가 온라인인 경우
+  cluster.on('online', function (worker) {
+    winston.log('info', '[SERVER] 워커 실행 중 - WORKER_ID : [' + worker.process.pid + ']');
+  });
+
+  // 워커가 오프라인인 경우
+  // 워커를 생성하고 워커 요청 메세지 받음
+  cluster.on('exit', function (worker) {
+    winston.log('info', '[SERVER] 워커 실행 중단 - WORKER_ID : [' + worker.process.pid + ']');
+
+    worker = cluster.fork();
+
+    worker.on('message', workerMsgListener);
+  });
+
+  // 클러스터가 워커인 경우
+} else if (cluster.isWorker) {
+  // 마스터와 워커 아이디 생성
+  let worker_id = cluster.worker.id;
+  let master_id;
+
+  // 마스터에게 id 요청
+  process.send({ worker_id: worker_id, cmd: 'MASTER_ID' });
+  process.on('message', function (msg) {
+    if (msg.cmd === 'MASTER_ID') {
+      master_id = msg.master_id;
+    }
+  }).on('unhandledRejection', (reason, p) => {
+    winston.log('error', '[SERVER][Unhandled Rejection at Promise] ', reason, p);
+  }).on('uncaughtException', (error) => {
+    try {
+      // 에러 발생 : 3초 안에 프로세스 종료
+      const killtimer = setTimeout(function () {
+        process.exit(1);
+      }, 3000);
+
+      // setTimeout을 현재 프로세스와 독립적으로 작동하도록 레퍼런스 제거
+      killtimer.unref();
+
+      // 워커가 죽었다는 걸 마스터에게 알림
+      cluster.worker.disconnect();
+
+      // 에러 로그 작성
+      winston.log('error', '[SERVER][Uncaught Exception thrown] ' + error.stack);
+    } catch (error) {
+      winston.log('error', '[SERVER] 프로세스 종료 과정에서 에러 발생 ' + error.stack);
+    }
+  });
+
+  // 필요한 설정 선언
+  const app = express();
+  const production = process.env.NODE_ENV === 'production';
+
+  // 라우터 객체 생성
+  const usersRouter = require('./routes/users');
+
+  // sequelize 동기화
+  sequelize.sync();
+
+  // passport 설정
+  passportConfig(passport);
+
+  // 포트 설정
+  app.set('port', process.env.PORT || 8000);
+
+  // 프로덕션 모드인 경우 보안 강화
+  if (production) {
+    app.use(hpp());
+    app.use(helmet());
+  }
+
+  // 기본 설정
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: false }));
+  app.use(cookieParser(process.env.COOKIE_SECRET));
+  // 세션 암호화
+  app.use(session({
+    resave: false,
+    saveUninitialized: false,
+    secret: process.env.COOKIE_SECRET,
+    cookie: {
+      httpOnly: true,
+      secure: false,
+      domain: production && '.bookseeker.com',
+    },
+  }));
+  // app.use(express.static(path.join(__dirname, 'public')));
+
+  // passport 설정 초기화 및 세션 사용
+  app.use(flash());
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+  // 서버 상태 확인
+  app.get('/', (req, res) => {
+    res.send('[SERVER] BOOKSEEKER의 서버입니다.');
+  });
+
+  // express에 라우터 연결
+  app.use('/users', usersRouter);
+
+  // 404 에러 생성
+  app.use(function (req, res, next) {
+    next(createError(404));
+  });
+
+  // 에러 핸들러
+  app.use(function (err, req, res, next) {
+    // Development일 때만 에러 메세지 남김
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+    // 에러 로그 기록
+    winston.log('error', err.stack);
+
+    // 에러 페이지 렌더링
+    res.status(err.status || 500);
+    res.render('error');
+  });
+
+  // 포트를 열어 클라이언트로부터 응답을 받는다.
+  app.listen(production ? app.get('port') : 8000, () => {
+    winston.log('info', `[SERVER] ${app.get('port')}번 포트에서 서버가 실행중입니다.`);
+  });
+
+  module.exports = app;
+}
