@@ -117,7 +117,9 @@ if (cluster.isMaster) {
   const production = process.env.NODE_ENV === 'production';
 
   // 라우터 객체 생성
+  const adminRouter = require('./routes/admin');
   const usersRouter = require('./routes/users');
+  const booksRouter = require('./routes/books');
 
   // sequelize 동기화
   sequelize.sync();
@@ -162,7 +164,9 @@ if (cluster.isMaster) {
   });
 
   // express에 라우터 연결
+  app.use('/admin', adminRouter);
   app.use('/users', usersRouter);
+  app.use('/books', booksRouter);
 
   // 404 에러 생성
   app.use(function (req, res, next) {
