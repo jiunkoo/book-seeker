@@ -20,7 +20,6 @@ const router = express.Router();
 router.post('/parsing/book', clientIp, isLoggedIn, async (req, res, next) => {
     try {
         const user_email = req.user.email;
-
         winston.log('info', `[ADMIN][${req.clientIp}|${user_email}] 도서 데이터 파싱`);
 
         // 관리자가 아닌 경우

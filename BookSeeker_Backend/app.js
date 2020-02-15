@@ -122,6 +122,7 @@ if (cluster.isMaster) {
   const booksRouter = require('./routes/books');
   const recommendRouter = require('./routes/recommend');
 
+
   // sequelize 동기화
   sequelize.sync();
 
