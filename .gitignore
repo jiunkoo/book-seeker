@@ -7,6 +7,9 @@ BookSeeker_Backend/log/
 BookSeeker_Backend/.env
 BookSeeker_Backend/config/server_info.json
 
+# Dummy Data
+BookSeeker_Backend/data/
+
 #node_modules
 # Enviroment File
 BookSeeker_Backend/node_modules/

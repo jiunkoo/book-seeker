@@ -15,6 +15,8 @@ db.Sequelize = Sequelize;
 
 // Table 객체 선언
 db.User = require('./user')(sequelize, Sequelize);
+db.Book = require('./book')(sequelize, Sequelize);
+db.Rating = require('./rating')(sequelize, Sequelize);
 
 // Table 객체 관계맺기
 
