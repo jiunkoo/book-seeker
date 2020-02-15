@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 // Mapping Rating Table
 module.exports = (sequelize, DataTypes) => (
     sequelize.define('rating', {
@@ -23,6 +22,3 @@ module.exports = (sequelize, DataTypes) => (
         paranoid: true, // 삭제일 기록
     })
 );
-=======
-// Mapping Rating Table
->>>>>>> 5b0d5af6cb06faae5a81c1f77d97b8cec8f508ab
