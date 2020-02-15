@@ -3,7 +3,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcrypt');
 
 // 모델 선언
-const User = require('../models');
+const { User } = require('../models');
 
 module.exports = (passport) => {
     passport.use(new LocalStrategy({
@@ -22,7 +22,7 @@ module.exports = (passport) => {
             // 만일 사용자가 존재하는 경우
             if (user) {
                 // 비밀번호 비교
-                const comparePassword = await bcrypt.compare(password, exUser.password);
+                const comparePassword = await bcrypt.compare(password, user.password);
 
                 // 비밀번호가 일치하는 경우
                 if (comparePassword) {

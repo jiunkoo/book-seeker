@@ -2,7 +2,7 @@
 const localStrategy = require('./localStrategy');
 
 // 모델 선언
-const User = require('../models');
+const { User } = require('../models');
 
 // 로그 생성
 const winston = require('../config/winston');
