@@ -4,7 +4,6 @@ import android.util.Log
 import com.example.bookseeker.contract.RecommendContract
 import com.example.bookseeker.model.data.BookData
 import com.example.bookseeker.model.data.BookList
-import com.example.bookseeker.model.data.LoginResult
 import com.example.bookseeker.network.RetrofitClient.retrofitInterface
 import io.reactivex.Observable
 

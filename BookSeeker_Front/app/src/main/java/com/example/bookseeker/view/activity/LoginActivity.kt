@@ -1,7 +1,6 @@
 package com.example.bookseeker.view.activity
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Looper
@@ -11,7 +10,7 @@ import android.util.Log
 import android.widget.Toast
 import com.example.bookseeker.R
 import com.example.bookseeker.contract.LoginContract
-import com.example.bookseeker.model.data.LoginData
+import com.example.bookseeker.model.data.LoginRequest
 import com.example.bookseeker.presenter.LoginPresenter
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -47,9 +46,9 @@ class LoginActivity : BaseActivity(), LoginContract.View {
 
     // setButtonEventListener : LoginActivity에서 Button Event를 처리하는 함수
     override fun setButtonEventListener() {
-        // Login Button Event를 처리하는 함수
+        // LoginRequest Button Event를 처리하는 함수
         login_btn_login.setOnClickListener {
-            var loginData = LoginData(
+            var loginData = LoginRequest(
                 login_etxt_email.text.toString(),
                 login_etxt_password.text.toString()
             )
@@ -60,7 +59,7 @@ class LoginActivity : BaseActivity(), LoginContract.View {
     // setTextViewEventListener : LoginActivity에서 TextView Event를 처리하는 함수
     override fun setTextViewEventListener() {
         // SignUp TextView Event를 처리하는 함수
-        login_txtv_signup.setOnClickListener {
+        login_txtv_register.setOnClickListener {
             startSignUpActivity()
         }
     }
@@ -134,50 +133,31 @@ class LoginActivity : BaseActivity(), LoginContract.View {
 
     // startSignUpActivity : LoginActivity에서 SignUpActivity로 넘어가는 함수
     override fun startSignUpActivity() {
-        val nextIntent = Intent(this@LoginActivity, SignUpActivity::class.java)
+        val nextIntent = Intent(this@LoginActivity, RegisterActivity::class.java)
         startActivity(nextIntent)
     }
 
     // requestLoginResult : 관찰자에게서 발행된 데이터를 가져오는 함수
-    fun requestLoginResult(loginData: LoginData) {
-        val subscription = loginPresenter.checkLoginData(loginData)
+    fun requestLoginResult(loginRequest: LoginRequest) {
+        val subscription = loginPresenter.checkLoginData(this, loginRequest)
             .subscribeOn(Schedulers.io()).subscribe(
                 { result ->
-                    when (result.status) {
-                        "0", "1" -> {
-                            Looper.prepare()
-                            setProgressOFF()
-                            showMessage("가입하지 않은 아이디거나 잘못된 비밀번호입니다.")
-                            Looper.loop()
-                        }
-                        "2" -> {
-                            Looper.prepare()
-                            setProgressOFF()
-                            showMessage("로그인에 성공하였습니다.")
-
-                            /*
-                            println("loginUser id : " + result.loginUser.id)
-                            println("loginUser email : " + result.loginUser.email)
-                            println("loginUser username : " + result.loginUser.username)
-                            println("loginUser token : " + result.token)
-                            */
-
-                            // ShardPreference에 토큰 값 집어넣기
-                            val pref = this.getPreferences(0)
-                            val editor = pref.edit()
-                            editor.putString("token", result.token)
-                            editor.commit()
-
-                            println("sharedPreference에 저장된 토큰 값은 : " + pref.getString("token", "None"))
-
-                            startSearchActivity()
-                            Looper.loop()
-                        }
+                    if((result.get("success").toString()).equals("true")){
+                        Looper.prepare()
+                        setProgressOFF()
+                        showMessage("로그인에 성공하였습니다.")
+                        startSearchActivity()
+                        Looper.loop()
+                    } else {
+                        Looper.prepare()
+                        setProgressOFF()
+                        showMessage(result.get("message").toString())
+                        Looper.loop()
                     }
                 },
                 { e ->
                     Looper.prepare()
-                    showMessage("Login Error!")
+                    showMessage("LoginRequest Error!")
                     Looper.loop()
                 }
             )
