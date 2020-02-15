@@ -1,20 +1,21 @@
 package com.example.bookseeker.presenter
 
 import android.util.Log
-import com.example.bookseeker.contract.SignUpContract
-import com.example.bookseeker.model.data.UserData
+import com.example.bookseeker.contract.RegisterContract
+import com.example.bookseeker.model.data.RegisterRequest
 import com.example.bookseeker.network.RetrofitClient
+import com.google.gson.JsonObject
 import io.reactivex.Observable
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-class SignUpPresenter : SignUpContract.Presenter {
-    private var signUpView: SignUpContract.View? = null
+class RegisterPresenter : RegisterContract.Presenter {
+    private var registerView: RegisterContract.View? = null
     private val retrofitInterface = RetrofitClient.retrofitInterface
 
     // takeView : View가 Create, Bind 될 때 Presenter에 전달하는 함수
-    override fun takeView(view: SignUpContract.View) {
-        signUpView = view
+    override fun takeView(view: RegisterContract.View) {
+        registerView = view
     }
 
     // checkRegEx : SignUpPresenter에서 EditText의 RegEx를 검사하는 함수
@@ -55,18 +56,18 @@ class SignUpPresenter : SignUpContract.Presenter {
         return checkRegExResult
     }
 
-    // insertSignUpData : SignUpActivity에서 User Data를 저장하는 함수
-    override fun insertSignUpData(userData: UserData): Observable<String> {
-        signUpView?.setProgressON("회원가입을 진행중입니다...")
+    // insertRegisterData : SignUpActivity에서 User Data를 저장하는 함수
+    override fun insertRegisterData(registerRequest: RegisterRequest): Observable<JsonObject> {
+        registerView?.setProgressON("회원가입을 진행중입니다...")
 
         return Observable.create { subscriber ->
             // 데이터 생성을 위한 Create
-            val callResponse = retrofitInterface.insertUserData(userData)
+            val callResponse = retrofitInterface.insertUserData(registerRequest)
             val response = callResponse.execute()
 
             if (response.isSuccessful) {
-                var result = response.body()?.string()
-                println("result는 " + result + "입니다.")
+                var result = response.body()
+
                 if (result != null) {
                     subscriber.onNext(result)
                 }
@@ -79,7 +80,7 @@ class SignUpPresenter : SignUpContract.Presenter {
 
     // dropView : View가 delete, unBind 될 때 Presenter에 전달하는 함수
     override fun dropView() {
-        signUpView = null
+        registerView = null
     }
 
     // executionLog : 공통으로 사용하는 Log 출력 부분을 생성하는 함수

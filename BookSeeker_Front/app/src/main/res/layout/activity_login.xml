@@ -129,12 +129,12 @@
 
             app:layout_constraintTop_toBottomOf="@id/login_btn_login"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/login_txtv_signup"
+            app:layout_constraintRight_toLeftOf="@id/login_txtv_register"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_chainStyle="packed"/>
     <TextView
-            android:id="@+id/login_txtv_signup"
-            android:text="Sign Up"
+            android:id="@+id/login_txtv_register"
+            android:text="Register"
             android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="@color/mediumLime"

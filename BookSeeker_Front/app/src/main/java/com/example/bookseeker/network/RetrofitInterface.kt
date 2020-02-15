@@ -1,16 +1,16 @@
 package com.example.bookseeker.network
 
 import com.example.bookseeker.model.data.*
-import okhttp3.ResponseBody
+import com.google.gson.JsonObject
 import retrofit2.Call
 import retrofit2.http.*
 
 interface RetrofitInterface {
-    @POST("/account/api/auth/register")
-    fun insertUserData(@Body UserData: UserData): Call<ResponseBody>
+    @POST("/users/register")
+    fun insertUserData(@Body registerRequest: RegisterRequest): Call<JsonObject>
 
-    @POST("/account/api/auth/login")
-    fun loginCheck(@Body loginData: LoginData): Call<LoginResult>
+    @POST("/users/login")
+    fun loginCheck(@Body loginRequest: LoginRequest): Call<JsonObject>
 
     @GET("/book/BookInfo")
     fun selectAllSearchResultData(@Query("category") category: Int, @Query("page") page: Int,

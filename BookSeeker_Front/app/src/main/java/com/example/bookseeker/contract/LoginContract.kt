@@ -1,10 +1,14 @@
 package com.example.bookseeker.contract
 
-import com.example.bookseeker.model.data.LoginData
-import com.example.bookseeker.model.data.LoginResult
+import android.content.Context
+import com.example.bookseeker.model.data.LoginRequest
 import com.example.bookseeker.presenter.BasePresenter
 import com.example.bookseeker.view.BaseView
+import com.google.gson.JsonObject
 import io.reactivex.Observable
+import okhttp3.ResponseBody
+import org.json.JSONObject
+import retrofit2.Response
 
 interface LoginContract {
     interface View : BaseView {
@@ -29,6 +33,6 @@ interface LoginContract {
         fun checkRegEx(txtv: String, etxt: String): String
 
         // checkLoginData : LoginPresenter에서 Email과 Password의 일치 여부를 비교하는 함수
-        fun checkLoginData(loginData : LoginData): Observable<LoginResult>
+        fun checkLoginData(context: Context, loginRequest : LoginRequest): Observable<JsonObject>
     }
 }

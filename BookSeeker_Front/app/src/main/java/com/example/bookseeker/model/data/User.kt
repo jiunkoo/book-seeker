@@ -5,28 +5,28 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 import java.io.Serializable
 
-data class UserData(
+data class RegisterRequest(
     // @SerializedName Annotation :  JSON 응답에서 각각의 필드 구분 위해 사용
     @SerializedName("email") val email: String,
-    @SerializedName("username") val username: String,
+    @SerializedName("nickname") val nickname: String,
     @SerializedName("password") val password: String
 ) : Serializable
 
-data class LoginData(
-    @SerializedName("username") val username: String,
+@Parcelize
+data class RegisterResponse(
+    val user_uid: String,
+    val email: String,
+    val nickname: String
+) : Parcelable{}
+
+data class LoginRequest(
+    @SerializedName("email") val email: String,
     @SerializedName("password") val password: String
 )
 
 @Parcelize
-data class LoginResult(
-    val status: String?,
-    val loginUser: LoginUser,
-    val token: String
-): Parcelable {}
-
-@Parcelize
-data class LoginUser(
-    val id: String,
+data class LoginResponse(
     val email: String,
-    val username: String
+    val nickname: String,
+    val tutorial: Boolean
 ) : Parcelable{}
