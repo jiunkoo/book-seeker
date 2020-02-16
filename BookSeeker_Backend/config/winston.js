@@ -27,7 +27,7 @@ if (!fs.existsSync(logDir)) {
 // 파일 출력 옵션 설정
 const transport_file = new transports.File({
     name: 'info-file',
-    filename: `${logDir}/${DATE}_server-test.log`,
+    filename: `${logDir}/${DATE}_bookseeker.log`,
     datePattern: 'YYYY-MM-DD',
     zippedArchive: false,
     colorize: false,
