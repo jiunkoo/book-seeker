@@ -191,7 +191,7 @@ if (cluster.isMaster) {
   });
 
   // 포트를 열어 클라이언트로부터 응답을 받는다.
-  app.listen(production ? app.get('port') : 8000, () => {
+  app.listen(production ? app.get('port') : 3000, () => {
     winston.log('info', `[SERVER] ${app.get('port')}번 포트에서 서버가 실행중입니다.`);
   });
 
