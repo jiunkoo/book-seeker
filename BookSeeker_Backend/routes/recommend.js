@@ -17,29 +17,31 @@ const winston = require('../config/winston');
 //라우터
 const router = express.Router();
 
-// 추천 만화 목록을 반환
-router.post('/comic', clientIp, isLoggedIn, async (req, res, next) => {
+// 추천 도서 목록을 반환
+router.get('/:genre', clientIp, isLoggedIn, async (req, res, next) => {
     try {
         const user_email = req.user.email;
         const user_uid = req.user.user_uid;
 
-        winston.log('info', `[RECOMMEND][${req.clientIp}|${user_email}]  추천 만화 목록 조회 Request`);
+        const genre = req.params.genre;
 
-        // 추천을 적용할 만화 평가 데이터 불러오기
-        const comicRatingList = await Rating.findAll({
+        winston.log('info', `[RECOMMEND][${req.clientIp}|${user_email}]  추천 ${genre} 목록 조회 Request`);
+
+        // 추천을 적용할 평가 데이터 불러오기
+        const ratingList = await Rating.findAll({
             where: {
-                genre: 'COMIC'
+                genre: genre
             }
         });
 
-        const trainedDataSet = await RF.trainingDataSet(comicRatingList);
+        const trainedDataSet = await RF.trainingDataSet(ratingList);
         const recommendBookList = await RF.recommendBookList(user_uid, trainedDataSet, 100);
 
         // 전체 도서 목록 조회 성공 메세지 반환
         const result = new Object();
         result.success = true;
         result.data = recommendBookList;
-        result.message = '추천 도서 목록 조회를 성공했습니다.';
+        result.message = '추천 ${genre} 목록 조회를 성공했습니다.';
         winston.log('info', `[RECOMMEND][${req.clientIp}|${user_email}] ${result.message}`);
         return res.status(200).send(result);
     } catch (e) {
