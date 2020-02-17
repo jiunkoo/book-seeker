@@ -120,6 +120,7 @@ if (cluster.isMaster) {
   const adminRouter = require('./routes/admin');
   const usersRouter = require('./routes/users');
   const booksRouter = require('./routes/books');
+  const ratingRouter = require('./routes/rating');
   const recommendRouter = require('./routes/recommend');
 
 
@@ -169,6 +170,7 @@ if (cluster.isMaster) {
   app.use('/admin', adminRouter);
   app.use('/users', usersRouter);
   app.use('/books', booksRouter);
+  app.useR('/rating', ratingRouter);
   app.use('/recommend', recommendRouter);
 
   // 404 에러 생성
