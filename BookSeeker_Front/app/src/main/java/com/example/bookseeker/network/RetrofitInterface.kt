@@ -16,9 +16,9 @@ interface RetrofitInterface {
 
     // 도서 검색
     @POST("/books/search/{filter}/{page}/{limit}")
-    fun searchBooks(@Body searchRequest: SearchRequest, @Path("filter") filter: Int, @Path("page") page: Int, @Path("limit") limit: Int): Call<JsonObject>
+    fun booksSearch(@Body searchRequest: SearchRequest, @Path("filter") filter: Int, @Path("page") page: Int, @Path("limit") limit: Int): Call<JsonObject>
 
     // 도서 목록 조회
-    @GET("/books/:genre/:filter/:page/:limit")
+    @GET("/books/{genre}/{filter}/{page}/{limit}")
     fun getBooks(@Path("genre") genre: String, @Path("filter") filter: Int, @Path("page") page: Int, @Path("limit") limit: Int): Call<JsonObject>
 }

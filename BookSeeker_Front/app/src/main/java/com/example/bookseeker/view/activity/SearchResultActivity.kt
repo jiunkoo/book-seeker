@@ -30,8 +30,6 @@ import kotlinx.android.synthetic.main.activity_search_result.*
 class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDelegateAdapter.onViewSelectedListener {
     // Activity와 함께 생성될 Presenter를 지연 초기화
     private lateinit var searchResultPresenter: SearchResultPresenter
-    //recyclerview를 담을 빈 데이터 리스트 변수를 초기화
-    private var searchResultBookList: BookList? = null
     // Disposable 객체 지정
     private var subscriptions = CompositeDisposable()
     // RecyclerView Adapter 설정
@@ -51,14 +49,16 @@ class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDe
         val intent = intent
         val keyword = intent.extras!!.get("keyword").toString()
 
+        // Spinner, Recyclerview 설정
+        val spinner = findViewById(R.id.search_result_spinner) as Spinner
+        val recyclerView = findViewById(R.id.search_result_recyclerview) as RecyclerView
+
         // 검색창에 keyword 넣기
         search_result_etxt_keyword.setText(keyword)
         search_result_etxt_keyword.setSelection(keyword.length)
 
-        // Spinner, Recyclerview 설정
-        val spinner = findViewById(R.id.search_result_spinner) as Spinner
-        val recyclerView = findViewById(R.id.search_result_recyclerview) as RecyclerView
-        setSpinner(keyword, spinner, recyclerView, savedInstanceState)
+        // BottomNavigationView 이벤트 처리
+        switchBottomNavigationView()
 
         // Button Event 처리
         setButtonEventListener()
@@ -66,8 +66,8 @@ class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDe
         // Edit Text Event 처리
         setEditTextEventListener(keyword)
 
-        // BottomNavigationView 이벤트 처리
-        switchBottomNavigationView()
+        // spinner 처리
+        setSpinner(keyword, spinner, recyclerView, savedInstanceState)
     }
 
     // initPresenter : View와 상호작용할 Presenter를 주입하기 위한 함수
@@ -156,7 +156,7 @@ class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDe
         startActivity(nextIntent)
     }
 
-    // setSpinner : SearchResultFragment에서 평가할 도서 목록에 대한 Spinner를 초기화 및 정의하는 함수
+    // setSpinner : 검색한 도서 목록에 대한 Spinner를 초기화 및 정의하는 함수
     fun setSpinner(keyword: String, spinner: Spinner, recyclerView: RecyclerView, savedInstanceState: Bundle?) {
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
@@ -184,7 +184,7 @@ class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDe
         recyclerView.clearOnScrollListeners() // 아이템 끝까지 도달되었을 때 클리어
         recyclerView.addOnScrollListener(
             InfiniteScrollListener(
-                { requestBookData(keyword, recyclerView) },
+                { booksSearchSubscribe(keyword, recyclerView) },
                 linearLayout
             )
         ) // 다시 갱신
@@ -195,7 +195,7 @@ class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDe
         }
 
         if (savedInstanceState == null) {
-            requestBookData(keyword, recyclerView)
+            booksSearchSubscribe(keyword, recyclerView)
         }
     }
 
@@ -204,11 +204,11 @@ class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDe
         startBookInfoActivity(bookData)
     }
 
-    // requestBookData : 관찰자에게서 발행된 데이터를 가져오는 함수
-    private fun requestBookData(keyword: String, recyclerView: RecyclerView) {
+    // booksSearchSubscribe : 관찰자에게서 발행된 데이터를 가져오는 함수
+    private fun booksSearchSubscribe(keyword: String, recyclerView: RecyclerView) {
         var searchRequest = SearchRequest(keyword)
         val subscription =
-            searchResultPresenter.searchBooks(this, searchRequest, filter, searchAdapter.itemCount / 10 + 1, 10)
+            searchResultPresenter.booksSearchObservable(this, searchRequest, filter, searchAdapter.itemCount / 10 + 1, 10)
                 .subscribeOn(Schedulers.io()).subscribe(
                     { result ->
                         if ((result.get("success").toString()).equals("true")) {

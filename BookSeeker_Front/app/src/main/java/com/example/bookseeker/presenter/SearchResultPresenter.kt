@@ -17,14 +17,14 @@ class SearchResultPresenter : SearchResultContract.Presenter {
         searchView = view
     }
 
-    // searchBooks : SearchDetailPresenter에서 모든 Search Result 데이터를 가져오는 함수
-    fun searchBooks(context: Context, searchRequest: SearchRequest, filter: Int, page: Int, limit: Int): Observable<JsonObject> {
+    // booksSearchObservable : SearchDetailPresenter에서 모든 검색 결과를 요청하는 함수
+    fun booksSearchObservable(context: Context, searchRequest: SearchRequest, filter: Int, page: Int, limit: Int): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
         val retrofitInterface = RetrofitClient.retrofitInterface(client)
 
         return Observable.create { subscriber ->
             // 데이터 생성을 위한 Create
-            val callResponse = retrofitInterface.searchBooks(searchRequest, filter, page, limit)
+            val callResponse = retrofitInterface.booksSearch(searchRequest, filter, page, limit)
             val response = callResponse.execute()
 
             if (response.isSuccessful) {

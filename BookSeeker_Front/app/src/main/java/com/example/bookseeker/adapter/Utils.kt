@@ -7,7 +7,7 @@ import android.os.Build
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.WindowManager
-import com.example.bookseeker.model.data.RecommendData
+import com.example.bookseeker.model.data.Recommend
 import com.google.gson.GsonBuilder
 import org.json.JSONArray
 import java.io.IOException
@@ -16,14 +16,14 @@ import java.nio.charset.Charset
 object Utils {
     private val TAG = "Utils"
 
-    fun loadRecommendData(context: Context): List<RecommendData> {
+    fun loadRecommendData(context: Context): List<Recommend> {
         try {
             val builder = GsonBuilder()
             val gson = builder.create()
             val array = JSONArray(loadJSONFromAsset(context, "bookdata.json"))
-            val recommendDataList = ArrayList<RecommendData>()
+            val recommendDataList = ArrayList<Recommend>()
             for (i in 0 until array.length()) {
-                val recommendData = gson.fromJson(array.getString(i), RecommendData::class.java)
+                val recommendData = gson.fromJson(array.getString(i), Recommend::class.java)
                 recommendDataList.add(recommendData)
             }
             return recommendDataList
