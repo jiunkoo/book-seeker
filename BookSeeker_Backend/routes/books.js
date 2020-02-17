@@ -104,7 +104,7 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
         const limit = parseInt(req.params.limit);
 
         winston.log('info', `[BOOK][${req.clientIp}|${user_email}] 전체 ${genre} 목록 조회 Request`);
-        winston.log('info', `[BOOK][${req.clientIp}|${user_email}] genre: ${genre}, filter : ${filter}, keyword : ${keyword}, page : ${page}, limit : ${limit}`);
+        winston.log('info', `[BOOK][${req.clientIp}|${user_email}] genre: ${genre}, filter : ${filter}, page : ${page}, limit : ${limit}`);
 
         let offset = 0;
         let order = '';
