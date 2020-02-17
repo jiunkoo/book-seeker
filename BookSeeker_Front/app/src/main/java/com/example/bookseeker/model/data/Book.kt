@@ -1,10 +1,11 @@
 package com.example.bookseeker.model.data
 
-import android.os.Parcel
 import android.os.Parcelable
 import com.example.bookseeker.adapter.AdapterConstants
 import com.example.bookseeker.adapter.ViewType
+import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
+import java.io.Serializable
 
 // @SerealizedName Annotation 사용
 /*
@@ -13,7 +14,7 @@ data class BookData(
     @SerializedName("title") @Expose var title: String,
     @SerializedName("author") @Expose var author: String,
     @SerializedName("publisher") @Expose var publisher: String,
-    @SerializedName("image") @Expose var image: String
+    @SerializedName("cover") @Expose var cover: String
     @SerializedName("rating") @Expose var bookRating: Float
 ) : Serializable
 */
@@ -45,7 +46,7 @@ data class BookData(
     val title: String?,
     val author: String?,
     val publisher: String?,
-    val image: String?,
+    val cover: String?,
     val rating: Float
 ) : ViewType, Parcelable {
 
@@ -66,7 +67,7 @@ data class BookData(
         dest?.writeString(title)
         dest?.writeString(author)
         dest?.writeString(publisher)
-        dest?.writeString(image)
+        dest?.writeString(cover)
         dest?.writeFloat(rating)
     }
 }
@@ -76,9 +77,8 @@ data class BookData(
 //Android Kotlin Extension의 exmerimental 기능을 적용한 것
 @Parcelize
 data class BookList(
-    var page: Int?,
     // MutableList 쓰면 객체 하나하나에 접근 가능
-    val results: List<BookData>) : Parcelable {}
+    val results: ArrayList<BookData>) : Parcelable {}
 
 @Parcelize
 data class BookData(
@@ -87,12 +87,16 @@ data class BookData(
     val author: String,
     val publisher: String,
     val introduction: String,
-    val image: String?,
+    val cover: String,
     val link: String,
     val keyword: String,
     val adult: String,
-    val date: String,
+    val genre: String,
+    val publication_date: String,
     val rating: Float
 ) : ViewType, Parcelable {
     override fun getViewType() = AdapterConstants.BOOKS
 }
+data class SearchRequest(
+    @SerializedName("keyword") val keyword: String
+) : Serializable

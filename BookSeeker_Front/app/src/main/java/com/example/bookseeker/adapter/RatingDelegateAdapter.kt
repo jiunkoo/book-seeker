@@ -23,7 +23,7 @@ class RatingDelegateAdapter : ViewTypeDelegateAdapter {
 
     inner class RatingDelegateViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(bookData: BookData) = with(itemView) {
-            Glide.with(itemView.context).load(bookData.image).into(recv_rating_item_imgv_book)
+            Glide.with(itemView.context).load(bookData.cover).into(recv_rating_item_imgv_book)
             recv_rating_item_txtv_booktitle.text = bookData.title
             recv_rating_item_txtv_author.text = bookData.author
             recv_rating_item_txtv_publisher.text = bookData.publisher

@@ -7,19 +7,13 @@ import com.example.bookseeker.model.data.LoginRequest
 import com.example.bookseeker.network.RetrofitClient
 import com.google.gson.JsonObject
 import io.reactivex.Observable
-import okhttp3.ResponseBody
-import retrofit2.Response
+import okhttp3.OkHttpClient
 import java.util.regex.Matcher
 import java.util.regex.Pattern
-import retrofit2.adapter.rxjava2.Result.response
-import com.google.gson.Gson
-import org.json.JSONObject
-
 
 
 class LoginPresenter : LoginContract.Presenter {
     private var loginView: LoginContract.View? = null
-    private val retrofitInterface = RetrofitClient.retrofitInterface
 
     // takeView : View가 Create, Bind 될 때 Presenter에 전달하는 함수
     override fun takeView(view: LoginContract.View) {
@@ -55,33 +49,37 @@ class LoginPresenter : LoginContract.Presenter {
         return checkRegExResult
     }
 
-    // loginCheck : View에서 LoginRequest Data를 가져와 로그인 여부를 결정하는 함수
+    // login : View에서 LoginRequest Data를 가져와 로그인 여부를 결정하는 함수
     override fun checkLoginData(context: Context, loginRequest : LoginRequest): Observable<JsonObject> {
+        val client: OkHttpClient = RetrofitClient.getClient(context, "receiveCookie")
+        val retrofitInterface = RetrofitClient.retrofitInterface(client)
+
         loginView?.setProgressON("로그인을 진행중입니다...")
 
         // 데이터가 들어오는지 관찰
         return Observable.create { subscriber ->
             // 데이터 생성을 위한 Create
-            val callResponse = retrofitInterface.loginCheck(loginRequest)
+            val callResponse = retrofitInterface.login(loginRequest)
             val response = callResponse.execute()
 
             // 성공적으로 응답이 온 경우
             if (response.isSuccessful) {
-                var setCookie = response.headers().get("Set-Cookie")
-                var result = response.body()!!
+                val result = response.body()!!
 
-                // 만일 쿠키가 있는 경우
-                if(setCookie != null){
-                    var splitCookieHeader = setCookie.split(";")
-                    var splitCookieValue = splitCookieHeader[0].split("=")
-
-                    // ShardPreference에 쿠키 값 집어넣기
-                    val pref = context.getSharedPreferences("shared_pref", 0)
-                    val editor = pref.edit()
-                    editor.putString("cookie", splitCookieValue[1])
-                    editor.commit()
-                    println("sharedPreference에 저장된 쿠키 값은 : " + pref.getString("cookie", "None"))
-                }
+                //TODO : Retrofit Interceptor가 쿠키를 제대로 저장하는지 확인
+//                val setCookie = response.headers().get("Set-Cookie")
+//                // 만일 쿠키가 있는 경우
+//                if(setCookie != null){
+//                    val splitCookieHeader = setCookie.split(";")
+//                    val splitCookieValue = splitCookieHeader[0].split("=")
+//
+//                    // ShardPreference에 쿠키 값 집어넣기
+//                    val pref = context.getSharedPreferences("shared_pref", 0)
+//                    val editor = pref.edit()
+//                    editor.putString("cookie", splitCookieValue[1])
+//                    editor.apply() // editor.commit()
+//                    println("sharedPreference에 저장된 쿠키 값은 : " + pref.getString("cookie", "None"))
+//                }
 
                 subscriber.onNext(result)
                 subscriber.onComplete() // 구독자에게 모든 데이터 발행이 완료되었음을 알림

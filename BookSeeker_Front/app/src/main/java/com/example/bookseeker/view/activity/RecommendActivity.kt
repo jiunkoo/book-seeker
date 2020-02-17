@@ -108,7 +108,7 @@ class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardv
         val pref = this.getPreferences(0)
         val userToken = pref.getString("token", "None")
 
-        val subscription = recommendPresenter.getAllRecommendBookList(recommendBookList?.page ?: 1, userToken!!)
+        val subscription = recommendPresenter.getAllRecommendBookList(1, userToken!!)
             .subscribeOn(Schedulers.io()).subscribe(
                 { retrivedBookList ->
                     recommendBookList = retrivedBookList

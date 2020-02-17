@@ -9,7 +9,6 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.example.bookseeker.R
 import com.example.bookseeker.model.data.BookData
-import com.example.bookseeker.model.data.RecommendData
 import com.mindorks.placeholderview.SwipeDirection
 import com.mindorks.placeholderview.annotations.*
 import com.mindorks.placeholderview.annotations.swipe.*
@@ -51,7 +50,7 @@ class RecommendCardvAdapter(
 
     @Resolve
     fun onResolved() {
-        Glide.with(context).load(bookData.image).into(bookImage)
+        Glide.with(context).load(bookData.cover).into(bookImage)
         bookTitle!!.text = bookData.title
         bookAuthor!!.text = bookData.author
         bookPublisher!!.text = bookData.publisher

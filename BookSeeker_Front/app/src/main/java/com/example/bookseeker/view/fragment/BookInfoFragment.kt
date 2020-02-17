@@ -34,11 +34,11 @@ class BookInfoFragment(searchDetailPresenter: SearchDetailPresenter, bookData: B
         val publisher = rootView.findViewById(R.id.bookinfo_txtv_publisher) as TextView
         val date = rootView.findViewById(R.id.bookinfo_txtv_date) as TextView
         val introduction = rootView.findViewById(R.id.bookinfo_txtv_introduction) as TextView
-        Glide.with(rootView.context).load(bookData.image).into(image)
+        Glide.with(rootView.context).load(bookData.cover).into(image)
         title.text = bookData.title
         author.text = bookData.author
         publisher.text = bookData.publisher
-        date.text = bookData.date
+        date.text = bookData.publication_date
         introduction.text = bookData.introduction
     }
 }

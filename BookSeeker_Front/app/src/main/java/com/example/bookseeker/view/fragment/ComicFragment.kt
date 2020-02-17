@@ -54,7 +54,6 @@ class ComicFragment(ratingPresenter: RatingPresenter) : Fragment() {
                 if(category != position) {
                     category = position
                     spinnerFlag = true
-                    comicBookList?.page = null
                 }
                 else{
                     spinnerFlag = false
@@ -87,22 +86,22 @@ class ComicFragment(ratingPresenter: RatingPresenter) : Fragment() {
 
     // requestBookData : 관찰자에게서 발행된 데이터를 가져오는 함수
     private fun requestBookData(recyclerView: RecyclerView){
-        val subscription = ratingPresenter.getAllComicBookList(category, comicBookList?.page ?: 1)
-            .subscribeOn(Schedulers.io()).subscribe(
-                { retrivedBookList ->
-                    comicBookList = retrivedBookList
-                    if(spinnerFlag == true){
-                        (recyclerView.adapter as RatingAdapter).clearAndAddBookList(retrivedBookList.results)
-                        spinnerFlag = false
-                    }else{
-                        (recyclerView.adapter as RatingAdapter).addBookList(retrivedBookList.results)
-                    }
-                },
-                { e ->
-                    Snackbar.make(recyclerView, e.message ?: "", Snackbar.LENGTH_LONG).show()
-                }
-            )
-        subscriptions.add(subscription)
+//        val subscription = ratingPresenter.getAllComicBookList(category, comicBookList?.page ?: 1)
+//            .subscribeOn(Schedulers.io()).subscribe(
+//                { retrivedBookList ->
+//                    comicBookList = retrivedBookList
+//                    if(spinnerFlag == true){
+//                        (recyclerView.adapter as RatingAdapter).clearAndAddBookList(retrivedBookList.results)
+//                        spinnerFlag = false
+//                    }else{
+//                        (recyclerView.adapter as RatingAdapter).addBookList(retrivedBookList.results)
+//                    }
+//                },
+//                { e ->
+//                    Snackbar.make(recyclerView, e.message ?: "", Snackbar.LENGTH_LONG).show()
+//                }
+//            )
+//        subscriptions.add(subscription)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
