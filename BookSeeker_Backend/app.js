@@ -170,7 +170,7 @@ if (cluster.isMaster) {
   app.use('/admin', adminRouter);
   app.use('/users', usersRouter);
   app.use('/books', booksRouter);
-  app.useR('/rating', ratingRouter);
+  app.use('/rating', ratingRouter);
   app.use('/recommend', recommendRouter);
 
   // 404 에러 생성
