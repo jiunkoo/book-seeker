@@ -61,7 +61,7 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
             <ImageButton
-                    android:id="@+id/search_detail_ibtn_back"
+                    android:id="@+id/search_result_ibtn_back"
                     android:src="@drawable/icon_search"
                     android:background="@color/transparent"
                     android:layout_marginLeft="@dimen/activity_margin"

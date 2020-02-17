@@ -1,13 +1,13 @@
 package com.example.bookseeker.presenter
 
 import android.util.Log
-import com.example.bookseeker.contract.SearchDetailContract
+import com.example.bookseeker.contract.BookInfoContract
 
-class SearchDetailPresenter : SearchDetailContract.Presenter {
-    private var searchView: SearchDetailContract.View? = null
+class BookInfoPresenter : BookInfoContract.Presenter {
+    private var searchView: BookInfoContract.View? = null
 
     // takeView : View가 Create, Bind 될 때 Presenter에 전달하는 함수
-    override fun takeView(view: SearchDetailContract.View) {
+    override fun takeView(view: BookInfoContract.View) {
         searchView = view
     }
 

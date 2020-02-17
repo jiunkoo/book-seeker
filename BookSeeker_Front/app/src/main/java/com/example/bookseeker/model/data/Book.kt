@@ -97,6 +97,7 @@ data class BookData(
 ) : ViewType, Parcelable {
     override fun getViewType() = AdapterConstants.BOOKS
 }
+
 data class SearchRequest(
     @SerializedName("keyword") val keyword: String
 ) : Serializable

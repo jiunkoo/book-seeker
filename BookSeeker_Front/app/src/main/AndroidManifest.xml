@@ -41,6 +41,17 @@
         <activity
                 android:name=".view.activity.SearchDetailActivity"
                 android:screenOrientation="portrait"
+                android:windowSoftInputMode="stateVisible"
+                android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+                android:name=".view.activity.SearchResultActivity"
+                android:screenOrientation="portrait"
+                android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+                android:name=".view.activity.BookInfoActivity"
+                android:screenOrientation="portrait"
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity

@@ -7,10 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.bookseeker.R
 import com.example.bookseeker.model.data.BookData
-import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.item_recv_searching.view.*
-import retrofit2.adapter.rxjava2.Result.response
-
 
 
 class SearchDelegateAdapter(val viewActions: onViewSelectedListener) : ViewTypeDelegateAdapter {
