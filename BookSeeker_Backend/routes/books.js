@@ -51,14 +51,13 @@ router.post('/search/:filter/:page/:limit', clientIp, isLoggedIn, async (req, re
         }
 
         // 필터에 따라 정렬 기준 변경
-        if (filter == 1) {
+        // 최신순, 오래된 순, 가나다 순
+        if (filter == 0) {
             order = 'publication_date ASC';
-        } else if (filter == 2) {
+        } else if (filter == 1) {
             order = 'publication_date DESC';
-        } else if (filter == 3) {
+        } else {
             order = 'title ASC';
-        }else {
-            order = 'title DESC';
         }
 
         // 페이징 적용
@@ -93,7 +92,7 @@ router.post('/search/:filter/:page/:limit', clientIp, isLoggedIn, async (req, re
     }
 });
 
-// 전체 만화/판타지/로맨스 목록 조회
+// 전체 만화|판타지|로맨스 목록 조회
 router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res, next) => {
     try {
         const user_email = req.user.email;
