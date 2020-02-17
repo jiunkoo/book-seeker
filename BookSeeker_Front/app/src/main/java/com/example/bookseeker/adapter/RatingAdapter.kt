@@ -5,7 +5,7 @@ import androidx.collection.SparseArrayCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bookseeker.model.data.BookData
 
-class RatingAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class RatingAdapter(listener: RatingDelegateAdapter.onViewSelectedListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var items: ArrayList<ViewType>
     private var delegateAdapters = SparseArrayCompat<ViewTypeDelegateAdapter>()
@@ -14,7 +14,7 @@ class RatingAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     init {
-        delegateAdapters.put(AdapterConstants.BOOKS, RatingDelegateAdapter())
+        delegateAdapters.put(AdapterConstants.BOOKS, RatingDelegateAdapter(listener))
         delegateAdapters.put(AdapterConstants.LOADING, LoadingDelegateAdapter())
         items = ArrayList()
         items.add(loadingItem)

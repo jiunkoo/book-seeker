@@ -29,7 +29,7 @@ class SearchDelegateAdapter(val viewActions: onViewSelectedListener) : ViewTypeD
         fun bind(bookData: BookData) = with(itemView) {
             var splitUrl = bookData.cover.split("/")
             var coverUrl:String = "https://img.ridicdn.net/cover/" + splitUrl[4] + "/xlarge"
-            println("커버는" + coverUrl)
+
             Glide.with(itemView.context).load(coverUrl).into(recv_searching_item_imgv_book)
             recv_searching_item_txtv_booktitle.text = bookData.title
             recv_searching_item_txtv_author.text = bookData.author

@@ -68,7 +68,7 @@
                 android:layout_margin="@dimen/activity_margin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:entries="@array/searchresult_spinner_item"
+                android:entries="@array/search_result_spinner_item"
 
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
