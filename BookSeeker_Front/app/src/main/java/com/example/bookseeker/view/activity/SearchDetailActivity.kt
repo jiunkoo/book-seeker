@@ -2,18 +2,12 @@ package com.example.bookseeker.view.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import com.example.bookseeker.R
 import com.example.bookseeker.contract.SearchDetailContract
 import com.example.bookseeker.presenter.SearchDetailPresenter
-import com.example.bookseeker.view.fragment.SearchResultFragment
-import com.example.bookseeker.view.fragment.SearchWordFragment
 import kotlinx.android.synthetic.main.activity_search_detail.*
 
 
@@ -28,15 +22,21 @@ class SearchDetailActivity : BaseActivity(), SearchDetailContract.View {
         // View가 Create(Bind) 되었다는 걸 Presenter에 전달
         searchDetailPresenter.takeView(this)
 
+        // SearchDetailActivity에서 데이터 받아오기
+        val intent = intent
+        val keyword = intent.extras!!.get("keyword").toString()
+
+        // 검색창에 keyword 넣기
+        search_detail_etxt_keyword.text = null // 초기화
+        search_detail_etxt_keyword.setText(keyword)
+        search_detail_etxt_keyword.setSelection(keyword.length)
+        search_detail_etxt_keyword.requestFocus()
+
         // Button Event 처리
         setButtonEventListener()
 
         // Edit Text Event 처리
         setEditTextEventListener()
-
-        // Fragment Event 처리
-        val searchWordFragment = SearchWordFragment(searchDetailPresenter)
-        replaceFragment(searchWordFragment)
 
         // BottomNavigationView 이벤트 처리
         switchBottomNavigationView()
@@ -65,34 +65,16 @@ class SearchDetailActivity : BaseActivity(), SearchDetailContract.View {
         // Input EditText Event를 처리하는 함수
         search_detail_etxt_keyword.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                // 문자열이 0인 경우
                 if (search_detail_etxt_keyword.text.toString().length == 0) {
                     showMessage("검색어를 입력해주세요.")
                 } else {
-                    val searchResultFragment = SearchResultFragment(this, searchDetailPresenter, search_detail_etxt_keyword.text.toString())
-                    replaceFragment(searchResultFragment)
+                    // 검색한 문자가 있는 경우 SearchResultActivity로 이동
+                    startSearchResultActivity()
                 }
             }
             true
         }
-        search_detail_etxt_keyword.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-            override fun afterTextChanged(p0: Editable?) {
-                if (search_detail_etxt_keyword.text.toString().length == 0) {
-                    // 검색이 전부 지워지면 Fragment 변경
-                    val searchWordFragment = SearchWordFragment(searchDetailPresenter)
-                    replaceFragment(searchWordFragment)
-                }
-            }
-        })
-    }
-
-    override fun replaceFragment(fragment: Fragment) {
-        val fragmentManager = supportFragmentManager
-        var transaction: FragmentTransaction = fragmentManager.beginTransaction()
-        transaction.replace(R.id.search_detail_layout_frame, fragment).commitAllowingStateLoss()
     }
 
     // startSearchActivity : SearchActivity로 넘어가는 함수
@@ -100,6 +82,14 @@ class SearchDetailActivity : BaseActivity(), SearchDetailContract.View {
         val nextIntent = Intent(this, SearchActivity::class.java)
         startActivity(nextIntent)
         finish() // 이전의 Activity로 돌아가는 것이므로 현재 Activity 종료
+    }
+
+    // startSearchResultActivity : SearchActivity로 넘어가는 함수
+    fun startSearchResultActivity() {
+        val nextIntent = Intent(this, SearchResultActivity::class.java)
+        nextIntent.putExtra("keyword", search_detail_etxt_keyword.text.toString())
+        startActivity(nextIntent)
+        overridePendingTransition(0, 0)
     }
 
     // switchBottomNavigationView : SearchDetailActivity에서 BottomNavigationView 전환 이벤트를 처리하는 함수
