@@ -98,7 +98,7 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
         const user_email = req.user.email;
         const user_uid = req.user.user_uid;
 
-        const genre = req.parsms.genre;
+        const genre = req.params.genre;
         const filter = parseInt(req.params.filter);
         const page = parseInt(req.params.page);
         const limit = parseInt(req.params.limit);
