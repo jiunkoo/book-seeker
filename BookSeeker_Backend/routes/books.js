@@ -170,14 +170,26 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
                     }
                 });
 
-                // 페이징 적용 데이터 불러오기
-                const bookList = await Book.findAll({
-                    offset: offset,
-                    limit: limit,
-                    order: Sequelize.literal(order),
-                    where: {
-                        genre: genre
-                    }
+                // 페이징 적용 데이터 불러오기(내가 평가하지 않은 도서)
+                let query =
+                    'SELECT * ' +
+                    'FROM books ' +
+                    'WHERE genre=:genre AND ' + 
+                    'bsin NOT IN(SELECT bsin FROM ratings WHERE user_uid=:user_uid AND deletedAt IS NULL) ' +
+                    'ORDER BY :order ' +
+                    'LIMIT :limit ' +
+                    'OFFSET :offset;';
+
+                const bookList = await sequelize.query(query, {
+                    replacements: {
+                        user_uid: user_uid,
+                        genre: genre,
+                        order: order,
+                        limit: limit,
+                        offset: offset
+                    },
+                    type: Sequelize.QueryTypes.SELECT,
+                    raw: true
                 });
 
                 // 불러온 데이터를 임시 테이블에 저장
@@ -225,15 +237,27 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
                 offset = 10 * (page - 1);
             }
 
-            // 페이징 적용 데이터 불러오기
-            const bookList = await Book.findAll({
-                offset: offset,
+            // 페이징 적용 데이터 불러오기(내가 평가하지 않은 도서)
+            let query =
+            'SELECT * ' +
+            'FROM books ' +
+            'WHERE genre=:genre AND ' + 
+            'bsin NOT IN(SELECT bsin FROM ratings WHERE user_uid=:user_uid AND deletedAt IS NULL) ' +
+            'ORDER BY :order ' +
+            'LIMIT :limit ' +
+            'OFFSET :offset;';
+
+        const bookList = await sequelize.query(query, {
+            replacements: {
+                user_uid: user_uid,
+                genre: genre,
+                order: order,
                 limit: limit,
-                order: Sequelize.literal(order),
-                where: {
-                    genre: genre
-                }
-            });
+                offset: offset
+            },
+            type: Sequelize.QueryTypes.SELECT,
+            raw: true
+        });
 
             // 전체 도서 목록 조회 성공 메세지 반환
             const result = new Object();
