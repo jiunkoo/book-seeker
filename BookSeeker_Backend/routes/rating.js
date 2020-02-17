@@ -107,7 +107,7 @@ router.get('/rating/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (r
             order = 'publication_date DESC';
         } else if (filter == 3) {
             order = 'title ASC';
-        }else {
+        } else {
             order = 'title DESC';
         }
 

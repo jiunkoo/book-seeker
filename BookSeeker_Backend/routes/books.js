@@ -156,7 +156,7 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
                 const result = new Object();
                 result.success = true;
                 result.data = bookList;
-                result.message = '전체 ${genre} 목록 조회를 성공했습니다.';
+                result.message = `전체 ${genre} 목록 조회를 성공했습니다.`;
                 winston.log('info', `[BOOK][${req.clientIp}|${user_email}] ${result.message}`);
                 return res.status(200).send(result);
             }
@@ -194,14 +194,14 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
                 const result = new Object();
                 result.success = true;
                 result.data = bookList;
-                result.message = '전체 ${genre} 목록 조회를 성공했습니다.';
+                result.message = `전체 ${genre} 목록 조회를 성공했습니다.`;
                 winston.log('info', `[BOOK][${req.clientIp}|${user_email}] ${result.message}`);
                 return res.status(200).send(result);
             }
         }
         // 그 외의 경우
         else {
-            // 정렬기준 설정
+            // 정렬 기준 설정
             if (filter == 1) {
                 order = 'publication_date ASC';
             } else if (filter == 2) {
@@ -239,7 +239,7 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
             const result = new Object();
             result.success = true;
             result.data = bookList;
-            result.message = '전체 ${genre} 목록 조회를 성공했습니다.';
+            result.message = `전체 ${genre} 목록 조회를 성공했습니다.`;
             winston.log('info', `[BOOK][${req.clientIp}|${user_email}] ${result.message}`);
             return res.status(200).send(result);
         }
