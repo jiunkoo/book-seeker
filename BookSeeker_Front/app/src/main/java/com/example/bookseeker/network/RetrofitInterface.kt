@@ -6,30 +6,19 @@ import retrofit2.Call
 import retrofit2.http.*
 
 interface RetrofitInterface {
+    // 회원가입
     @POST("/users/register")
-    fun insertUserData(@Body registerRequest: RegisterRequest): Call<JsonObject>
+    fun register(@Body registerRequest: RegisterRequest): Call<JsonObject>
 
+    // 로그인
     @POST("/users/login")
-    fun loginCheck(@Body loginRequest: LoginRequest): Call<JsonObject>
+    fun login(@Body loginRequest: LoginRequest): Call<JsonObject>
 
-    @GET("/book/BookInfo")
-    fun selectAllSearchResultData(@Query("category") category: Int, @Query("page") page: Int,
-                                  @Query("page_size") page_size: Int,
-                                  @Query("searchWord") searchWord: String): Call<BookList>
+    // 도서 검색
+    @POST("/books/search/{filter}/{page}/{limit}")
+    fun searchBooks(@Body searchRequest: SearchRequest, @Path("filter") filter: Int, @Path("page") page: Int, @Path("limit") limit: Int): Call<JsonObject>
 
-    @GET("/book/ComicInfo")
-    fun selectAllComicData(@Query("category") category: Int, @Query("page") page: Int,
-                            @Query("page_size") page_size: Int): Call<BookList>
-
-    @GET("/recommend/comic")
-    fun selectAllComicRecommendData(@Query("userToken") userToken: String): Call<BookList>
-
-    @GET("/book/RomanceInfo")
-    fun selectAllRomanceData(@Query("page") page: Int, @Query("page_size") page_size: Int): Call<BookList>
-
-    @GET("/book/FantasyInfo")
-    fun selectOneFantasyDataByTitle(@Query("title") title: String): Call<List<BookData>>
-
-    @GET("/book/FantasyInfo")
-    fun selectAllFantasyData(@Query("page") page: Int, @Query("page_size") page_size: Int): Call<BookList>
+    // 도서 목록 조회
+    @GET("/books/:genre/:filter/:page/:limit")
+    fun getBooks(@Path("genre") genre: String, @Path("filter") filter: Int, @Path("page") page: Int, @Path("limit") limit: Int): Call<JsonObject>
 }

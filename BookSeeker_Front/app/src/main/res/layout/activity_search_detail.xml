@@ -32,7 +32,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"/>
             <EditText
-                    android:id="@+id/search_detail_etxt_searchword"
+                    android:id="@+id/search_detail_etxt_keyword"
                     android:inputType="text"
                     android:maxLines="1"
                     android:imeOptions="actionSearch"

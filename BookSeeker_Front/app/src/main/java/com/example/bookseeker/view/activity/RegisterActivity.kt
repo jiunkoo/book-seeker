@@ -193,7 +193,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View {
 
     // requestRegisterResult : 관찰자에게서 발행된 데이터를 가져오는 함수
     fun requestSignUpResult(registerRequest: RegisterRequest) {
-        val subscription = registerPresenter.insertRegisterData(registerRequest)
+        val subscription = registerPresenter.insertRegisterData(this, registerRequest)
             .subscribeOn(Schedulers.io()).subscribe(
                 { result ->
                     if((result.get("success").toString()).equals("true")) {

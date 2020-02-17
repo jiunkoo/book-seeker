@@ -56,32 +56,31 @@ class SearchDetailActivity : BaseActivity(), SearchDetailContract.View {
 
         search_detail_ibtn_clear.setOnClickListener {
             // 클리어 버튼을 누르면 검색어 전부 삭제
-            search_detail_etxt_searchword.text = null
+            search_detail_etxt_keyword.text = null
         }
     }
 
     // setEditTextEventListener : EditText Event를 처리하는 함수
     override fun setEditTextEventListener() {
         // Input EditText Event를 처리하는 함수
-        search_detail_etxt_searchword.setOnEditorActionListener { _, actionId, _ ->
+        search_detail_etxt_keyword.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                if (search_detail_etxt_searchword.text.toString().length == 0) {
+                if (search_detail_etxt_keyword.text.toString().length == 0) {
                     showMessage("검색어를 입력해주세요.")
                 } else {
-                    val searchResultFragment =
-                        SearchResultFragment(searchDetailPresenter, search_detail_etxt_searchword.text.toString())
+                    val searchResultFragment = SearchResultFragment(this, searchDetailPresenter, search_detail_etxt_keyword.text.toString())
                     replaceFragment(searchResultFragment)
                 }
             }
             true
         }
-        search_detail_etxt_searchword.addTextChangedListener(object : TextWatcher {
+        search_detail_etxt_keyword.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun afterTextChanged(p0: Editable?) {
-                if (search_detail_etxt_searchword.text.toString().length == 0) {
+                if (search_detail_etxt_keyword.text.toString().length == 0) {
                     // 검색이 전부 지워지면 Fragment 변경
                     val searchWordFragment = SearchWordFragment(searchDetailPresenter)
                     replaceFragment(searchWordFragment)

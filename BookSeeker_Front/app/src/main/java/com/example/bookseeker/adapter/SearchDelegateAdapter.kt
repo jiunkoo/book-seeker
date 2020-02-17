@@ -7,7 +7,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.bookseeker.R
 import com.example.bookseeker.model.data.BookData
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.item_recv_searching.view.*
+import retrofit2.adapter.rxjava2.Result.response
+
+
 
 class SearchDelegateAdapter(val viewActions: onViewSelectedListener) : ViewTypeDelegateAdapter {
     interface onViewSelectedListener {
@@ -26,7 +30,10 @@ class SearchDelegateAdapter(val viewActions: onViewSelectedListener) : ViewTypeD
 
     inner class RatingDelegateViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(bookData: BookData) = with(itemView) {
-            Glide.with(itemView.context).load(bookData.image).into(recv_searching_item_imgv_book)
+            var splitUrl = bookData.cover.split("/")
+            var coverUrl:String = "https://img.ridicdn.net/cover/" + splitUrl[4] + "/xlarge"
+            println("커버는" + coverUrl)
+            Glide.with(itemView.context).load(coverUrl).into(recv_searching_item_imgv_book)
             recv_searching_item_txtv_booktitle.text = bookData.title
             recv_searching_item_txtv_author.text = bookData.author
             recv_searching_item_txtv_publisher.text = bookData.publisher

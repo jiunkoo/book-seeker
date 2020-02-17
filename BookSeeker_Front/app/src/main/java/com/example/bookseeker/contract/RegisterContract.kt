@@ -1,5 +1,6 @@
 package com.example.bookseeker.contract
 
+import android.content.Context
 import com.example.bookseeker.model.data.RegisterRequest
 import com.example.bookseeker.presenter.BasePresenter
 import com.example.bookseeker.view.BaseView
@@ -23,6 +24,6 @@ interface RegisterContract {
         fun checkRegEx(txtv: String, etxt: String): String
 
         // insertRegisterData : RegisterPresenter에서 Register Data를 저장하는 함수
-        fun insertRegisterData(registerRequest: RegisterRequest): Observable<JsonObject>
+        fun insertRegisterData(context: Context, registerRequest: RegisterRequest): Observable<JsonObject>
     }
 }
