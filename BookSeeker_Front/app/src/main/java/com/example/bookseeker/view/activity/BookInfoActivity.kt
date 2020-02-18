@@ -82,7 +82,10 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
     }
 
     fun setBookData(bookData: BookData){
-        Glide.with(this).load(bookData.cover).into(bookinfo_imgv_book)
+        var splitUrl = bookData.cover.split("/")
+        var coverUrl:String = "https://img.ridicdn.net/cover/" + splitUrl[4] + "/xxlarge"
+
+        Glide.with(this).load(coverUrl).into(bookinfo_imgv_book)
         bookinfo_txtv_booktitle.text = bookData.title
         bookinfo_txtv_author.text = bookData.author
         bookinfo_txtv_publisher.text = bookData.publisher
