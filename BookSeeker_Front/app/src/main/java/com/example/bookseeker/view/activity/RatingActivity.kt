@@ -174,9 +174,9 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
         if (tabPosition == 0) {
             genre = "COMIC"
         } else if (tabPosition == 1) {
-            genre = "FANTASY"
-        } else {
             genre = "ROMANCE"
+        } else {
+            genre = "FANTASY"
         }
 
         val subscription =
