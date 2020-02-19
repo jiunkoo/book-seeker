@@ -17,13 +17,10 @@ db.Sequelize = Sequelize;
 // 테이블 객체 선언
 db.User = require('./user')(sequelize, Sequelize);
 db.Book = require('./book')(sequelize, Sequelize);
-db.Rating = require('./rating')(sequelize, Sequelize);
+db.Evaluation = require('./evaluation')(sequelize, Sequelize);
 
 // 임시 테이블로 사용할 테이블 객체 선언
 db.BookHistory = require('./bookhistory')(sequelize, Sequelize);
-
-// 임시 테이블 선언
-// Temporal(db.Book, sequelize);
 
 // Table 객체 관계맺기
 

@@ -1,6 +1,6 @@
 module.exports = {
     // 데이터 셋 트레이닝
-    trainingDataSet: (comicRatingList) => {
+    trainingDataSet: (evaluationList) => {
         // trainedDataSet : 학습을 마친 데이터 객체
         // userBasedData : 사용자별 도서 평가 데이터 객체
         // bookBasedData : 도서별 도서 평가 사용자 데이터 객체
@@ -13,12 +13,12 @@ module.exports = {
         let bookRankingList = [], trainSet = [], testSet = [];
 
         // 데이터 셋을 불러온 후 8:2 비율로 트레이닝, 테스트 집합 분할
-        for (let i = 0; i < comicRatingList.length; i++) {
+        for (let i = 0; i < evaluationList.length; i++) {
             if (Math.random() > 0.8) {
-                testSet.push(comicRatingList[i]);
+                testSet.push(evaluationList[i]);
             }
             else {
-                trainSet.push(comicRatingList[i]);
+                trainSet.push(evaluationList[i]);
             }
         }
 
@@ -69,21 +69,21 @@ module.exports = {
         // 특정 사용자의 도서 평가 목록이 있는 경우
         // 특정 사용자의 도서 평가 목록을 바탕으로 비슷한 사용자를 찾아 도서 추천
         if (userList) {
-            // completionRating : 특정 사용자의 도서 평가 목록(유사도 계산이 끝난 도서 목록)
+            // completionEvaluation : 특정 사용자의 도서 평가 목록(유사도 계산이 끝난 도서 목록)
             // similarUsers :  특정 사용자와 같은 도서를 평가한 비슷한 사용자 유사도 목록 객체
-            // estimatedRating : 계산한 예상 도서 평점 목록 객체
-            let completionRating = {}, similarUsers = {}, estimatedRating = {};
+            // estimatedEvaluation : 계산한 예상 도서 평점 목록 객체
+            let completionEvaluation = {}, similarUsers = {}, estimatedEvaluation = {};
 
             // relatedUsers : 전체 유사도 계산을 바탕으로 한 특정 사용자와 비슷한 사용자 간 유사도 배열
             // returnData : 프론트에 반환할 결과값이 들어갈 배열
             let relatedUsers = [], returnData = [];
 
-            // estimatedRatingCount : 예상 도서 평점 목록 객체 개수
-            let estimatedRatingCount = 0;
+            // estimatedEvaluationCount : 예상 도서 평점 목록 객체 개수
+            let estimatedEvaluationCount = 0;
 
             // 반복문을 돌려 특정 사용자와 같은 도서를 평가한 비슷한 사용자 목록 추출
             for (let i = 0; i < userList.length; i++) {
-                completionRating[userList[i].bsin] = true;
+                completionEvaluation[userList[i].bsin] = true;
                 let similarUserList = trainedDataSet.bookBasedData[userList[i].bsin];
 
                 // 반복문을 돌려 한 개 도서에 대해 사용자 간 유사도 계산
@@ -113,22 +113,22 @@ module.exports = {
                 // 예상 평점 계산 : 평점 합계
                 for (let j = 0; j < userList.length; j++) {
                     // 이미 평점 계산이 끝난 도서인 경우
-                    if (completionRating[userList[j].bsin]) {
+                    if (completionEvaluation[userList[j].bsin]) {
                         continue;
                     }
                     // 아직 예상 평점 계산을 하지 않은 도서의 경우 평점 계산
-                    if (!estimatedRating[userList[j].bsin]) {
-                        estimatedRating[userList[j].bsin] = 0;
-                        estimatedRatingCount++;
+                    if (!estimatedEvaluation[userList[j].bsin]) {
+                        estimatedEvaluation[userList[j].bsin] = 0;
+                        estimatedEvaluationCount++;
                     }
-                    estimatedRating[userList[j].bsin] += rating;
+                    estimatedEvaluation[userList[j].bsin] += rating;
                 }
             }
 
             // 예상 평점 목록을 결과 배열에 넣고 내림차순으로 정렬
             // 특정 개수만큼 자름
-            for (let bsin in estimatedRating) {
-                returnData.push({ bsin: bsin, rating: Math.round(Math.log(estimatedRating[bsin] + 1) * 100) / 100 });
+            for (let bsin in estimatedEvaluation) {
+                returnData.push({ bsin: bsin, rating: Math.round(Math.log(estimatedEvaluation[bsin] + 1) * 100) / 100 });
             }
             returnData.sort((a, b) => b.rating - a.rating);
             returnData.splice(count); 
@@ -138,7 +138,7 @@ module.exports = {
                 if (returnData.length >= count) {
                     break;
                 }
-                if (!estimatedRating[trainedDataSet.bookRankingList[i].bsin]) {
+                if (!estimatedEvaluation[trainedDataSet.bookRankingList[i].bsin]) {
                     returnData.push(trainedDataSet.bookRankingList[i]);
                 }
             }

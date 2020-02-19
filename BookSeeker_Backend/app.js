@@ -17,6 +17,7 @@ const winston = require('./config/winston');
 // const path = require('path');
 
 // 보안 강화
+const https = require('https');
 const hpp = require('hpp');
 const helmet = require('helmet');
 
@@ -120,9 +121,19 @@ if (cluster.isMaster) {
   const adminRouter = require('./routes/admin');
   const usersRouter = require('./routes/users');
   const booksRouter = require('./routes/books');
-  const ratingRouter = require('./routes/rating');
+  const evaluationRouter = require('./routes/evaluation');
   const recommendRouter = require('./routes/recommend');
 
+  // https 인증서
+  const privateKey = fs.readFileSync(process.env.HTTPS_PRIVATEKEY, 'utf8');
+  const cert = fs.readFileSync(process.env.HTTPS_CERTIFICATE, 'utf8');
+  const ca = fs.readFileSync(process.env.HTTPS_CA, utf8);
+
+  const credentials = {
+    key: privateKey,
+    cert: cert,
+    ca: ca
+  }
 
   // sequelize 동기화
   sequelize.sync();
@@ -143,6 +154,7 @@ if (cluster.isMaster) {
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
   app.use(cookieParser(process.env.COOKIE_SECRET));
+
   // 세션 암호화
   app.use(session({
     resave: false,
@@ -170,7 +182,7 @@ if (cluster.isMaster) {
   app.use('/admin', adminRouter);
   app.use('/users', usersRouter);
   app.use('/books', booksRouter);
-  app.use('/rating', ratingRouter);
+  app.use('/evaluation', evaluationRouter);
   app.use('/recommend', recommendRouter);
 
   // 404 에러 생성
@@ -192,9 +204,12 @@ if (cluster.isMaster) {
     res.render('error');
   });
 
-  // 포트를 열어 클라이언트로부터 응답을 받는다.
-  app.listen(production ? app.get('port') : 3000, () => {
-    winston.log('info', `[SERVER] ${app.get('port')}번 포트에서 서버가 실행중입니다.`);
+  // https 서버 실행
+  const httpsServer = https.createServer(credentials, app);
+
+  // https 서버 : 3000번
+  httpsServer.listen(production ? app.get('port') : 3000, () => {
+    winston.log('info', `[SERVER] ${app.get('port')}번 포트에서 HTTPS 서버가 실행중입니다.`);
   });
 
   module.exports = app;

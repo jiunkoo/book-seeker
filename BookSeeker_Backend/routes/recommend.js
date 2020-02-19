@@ -8,7 +8,7 @@ const Sequelize = require('sequelize');
 const RF = require('../config/recommendAlgorithm');
 
 // 모델 및 미들웨어 선언
-const { Rating } = require('../models');
+const { Evaluation } = require('../models');
 const { clientIp, isLoggedIn } = require('./middlewares');
 
 // 로그 생성
@@ -28,13 +28,13 @@ router.get('/:genre', clientIp, isLoggedIn, async (req, res, next) => {
         winston.log('info', `[RECOMMEND][${req.clientIp}|${user_email}]  추천 ${genre} 목록 조회 Request`);
 
         // 추천을 적용할 평가 데이터 불러오기
-        const ratingList = await Rating.findAll({
+        const evaluationList = await Evaluation.findAll({
             where: {
                 genre: genre
             }
         });
 
-        const trainedDataSet = await RF.trainingDataSet(ratingList);
+        const trainedDataSet = await RF.trainingDataSet(evaluationList);
         const recommendBookList = await RF.recommendBookList(user_uid, trainedDataSet, 100);
 
         // 전체 도서 목록 조회 성공 메세지 반환

@@ -1,6 +1,6 @@
 // Mapping Rating Table
 module.exports = (sequelize, DataTypes) => (
-    sequelize.define('rating', {
+    sequelize.define('evaluation', {
         user_uid: {
             type: DataTypes.STRING(100),
             allowNull: false,
@@ -16,9 +16,13 @@ module.exports = (sequelize, DataTypes) => (
         rating: {
             type: DataTypes.FLOAT,
             allowNull: false,
+        },
+        state: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
         }
     }, {
         timestamps: true, // 생성&수정일 기록
-        paranoid: true, // 삭제일 기록
+        paranoid: true
     })
 );
