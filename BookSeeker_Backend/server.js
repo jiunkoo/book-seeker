@@ -10,7 +10,7 @@ require('dotenv').config();
 require('greenlock-express')
 .init({
     packageRoot: __dirname,
-    configDir: HTTPS_CONFIGDIR,
+    configDir: process.env.HTTPS_CONFIGDIR,
     maintainerEmail: process.env.DOMAIN_EMAIL,
     cluster: false
 }).serve(app);
