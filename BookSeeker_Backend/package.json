@@ -14,6 +14,7 @@
     "express": "~4.16.1",
     "express-session": "^1.17.0",
     "fs": "0.0.1-security",
+    "greenlock-express": "^4.0.3",
     "helmet": "^3.21.2",
     "hpp": "^0.2.3",
     "http-errors": "~1.6.3",
