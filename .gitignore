@@ -7,6 +7,9 @@ BookSeeker_Backend/log/
 BookSeeker_Backend/.env
 BookSeeker_Backend/config/server_info.json
 
+# Test File
+BookSeeker_Backend/cluster/
+
 # Dummy Data
 BookSeeker_Backend/data/
 
