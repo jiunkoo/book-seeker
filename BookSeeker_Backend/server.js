@@ -19,6 +19,5 @@ require("greenlock-express").init({
     packageRoot: __dirname,
     configDir: process.env.HTTPS_CONFIGDIR,
     maintainerEmail: process.env.DOMAIN_EMAIL,
-    cluster: true,
-    workers: workerCount
+    cluster: false
 }).serve(app);
