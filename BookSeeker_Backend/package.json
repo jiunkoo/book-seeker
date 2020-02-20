@@ -14,13 +14,10 @@
     "express": "~4.16.1",
     "express-session": "^1.17.0",
     "fs": "0.0.1-security",
-    "greenlock-express": "^4.0.3",
     "helmet": "^3.21.2",
     "hpp": "^0.2.3",
     "http-errors": "~1.6.3",
     "https": "^1.0.0",
-    "le-challenge-fs": "^2.0.9",
-    "le-sni-auto": "^2.1.9",
     "mariadb": "^2.2.0",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.27",
@@ -36,6 +33,6 @@
   "main": "app.js",
   "devDependencies": {},
   "author": "jiun koo",
-  "license": "MIT",
+  "license": "ISC",
   "description": ""
 }
