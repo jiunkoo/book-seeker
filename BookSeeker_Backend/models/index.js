@@ -1,5 +1,4 @@
 const Sequelize = require('sequelize');
-const Temporal = require('sequelize-temporal');
 const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/server_info.json')[env];
 const db = {};

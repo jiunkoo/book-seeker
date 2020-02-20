@@ -3,22 +3,20 @@ const express = require('express');
 
 // 인증
 const passport = require('passport');
-const passportConfig = require('../passport');
+const passportConfig = require('./passport');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const flash = require('connect-flash');
 
 // 프로미스 기반 ORM(Objective-Relational Mapping)
-const { sequelize } = require('../models');
+const { sequelize } = require('./models');
 
 // 에러와 로그 생성
 const createError = require('http-errors');
-const winston = require('../config/winston');
+const winston = require('./config/winston');
 // const path = require('path');
 
 // 보안 강화
-const https = require('https');
-const greenlock = require('greenlock-express');
 const hpp = require('hpp');
 const helmet = require('helmet');
 
@@ -40,48 +38,52 @@ const workerCount = cpuCount / 2;
 
 // 클러스터가 마스터인 경우
 if (cluster.isMaster) {
-  winston.log('info', '[SERVER] SERVER_ID : ' + instance_id);
-  winston.log('info', '[SERVER] SERVER_CPU : ' + cpuCount + ', WORKER_COUNT : ' + workerCount);
+  winston.log('info', "[SERVER] 내가 마스터임!");
 
-  let worker_id;
-  let worker;
-
-  // 워커 메세지 리스너
-  const workerMsgListener = function (msg) {
-    worker_id = msg.worker_id;
-
-    // 마스터 uuid 요청
-    if (msg.cmd === 'MASTER_ID') {
-      cluster.workers[worker_id].send({ cmd: 'MASTER_ID', master_id: instance_id });
+    winston.log('info', '[SERVER] SERVER_ID : ' + instance_id);
+    winston.log('info', '[SERVER] SERVER_CPU : ' + cpuCount + ', WORKER_COUNT : ' + workerCount);
+  
+    let worker_id;
+    let worker;
+  
+    // 워커 메세지 리스너
+    const workerMsgListener = function (msg) {
+      worker_id = msg.worker_id;
+  
+      // 마스터 uuid 요청
+      if (msg.cmd === 'MASTER_ID') {
+        cluster.workers[worker_id].send({ cmd: 'MASTER_ID', master_id: instance_id });
+      }
     }
-  }
+  
+    // cpu 개수만큼 워커 생성 및 HTTPS 설정 적용
+    for (let i = 0; i < workerCount; i++) {
+      winston.log('info', "[SERVER] 워커 생성 - [" + (i + 1) + "/" + workerCount + "]");
+  
+      let worker = cluster.fork();
+  
+      worker.on('message', workerMsgListener);
+    }
+  
+    // 워커가 온라인인 경우
+    cluster.on('online', function (worker) {
+      winston.log('info', '[SERVER] 워커 실행 중 - WORKER_ID : [' + worker.process.pid + ']');
+    });
+  
+    // 워커가 오프라인인 경우
+    // 워커를 생성 및 HTTPS 설정을 적용하고 워커 요청 메세지 받음
+    cluster.on('exit', function (worker) {
+      winston.log('info', '[SERVER] 워커 실행 중단 - WORKER_ID : [' + worker.process.pid + ']');
+  
+      worker = cluster.fork();
+  
+      worker.on('message', workerMsgListener);
+    });
+}
+// 클러스터가 워커인 경우
+else {
+  winston.log('info', "[SERVER] 내가 워커임!");
 
-  // cpu 개수만큼 워커 생성 및 HTTPS 설정 적용
-  for (let i = 0; i < workerCount; i++) {
-    winston.log('info', "[SERVER] 워커 생성 - [" + (i + 1) + "/" + workerCount + "]");
-
-    let worker = cluster.fork();
-
-    worker.on('message', workerMsgListener);
-  }
-
-  // 워커가 온라인인 경우
-  cluster.on('online', function (worker) {
-    winston.log('info', '[SERVER] 워커 실행 중 - WORKER_ID : [' + worker.process.pid + ']');
-  });
-
-  // 워커가 오프라인인 경우
-  // 워커를 생성 및 HTTPS 설정을 적용하고 워커 요청 메세지 받음
-  cluster.on('exit', function (worker) {
-    winston.log('info', '[SERVER] 워커 실행 중단 - WORKER_ID : [' + worker.process.pid + ']');
-
-    worker = cluster.fork();
-
-    worker.on('message', workerMsgListener);
-  });
-
-  // 클러스터가 워커인 경우
-} else if (cluster.isWorker) {
   // 마스터와 워커 아이디 생성
   let worker_id = cluster.worker.id;
   let master_id;
@@ -119,30 +121,11 @@ if (cluster.isMaster) {
   const production = process.env.NODE_ENV === 'production';
 
   // 라우터 객체 생성
-  const adminRouter = require('../routes/admin');
-  const usersRouter = require('../routes/users');
-  const booksRouter = require('../routes/books');
-  const evaluationRouter = require('../routes/evaluation');
-  const recommendRouter = require('../routes/recommend');
-
-  // HTTPS 인증서 적용
-  const lexWorker = require('greenlock-cluster/worker').create({
-    // 실제 배포 시 주소 : https://acme-v02.api.letsencrypt.org/directory
-    server: 'https://acme-staging-v02.api.letsencrypt.org/directory', // 테스트용 SSL 생성
-    version: process.env.HTTPS_VERSION, // 인증서 버전
-    configDir: process.env.HTTPS_CONFIGDIR, // 인증서 설치 경로
-    approveDomains: (opts, certs, cb) => {
-      if (certs) {
-        opts.domains = [process.env.DOMAIN_DEFAULT, process.env.DOMAIN_WWW];
-      } else {
-        opts.email = process.env.DOMAIN_EMAIL;
-        opts.agreeTos = true; // 약관 동의
-      }
-      cb(null, { options: opts, certs });
-    },
-    renewWithin: 81 * 24 * 60 * 60 * 1000,
-    renewBy: 80 * 24 * 60 * 60 * 1000,
-  });
+  const adminRouter = require('./routes/admin');
+  const usersRouter = require('./routes/users');
+  const booksRouter = require('./routes/books');
+  const evaluationRouter = require('./routes/evaluation');
+  const recommendRouter = require('./routes/recommend');
 
   // sequelize 동기화
   sequelize.sync();
@@ -172,7 +155,7 @@ if (cluster.isMaster) {
     cookie: {
       httpOnly: true,
       secure: false,
-      domain: production && '.bookseeker.com',
+      domain: production && '.hexanovem.com',
     },
   }));
   // app.use(express.static(path.join(__dirname, 'public')));
@@ -213,11 +196,8 @@ if (cluster.isMaster) {
     res.render('error');
   });
 
-  // https 서버 생성
-  const httpsServer = https.createServer(lexWorker.httpsOptions, lexWorker.middleware(app));
-
   // https 서버 실행 : 3000번
-  httpsServer.listen(production ? app.get('port') : 3000, () => {
+  app.listen(production ? app.get('port') : 3000, () => {
     winston.log('info', `[SERVER] ${app.get('port')}번 포트에서 HTTPS 서버가 실행중입니다.`);
   });
 
