@@ -3,7 +3,7 @@ package com.example.bookseeker.presenter
 import android.content.Context
 import android.util.Log
 import com.example.bookseeker.contract.LoginContract
-import com.example.bookseeker.model.data.LoginRequest
+import com.example.bookseeker.model.data.Login
 import com.example.bookseeker.network.RetrofitClient
 import com.google.gson.JsonObject
 import io.reactivex.Observable
@@ -49,8 +49,8 @@ class LoginPresenter : LoginContract.Presenter {
         return checkRegExResult
     }
 
-    // login : View에서 LoginRequest Data를 가져와 로그인 여부를 결정하는 함수
-    override fun checkLoginData(context: Context, loginRequest : LoginRequest): Observable<JsonObject> {
+    // login : View에서 Login Data를 가져와 로그인 여부를 결정하는 함수
+    override fun checkLoginData(context: Context, login : Login): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "receiveCookie")
         val retrofitInterface = RetrofitClient.retrofitInterface(client)
 
@@ -59,7 +59,7 @@ class LoginPresenter : LoginContract.Presenter {
         // 데이터가 들어오는지 관찰
         return Observable.create { subscriber ->
             // 데이터 생성을 위한 Create
-            val callResponse = retrofitInterface.login(loginRequest)
+            val callResponse = retrofitInterface.login(login)
             val response = callResponse.execute()
 
             // 성공적으로 응답이 온 경우

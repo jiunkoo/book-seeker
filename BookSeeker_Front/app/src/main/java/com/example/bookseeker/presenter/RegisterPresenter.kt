@@ -3,7 +3,7 @@ package com.example.bookseeker.presenter
 import android.content.Context
 import android.util.Log
 import com.example.bookseeker.contract.RegisterContract
-import com.example.bookseeker.model.data.RegisterRequest
+import com.example.bookseeker.model.data.Register
 import com.example.bookseeker.network.RetrofitClient
 import com.google.gson.JsonObject
 import io.reactivex.Observable
@@ -58,7 +58,7 @@ class RegisterPresenter : RegisterContract.Presenter {
     }
 
     // insertRegisterData : SignUpActivity에서 User Data를 저장하는 함수
-    override fun insertRegisterData(context: Context, registerRequest: RegisterRequest): Observable<JsonObject> {
+    override fun insertRegisterData(context: Context, register: Register): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "NONE")
         val retrofitInterface = RetrofitClient.retrofitInterface(client)
 
@@ -66,7 +66,7 @@ class RegisterPresenter : RegisterContract.Presenter {
 
         return Observable.create { subscriber ->
             // 데이터 생성을 위한 Create
-            val callResponse = retrofitInterface.register(registerRequest)
+            val callResponse = retrofitInterface.register(register)
             val response = callResponse.execute()
 
             if (response.isSuccessful) {

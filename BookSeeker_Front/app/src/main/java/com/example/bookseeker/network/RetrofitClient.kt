@@ -8,13 +8,12 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
-    const val BASE_URL = "http://15.164.129.202"
+    const val BASE_URL = "https://hexanovem.com"
 
     // Http 요청 및 응답 로그
     val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
     }
-
 
     // Retrofit Client에 필요한 Interceptor 추가
     fun getClient(context: Context, type: String): OkHttpClient {

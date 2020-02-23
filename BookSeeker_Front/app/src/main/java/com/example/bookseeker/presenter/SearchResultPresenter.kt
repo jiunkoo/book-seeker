@@ -3,7 +3,7 @@ package com.example.bookseeker.presenter
 import android.content.Context
 import android.util.Log
 import com.example.bookseeker.contract.SearchResultContract
-import com.example.bookseeker.model.data.SearchRequest
+import com.example.bookseeker.model.data.BooksSearch
 import com.example.bookseeker.network.RetrofitClient
 import com.google.gson.JsonObject
 import io.reactivex.Observable
@@ -18,13 +18,13 @@ class SearchResultPresenter : SearchResultContract.Presenter {
     }
 
     // booksSearchObservable : SearchDetailPresenter에서 모든 검색 결과를 요청하는 함수
-    fun booksSearchObservable(context: Context, searchRequest: SearchRequest, filter: Int, page: Int, limit: Int): Observable<JsonObject> {
+    fun booksSearchObservable(context: Context, booksSearch: BooksSearch, filter: Int, page: Int, limit: Int): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
         val retrofitInterface = RetrofitClient.retrofitInterface(client)
 
         return Observable.create { subscriber ->
             // 데이터 생성을 위한 Create
-            val callResponse = retrofitInterface.booksSearch(searchRequest, filter, page, limit)
+            val callResponse = retrofitInterface.booksSearch(booksSearch, filter, page, limit)
             val response = callResponse.execute()
 
             if (response.isSuccessful) {
