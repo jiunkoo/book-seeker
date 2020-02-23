@@ -10,7 +10,7 @@ import android.util.Log
 import android.widget.Toast
 import com.example.bookseeker.R
 import com.example.bookseeker.contract.LoginContract
-import com.example.bookseeker.model.data.LoginRequest
+import com.example.bookseeker.model.data.Login
 import com.example.bookseeker.presenter.LoginPresenter
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -46,9 +46,9 @@ class LoginActivity : BaseActivity(), LoginContract.View {
 
     // setButtonEventListener : LoginActivity에서 Button Event를 처리하는 함수
     override fun setButtonEventListener() {
-        // LoginRequest Button Event를 처리하는 함수
+        // Login Button Event를 처리하는 함수
         login_btn_login.setOnClickListener {
-            var loginData = LoginRequest(
+            var loginData = Login(
                 login_etxt_email.text.toString(),
                 login_etxt_password.text.toString()
             )
@@ -60,7 +60,7 @@ class LoginActivity : BaseActivity(), LoginContract.View {
     override fun setTextViewEventListener() {
         // SignUp TextView Event를 처리하는 함수
         login_txtv_register.setOnClickListener {
-            startSignUpActivity()
+            startRegisterActivity()
         }
     }
 
@@ -131,15 +131,15 @@ class LoginActivity : BaseActivity(), LoginContract.View {
         startActivity(nextIntent)
     }
 
-    // startSignUpActivity : LoginActivity에서 SignUpActivity로 넘어가는 함수
-    override fun startSignUpActivity() {
+    // startRegisterActivity : LoginActivity에서 SignUpActivity로 넘어가는 함수
+    override fun startRegisterActivity() {
         val nextIntent = Intent(this@LoginActivity, RegisterActivity::class.java)
         startActivity(nextIntent)
     }
 
     // requestLoginResult : 관찰자에게서 발행된 데이터를 가져오는 함수
-    fun requestLoginResult(loginRequest: LoginRequest) {
-        val subscription = loginPresenter.checkLoginData(this, loginRequest)
+    fun requestLoginResult(login: Login) {
+        val subscription = loginPresenter.checkLoginData(this, login)
             .subscribeOn(Schedulers.io()).subscribe(
                 { result ->
                     if((result.get("success").toString()).equals("true")){
@@ -157,7 +157,7 @@ class LoginActivity : BaseActivity(), LoginContract.View {
                 },
                 { e ->
                     Looper.prepare()
-                    showMessage("LoginRequest Error!")
+                    showMessage("Login Error!")
                     Looper.loop()
                 }
             )

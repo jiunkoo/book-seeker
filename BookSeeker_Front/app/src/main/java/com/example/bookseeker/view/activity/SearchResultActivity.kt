@@ -19,7 +19,7 @@ import com.example.bookseeker.adapter.listener.InfiniteScrollListener
 import com.example.bookseeker.contract.SearchResultContract
 import com.example.bookseeker.model.data.BookData
 import com.example.bookseeker.model.data.BookList
-import com.example.bookseeker.model.data.SearchRequest
+import com.example.bookseeker.model.data.BooksSearch
 import com.example.bookseeker.presenter.SearchResultPresenter
 import com.google.android.material.snackbar.Snackbar
 import io.reactivex.disposables.CompositeDisposable
@@ -206,7 +206,7 @@ class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDe
 
     // booksSearchSubscribe : 관찰자에게서 발행된 데이터를 가져오는 함수
     private fun booksSearchSubscribe(keyword: String, recyclerView: RecyclerView) {
-        var searchRequest = SearchRequest(keyword)
+        var searchRequest = BooksSearch(keyword)
         val subscription =
             searchResultPresenter.booksSearchObservable(this, searchRequest, filter, searchAdapter.itemCount / 10 + 1, 10)
                 .subscribeOn(Schedulers.io()).subscribe(

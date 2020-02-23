@@ -45,7 +45,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View {
     override fun setButtonEventListener() {
         // SignUp Button Event를 처리하는 함수
         register_btn_register.setOnClickListener() {
-            var userData = RegisterRequest(
+            var userData = Register(
                 register_etxt_email.text.toString(),
                 register_etxt_nickname.text.toString(),
                 register_etxt_password.text.toString()
@@ -192,8 +192,8 @@ class RegisterActivity : BaseActivity(), RegisterContract.View {
     }
 
     // requestRegisterResult : 관찰자에게서 발행된 데이터를 가져오는 함수
-    fun requestSignUpResult(registerRequest: RegisterRequest) {
-        val subscription = registerPresenter.insertRegisterData(this, registerRequest)
+    fun requestSignUpResult(register: Register) {
+        val subscription = registerPresenter.insertRegisterData(this, register)
             .subscribeOn(Schedulers.io()).subscribe(
                 { result ->
                     if((result.get("success").toString()).equals("true")) {

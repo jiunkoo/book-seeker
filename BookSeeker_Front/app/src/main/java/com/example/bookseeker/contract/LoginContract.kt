@@ -1,14 +1,11 @@
 package com.example.bookseeker.contract
 
 import android.content.Context
-import com.example.bookseeker.model.data.LoginRequest
+import com.example.bookseeker.model.data.Login
 import com.example.bookseeker.presenter.BasePresenter
 import com.example.bookseeker.view.BaseView
 import com.google.gson.JsonObject
 import io.reactivex.Observable
-import okhttp3.ResponseBody
-import org.json.JSONObject
-import retrofit2.Response
 
 interface LoginContract {
     interface View : BaseView {
@@ -24,8 +21,8 @@ interface LoginContract {
         // startSearchActivity : LoginActivity에서 SearchActivity로 넘어가는 함수
         fun startSearchActivity()
 
-        // startSignUpActivity : LoginActivity에서 SignUpActivity로 넘어가는 함수
-        fun startSignUpActivity()
+        // startRegisterActivity : LoginActivity에서 SignUpActivity로 넘어가는 함수
+        fun startRegisterActivity()
     }
 
     interface Presenter : BasePresenter<View> {
@@ -33,6 +30,6 @@ interface LoginContract {
         fun checkRegEx(txtv: String, etxt: String): String
 
         // checkLoginData : LoginPresenter에서 Email과 Password의 일치 여부를 비교하는 함수
-        fun checkLoginData(context: Context, loginRequest : LoginRequest): Observable<JsonObject>
+        fun checkLoginData(context: Context, login : Login): Observable<JsonObject>
     }
 }
