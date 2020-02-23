@@ -129,15 +129,6 @@ else {
   // passport 설정
   passportConfig(passport);
 
-  // HTTPS 설정
-  require('greenlock-express')
-  .init({
-    packageRoot: __dirname,
-    configDir: process.env.HTTPS_CONFIGDIR,
-    maintainerEmail: process.env.DOMAIN_EMAIL,
-    cluster: false
-  }).serve(httpsServer);
-
   // 포트 설정
   app.set('port', process.env.PORT || 3000);
 
@@ -178,7 +169,7 @@ else {
   app.use('/recommend', recommendRouter);
 
   // 서버 상태 확인
-  app.use('/', function(req, res) {
+  app.use('/', function (req, res) {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.end('[SERVER] BOOKSEEKER의 서버입니다.');
   });
@@ -202,14 +193,28 @@ else {
     res.render('error');
   });
 
-  function httpsServer(glx) {
-    glx.serveApp(app);
-  }
- 
-  if(require.main === module) {
-    // HTTPS 서버 실행
-    app.listen(3000);
-  }
+  // // HTTPS 설정
+  // require('greenlock-express')
+  // .init({
+  //   packageRoot: __dirname,
+  //   configDir: process.env.HTTPS_CONFIGDIR,
+  //   maintainerEmail: process.env.DOMAIN_EMAIL,
+  //   cluster: false
+  // }).serve(httpsServer);
+
+  // function httpsServer(glx) {
+  //   glx.serveApp(app);
+  // }
+
+  // if(require.main === module) {
+  //   // HTTPS 서버 실행
+  //   app.listen(3000);
+  // }
+
+  // HTTPS 서버 실행
+  app.listen(production ? app.get('port') : 3000, () => {
+    winston.log('info', `[SERVER] ${app.get('port')}번 포트에서 서버가 실행중입니다.`);
+  });
 
   module.exports = app;
 }

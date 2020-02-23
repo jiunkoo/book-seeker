@@ -36,7 +36,7 @@ router.post('/', clientIp, isLoggedIn, async (req, res, next) => {
         const user_uid = req.user.user_uid;
 
         const { bsin, genre } = req.body;
-        const rating = parseInt(req.body.rating);
+        const rating = parseFloat(req.body.rating);
         const state = parseInt(req.body.state);
 
         winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] 도서 평가 Request`);
@@ -53,36 +53,73 @@ router.post('/', clientIp, isLoggedIn, async (req, res, next) => {
             return res.status(200).send(result);
         }
 
-        // // 평가 데이터 생성
-        // const evaluation = await Evaluation.create({
-        //     user_uid: user_uid,
-        //     bsin: bsin,
-        //     genre: genre,
-        //     rating: rating
-        // });
+        // 기존 사용자의 평가 데이터가 있는지 검색
+        let query =
+            'SELECT * ' +
+            'FROM evaluations ' +
+            'WHERE user_uid=:user_uid AND bsin=:bsin; ';
 
-        // 평가 데이터 생성
-        const evaluation = await Evaluation.findOrCreate({
-            where: {
+        const evaluation = await sequelize.query(query, {
+            replacements: {
                 user_uid: user_uid,
                 bsin: bsin
             },
-            defaults: {
+            type: Sequelize.QueryTypes.SELECT,
+            raw: true
+        });
+
+        // 평가 데이터가 있는 경우
+        if (evaluation[0] != null) {
+            // 기존의 평가 데이터 수정
+            let query =
+                'UPDATE evaluations ' +
+                'SET rating=:rating, state=:state, deletedAt=null ' +
+                'WHERE user_uid=:user_uid AND bsin=:bsin; ';
+
+            await sequelize.query(query, {
+                replacements: {
+                    user_uid: user_uid,
+                    bsin: bsin,
+                    rating: rating,
+                    state: state
+                },
+                type: Sequelize.QueryTypes.UPDATE,
+                raw: true
+            });
+
+            const returnData = await Evaluation.findOne({
+                where: {
+                    user_uid: user_uid,
+                    bsin: bsin
+                }
+            });
+
+            // 도서 평가 성공 메세지 반환
+            const result = new Object();
+            result.success = true;
+            result.data = returnData;
+            result.message = '도서 평가를 성공했습니다.';
+            winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] ${result.message}`);
+            return res.status(200).send(result);
+        }
+        // 평가 데이터가 없는 경우
+        else {
+            // 평가 데이터 생성
+            const createEvaluation = await Evaluation.create({
                 user_uid: user_uid,
                 bsin: bsin,
                 genre: genre,
-                rating: rating,
-                state: state
-            }
-        });
+                rating: rating
+            });
 
-        // 도서 평가 성공 메세지 반환
-        const result = new Object();
-        result.success = true;
-        result.data = evaluation;
-        result.message = '도서 평가를 성공했습니다.';
-        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] ${result.message}`);
-        return res.status(200).send(result);
+            // 도서 평가 성공 메세지 반환
+            const result = new Object();
+            result.success = true;
+            result.data = createEvaluation;
+            result.message = '도서 평가를 성공했습니다.';
+            winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] ${result.message}`);
+            return res.status(201).send(result);
+        }
     } catch (e) {
         winston.log('error', `[EVALUATION][${req.clientIp}|${req.body.email}] 도서 평가 Exception`);
 
@@ -113,8 +150,8 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
         let offset = 0;
         let order = 'publication_date ASC';
 
-        if(page > 1) {
-            offset = 10 * (page -1);
+        if (page > 1) {
+            offset = 10 * (page - 1);
         }
 
         // 필터에 따라 정렬 기준 변경
