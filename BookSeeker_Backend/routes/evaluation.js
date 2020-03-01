@@ -269,7 +269,7 @@ router.get('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
         // 나의 평가 여부에 따라 반환 데이터 작성
         if (myEvaluation == null) {
             returnData.my_rating = 0.0.toFixed(1);
-            returnData.my_state = ;
+            returnData.my_state = -1;
         } else {
             returnData.my_rating = myEvaluation.rating;
             returnData.my_state = myEvaluation.state;
