@@ -211,6 +211,7 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
 router.get('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
     try {
         const user_email = req.user.email;
+        const user_uid = req.user.user_uid;
 
         const bsin = parseInt(req.params.bsin);
 
@@ -219,17 +220,6 @@ router.get('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
 
         // 해당하는 도서 데이터 가져오기
         const book = await Book.findOne({
-            where: {
-                bsin: bsin
-            }
-        });
-
-        // 평가한 사람 수와 평균 값 가져오기
-        const evaluation = await Evaluation.findOne({
-            attributes: [
-                [sequelize.fn('COUNT', sequelize.col('bsin')), 'count'],
-                [sequelize.fn('AVG', sequelize.col('rating')), 'average']
-            ],
             where: {
                 bsin: bsin
             }
@@ -247,8 +237,43 @@ router.get('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
         returnData.keyword = book.keyword;
         returnData.adult = book.adult;
         returnData.genre = book.genre;
-        returnData.count = evaluation.dataValues.count;
-        returnData.average = (evaluation.dataValues.average).toFixed(1);
+
+        // 평가한 사람 수와 평균 값 가져오기
+        const evaluation = await Evaluation.findOne({
+            attributes: [
+                [sequelize.fn('COUNT', sequelize.col('bsin')), 'count'],
+                [sequelize.fn('AVG', sequelize.col('rating')), 'average']
+            ],
+            where: {
+                bsin: bsin
+            }
+        });
+
+        // 평가한 데이터 갯수에 따라 반환 데이터 작성
+        if (evaluation == null) {
+            returnData.all_count = evaluation.dataValues.count;
+            returnData.all_average = (evaluation.dataValues.average).toFixed(1);
+        } else {
+            returnData.all_count = 0;
+            returnData.all_average = 0.0.toFixed(1);
+        }
+
+        // 내가 평가한 값과 상태 가져오기
+        const myEvaluation = await Evaluation.findOne({
+            where: {
+                user_uid: user_uid,
+                bsin: bsin
+            }
+        });
+
+        // 나의 평가 여부에 따라 반환 데이터 작성
+        if (myEvaluation == null) {
+            returnData.my_rating = 0.0.toFixed(1);
+            returnData.my_state = ;
+        } else {
+            returnData.my_rating = myEvaluation.rating;
+            returnData.my_state = myEvaluation.state;
+        }
 
         // 도서 검색 성공 메세지 반환
         const result = new Object();
