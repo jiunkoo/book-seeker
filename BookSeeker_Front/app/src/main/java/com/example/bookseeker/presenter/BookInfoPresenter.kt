@@ -11,17 +11,19 @@ import io.reactivex.Observable
 import okhttp3.OkHttpClient
 
 class BookInfoPresenter : BookInfoContract.Presenter {
-    private var searchView: BookInfoContract.View? = null
+    private var bookInfoView: BookInfoContract.View? = null
 
     // takeView : View가 Create, Bind 될 때 Presenter에 전달하는 함수
     override fun takeView(view: BookInfoContract.View) {
-        searchView = view
+        bookInfoView = view
     }
 
     // createEvaluationObservable : 하나의 평가 데이터 생성 요청을 관찰하는 함수
     fun createEvaluationObservable(context: Context, evaluationCreate: EvaluationCreate): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
         val retrofitInterface = RetrofitClient.retrofitInterface(client)
+
+        bookInfoView?.setProgressON("도서 평가 중입니다...")
 
         // 데이터 생성을 위한 Create
         return Observable.create { subscriber ->
@@ -43,6 +45,8 @@ class BookInfoPresenter : BookInfoContract.Presenter {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
         val retrofitInterface = RetrofitClient.retrofitInterface(client)
 
+        bookInfoView?.setProgressON("도서 정보를 가져오고 있습니다...")
+
         return Observable.create { subscriber ->
             // 데이터 생성을 위한 Create
             val callResponse = retrofitInterface.getEvaluation(bsin)
@@ -62,6 +66,8 @@ class BookInfoPresenter : BookInfoContract.Presenter {
     fun patchEvaluationObservable(context: Context, evaluationPatch: EvaluationPatch): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
         val retrofitInterface = RetrofitClient.retrofitInterface(client)
+
+        bookInfoView?.setProgressON("도서 평가 수정 중입니다...")
 
         // 데이터 생성을 위한 Create
         return Observable.create { subscriber ->
@@ -83,6 +89,8 @@ class BookInfoPresenter : BookInfoContract.Presenter {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
         val retrofitInterface = RetrofitClient.retrofitInterface(client)
 
+        bookInfoView?.setProgressON("도서 평가 삭제 중입니다...")
+
         // 데이터 생성을 위한 Create
         return Observable.create { subscriber ->
             val callResponse = retrofitInterface.deleteEvaluation(bsin)
@@ -100,7 +108,7 @@ class BookInfoPresenter : BookInfoContract.Presenter {
 
     // dropView : View가 delete, unBind 될 때 Presenter에 전달하는 함수
     override fun dropView() {
-        searchView = null
+        bookInfoView = null
     }
 
     // executionLog : 공통으로 사용하는 Log 출력 부분을 생성하는 함수

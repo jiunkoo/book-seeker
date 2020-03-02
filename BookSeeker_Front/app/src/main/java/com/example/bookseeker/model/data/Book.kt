@@ -32,6 +32,8 @@ data class BookData(
     override fun getViewType() = AdapterConstants.BOOKS
 }
 
+
+
 data class BooksSearch(
     @SerializedName("keyword") val keyword: String
 ) : Serializable

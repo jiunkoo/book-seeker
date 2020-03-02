@@ -66,21 +66,6 @@ class LoginPresenter : LoginContract.Presenter {
             if (response.isSuccessful) {
                 val result = response.body()!!
 
-                //TODO : Retrofit Interceptor가 쿠키를 제대로 저장하는지 확인
-//                val setCookie = response.headers().get("Set-Cookie")
-//                // 만일 쿠키가 있는 경우
-//                if(setCookie != null){
-//                    val splitCookieHeader = setCookie.split(";")
-//                    val splitCookieValue = splitCookieHeader[0].split("=")
-//
-//                    // ShardPreference에 쿠키 값 집어넣기
-//                    val pref = context.getSharedPreferences("shared_pref", 0)
-//                    val editor = pref.edit()
-//                    editor.putString("cookie", splitCookieValue[1])
-//                    editor.apply() // editor.commit()
-//                    println("sharedPreference에 저장된 쿠키 값은 : " + pref.getString("cookie", "None"))
-//                }
-
                 subscriber.onNext(result)
                 subscriber.onComplete() // 구독자에게 모든 데이터 발행이 완료되었음을 알림
             } else {

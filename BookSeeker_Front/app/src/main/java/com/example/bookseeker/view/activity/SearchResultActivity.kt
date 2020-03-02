@@ -218,18 +218,19 @@ class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDe
 
                             for (i in 0 until jsonArray.size()) {
                                 var jsonObject = jsonArray[i].asJsonObject
+                                // 데이터 가공 처리(큰따옴표 제거)
                                 var bookData = BookData(
-                                    jsonObject.get("bsin").toString(),
-                                    jsonObject.get("title").toString(),
-                                    jsonObject.get("author").toString(),
-                                    jsonObject.get("publisher").toString(),
-                                    jsonObject.get("introduction").toString(),
-                                    jsonObject.get("cover").toString(),
-                                    jsonObject.get("link").toString(),
-                                    jsonObject.get("keyword").toString(),
-                                    jsonObject.get("adult").toString(),
-                                    jsonObject.get("genre").toString(),
-                                    jsonObject.get("publication_date").toString(),
+                                    jsonObject.get("bsin").toString().replace("\"", ""),
+                                    jsonObject.get("title").toString().replace("\"", ""),
+                                    jsonObject.get("author").toString().replace("\"", ""),
+                                    jsonObject.get("publisher").toString().replace("\"", ""),
+                                    jsonObject.get("introduction").toString().replace("\"", ""),
+                                    jsonObject.get("cover").toString().replace("\"", ""),
+                                    jsonObject.get("link").toString().replace("\"", ""),
+                                    jsonObject.get("keyword").toString().replace("\"", ""),
+                                    jsonObject.get("adult").toString().replace("\"", ""),
+                                    jsonObject.get("genre").toString().replace("\"", ""),
+                                    jsonObject.get("publication_date").toString().replace("\"", ""),
                                     0.0f
                                 )
                                 bookDataArray.add(bookData)
