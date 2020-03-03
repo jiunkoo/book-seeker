@@ -109,7 +109,8 @@ router.post('/', clientIp, isLoggedIn, async (req, res, next) => {
                 user_uid: user_uid,
                 bsin: bsin,
                 genre: genre,
-                rating: rating
+                rating: rating,
+                state: state
             });
 
             // 도서 평가 성공 메세지 반환
@@ -251,11 +252,11 @@ router.get('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
 
         // 평가한 데이터 갯수에 따라 반환 데이터 작성
         if (evaluation == null) {
-            returnData.all_count = evaluation.dataValues.count;
-            returnData.all_average = (evaluation.dataValues.average).toFixed(1);
-        } else {
             returnData.all_count = 0;
             returnData.all_average = 0.0.toFixed(1);
+        } else {
+            returnData.all_count = evaluation.dataValues.count;
+            returnData.all_average = (evaluation.dataValues.average).toFixed(1);
         }
 
         // 내가 평가한 값과 상태 가져오기
@@ -305,7 +306,7 @@ router.patch('/', clientIp, isLoggedIn, async (req, res, next) => {
         const rating = req.body.rating;
 
         winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] 도서 평가 수정 Request`);
-        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] rating : ${rating}`);
+        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] bsin : ${bsin}, rating : ${rating}`);
 
         const returnData = Object();
         returnData.bsin = bsin;
@@ -314,6 +315,7 @@ router.patch('/', clientIp, isLoggedIn, async (req, res, next) => {
         // 도서 평가 수정
         await Evaluation.update({
             rating: rating,
+        },{
             where: {
                 user_uid: user_uid,
                 bsin: bsin
