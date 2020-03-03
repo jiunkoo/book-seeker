@@ -238,6 +238,10 @@ router.get('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
         returnData.keyword = book.keyword;
         returnData.adult = book.adult;
         returnData.genre = book.genre;
+        returnData.all_count = 0;
+        returnData.all_average = 0.0.toFixed(1);
+        returnData.my_rating = 0.0.toFixed(1);
+        returnData.my_state = -1;
 
         // 평가한 사람 수와 평균 값 가져오기
         const evaluation = await Evaluation.findOne({
@@ -250,18 +254,15 @@ router.get('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
             }
         });
 
-        // 평가한 데이터 갯수에 따라 반환 데이터 작성
-        if (evaluation.dataValues == null) {
-            returnData.all_count = 0;
-            returnData.all_average = 0.0.toFixed(1);
-        } else {
+        // 평가한 데이터가 있으면 반환 데이터 변경
+        if (evaluation.dataValues.count != 0) {
             returnData.all_count = evaluation.dataValues.count;
             returnData.all_average = (evaluation.dataValues.average).toFixed(1);
         }
-        console.log(evaluation);
 
         // 내가 평가한 값과 상태 가져오기
         const myEvaluation = await Evaluation.findOne({
+            attributes:["rating", "state"],
             where: {
                 user_uid: user_uid,
                 bsin: bsin
@@ -269,10 +270,7 @@ router.get('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
         });
 
         // 나의 평가 여부에 따라 반환 데이터 작성
-        if (myEvaluation == null) {
-            returnData.my_rating = 0.0.toFixed(1);
-            returnData.my_state = -1;
-        } else {
+        if (myEvaluation != null) {
             returnData.my_rating = myEvaluation.rating;
             returnData.my_state = myEvaluation.state;
         }
@@ -316,7 +314,7 @@ router.patch('/', clientIp, isLoggedIn, async (req, res, next) => {
         // 도서 평가 수정
         await Evaluation.update({
             rating: rating,
-        },{
+        }, {
             where: {
                 user_uid: user_uid,
                 bsin: bsin
