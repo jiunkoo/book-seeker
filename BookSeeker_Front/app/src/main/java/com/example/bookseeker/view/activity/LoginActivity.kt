@@ -20,7 +20,7 @@ class LoginActivity : BaseActivity(), LoginContract.View {
     // LoginActivity와 함께 생성될 LoginPresenter를 지연 초기화
     private lateinit var loginPresenter: LoginPresenter
     // Disposable 객체 지정
-    private var subscriptions = CompositeDisposable()
+    internal val disposables = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -161,11 +161,19 @@ class LoginActivity : BaseActivity(), LoginContract.View {
                     Looper.loop()
                 }
             )
-        subscriptions.add(subscription)
+        disposables.add(subscription)
     }
+
+//    override fun onStop() {
+//        super.onStop()
+//
+//        // 관리하고 있던 disposable 객체 전부 해제
+//        disposables.clear()
+//    }
 
     override fun onDestroy() {
         super.onDestroy()
+
         // View가 Delete(Unbind) 되었다는 걸 Presenter에 전달
         loginPresenter.dropView()
     }

@@ -1,6 +1,7 @@
 package com.example.bookseeker.view.activity
 
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.os.Looper
@@ -10,30 +11,42 @@ import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.example.bookseeker.R
 import com.example.bookseeker.contract.BookInfoContract
-import com.example.bookseeker.model.data.BookData
 import com.example.bookseeker.model.data.EvaluationCreate
 import com.example.bookseeker.model.data.EvaluationPatch
 import com.example.bookseeker.presenter.BookInfoPresenter
-import com.google.android.material.snackbar.Snackbar
 import com.google.gson.JsonObject
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_bookinfo.*
 import java.io.Serializable
+import com.google.gson.JsonParser
+
+
+
+
 
 
 class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
     // Activity와 함께 생성될 Presenter를 지연 초기화
     private lateinit var bookInfoPresenter: BookInfoPresenter
     // Disposable 객체 지정
-    private var subscriptions = CompositeDisposable()
+    internal val disposables = CompositeDisposable()
     // 변경 전 평점
     private var preRating = 0.0f
     // 변경 전 상태
     private var preState = -1
+    // 색상
+    val lightRed = "#ffc8d2"
+    val lightYellow = "#ffebc8"
+    val lightLime = "#dcf0dc"
+    val lightMint = "#bee6eb"
+    val mediumRed = "#e02947"
+    val mediumYellow = "#ffbe50"
+    val mediumLime = "#80c783"
+    val mediumMint = "#03738c"
 
-    // 가져올 도서 정보
-    private lateinit var bookData: BookData
+    // 가져올 도서 정보 객체
+    private lateinit var jsonObject: JsonObject
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +60,8 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
 
         // SearchResultActivity에서 데이터 받아오기
         val intent = intent
-        bookData = intent.getParcelableExtra("bookData") as BookData
+        var bookData = intent.getStringExtra("bookData")
+        jsonObject = JsonParser().parse(bookData).asJsonObject
 
         // 화면에 도서 정보 뿌리기
         setBookData()
@@ -57,9 +71,6 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
 
         // Rating bar Event 처리
         setRatingbarEventListener()
-
-        // 평균 별점 및 평가 개수
-        getEvaluationSubscribe()
     }
 
     // initPresenter : View와 상호작용할 Presenter를 주입하기 위한 함수
@@ -111,10 +122,14 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
 
     // setButtonEventListener : BookInfoActivity에서 Button Event를 처리하는 함수
     fun setButtonEventListener() {
+        var link = jsonObject.get("link").toString().replace("\"", "")
+        var bsin = jsonObject.get("bsin").toString().replace("\"", "")
+        var genre = jsonObject.get("genre").toString().replace("\"", "")
+
         // BookInfo Link Button Event를 처리하는 함수
         bookinfo_btn_link.setOnClickListener {
             // 해당 도서 구매 페이지로 연결
-            var combinationUri = "https://ridibooks.com" + bookData.link
+            var combinationUri = "https://ridibooks.com" + link
             val webIntent = Intent(Intent.ACTION_VIEW, Uri.parse(combinationUri))
             startActivity(webIntent)
         }
@@ -124,13 +139,29 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
             var rating = bookinfo_ratingbar_bookrating.rating
             // 별점이 없는 경우 평가 생성
             if (rating == 0.0f) {
-                var evaluationCreate = EvaluationCreate(bookData.bsin, bookData.genre, rating, 0)
+                var evaluationCreate = EvaluationCreate(bsin, genre, rating, 0)
                 createEvaluationSubscribe(evaluationCreate)
             }
             // 별점이 있는 경우 평가 수정
             else {
-                var evaluationPatch = EvaluationPatch(bookData.bsin, rating, 0)
-                patchEvaluationSubscribe(evaluationPatch)
+                // 이미 해당 버튼을 선택한 경우
+                if(preState == 0){
+                    var evaluationPatch = EvaluationPatch(bsin, rating, -1)
+                    patchEvaluationSubscribe(evaluationPatch)
+                    bookinfo_btn_boring.setBackgroundColor(Color.parseColor(lightRed))
+                    bookinfo_btn_interesting.setBackgroundColor(Color.parseColor(lightYellow))
+                    bookinfo_btn_reading.setBackgroundColor(Color.parseColor(lightLime))
+                    bookinfo_btn_read.setBackgroundColor(Color.parseColor(lightMint))
+                }
+                // 해당 버튼을 선택하지 않은 경우
+                else {
+                    var evaluationPatch = EvaluationPatch(bsin, rating, 0)
+                    patchEvaluationSubscribe(evaluationPatch)
+                    bookinfo_btn_boring.setBackgroundColor(Color.parseColor(mediumRed))
+                    bookinfo_btn_interesting.setBackgroundColor(Color.parseColor(lightYellow))
+                    bookinfo_btn_reading.setBackgroundColor(Color.parseColor(lightLime))
+                    bookinfo_btn_read.setBackgroundColor(Color.parseColor(lightMint))
+                }
             }
         }
         // '관심 있어요' 버튼
@@ -138,13 +169,29 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
             var rating = bookinfo_ratingbar_bookrating.rating
             // 별점이 없는 경우 평가 생성
             if (rating == 0.0f) {
-                var evaluationCreate = EvaluationCreate(bookData.bsin, bookData.genre, rating, 1)
+                var evaluationCreate = EvaluationCreate(bsin, genre, rating, 1)
                 createEvaluationSubscribe(evaluationCreate)
             }
             // 별점이 있는 경우 평가 수정
             else {
-                var evaluationPatch = EvaluationPatch(bookData.bsin, rating, 1)
-                patchEvaluationSubscribe(evaluationPatch)
+                // 이미 해당 버튼을 선택한 경우
+                if(preState == 1){
+                    var evaluationPatch = EvaluationPatch(bsin, rating, -1)
+                    patchEvaluationSubscribe(evaluationPatch)
+                    bookinfo_btn_boring.setBackgroundColor(Color.parseColor(lightRed))
+                    bookinfo_btn_interesting.setBackgroundColor(Color.parseColor(lightYellow))
+                    bookinfo_btn_reading.setBackgroundColor(Color.parseColor(lightLime))
+                    bookinfo_btn_read.setBackgroundColor(Color.parseColor(lightMint))
+                }
+                // 해당 버튼을 선택하지 않은 경우
+                else {
+                    var evaluationPatch = EvaluationPatch(bsin, rating, 1)
+                    patchEvaluationSubscribe(evaluationPatch)
+                    bookinfo_btn_boring.setBackgroundColor(Color.parseColor(lightRed))
+                    bookinfo_btn_interesting.setBackgroundColor(Color.parseColor(mediumYellow))
+                    bookinfo_btn_reading.setBackgroundColor(Color.parseColor(lightLime))
+                    bookinfo_btn_read.setBackgroundColor(Color.parseColor(lightMint))
+                }
             }
         }
         // '읽고 있어요' 버튼
@@ -152,45 +199,80 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
             var rating = bookinfo_ratingbar_bookrating.rating
             // 별점이 없는 경우 평가 생성
             if (rating == 0.0f) {
-                var evaluationCreate = EvaluationCreate(bookData.bsin, bookData.genre, rating, 2)
+                var evaluationCreate = EvaluationCreate(bsin, genre, rating, 2)
                 createEvaluationSubscribe(evaluationCreate)
             }
             // 별점이 있는 경우 평가 수정
             else {
-                var evaluationPatch = EvaluationPatch(bookData.bsin, rating, 2)
-                patchEvaluationSubscribe(evaluationPatch)
+                // 이미 해당 버튼을 선택한 경우
+                if(preState == 2){
+                    var evaluationPatch = EvaluationPatch(bsin, rating, -1)
+                    patchEvaluationSubscribe(evaluationPatch)
+                    bookinfo_btn_boring.setBackgroundColor(Color.parseColor(lightRed))
+                    bookinfo_btn_interesting.setBackgroundColor(Color.parseColor(lightYellow))
+                    bookinfo_btn_reading.setBackgroundColor(Color.parseColor(lightLime))
+                    bookinfo_btn_read.setBackgroundColor(Color.parseColor(lightMint))
+                }
+                // 해당 버튼을 선택하지 않은 경우
+                else {
+                    var evaluationPatch = EvaluationPatch(bsin, rating, 2)
+                    patchEvaluationSubscribe(evaluationPatch)
+                    bookinfo_btn_boring.setBackgroundColor(Color.parseColor(lightRed))
+                    bookinfo_btn_interesting.setBackgroundColor(Color.parseColor(lightYellow))
+                    bookinfo_btn_reading.setBackgroundColor(Color.parseColor(mediumLime))
+                    bookinfo_btn_read.setBackgroundColor(Color.parseColor(lightMint))
+                }
             }
         }
         // '읽었어요' 버튼
         bookinfo_btn_read.setOnClickListener {
             // 별점이 없는 경우 평가 수정 불가
             var rating = bookinfo_ratingbar_bookrating.rating
-            if(rating == 0.0f){
+            if (rating == 0.0f) {
                 showMessage("도서 평가가 필요합니다!")
             }
             // 별점이 있는 경우 평가 수정
             else {
-                var evaluationPatch = EvaluationPatch(bookData.bsin, rating, 3)
-                patchEvaluationSubscribe(evaluationPatch)
+                // 이미 해당 버튼을 선택한 경우
+                if(preState == 3){
+                    var evaluationPatch = EvaluationPatch(bsin, rating, -1)
+                    patchEvaluationSubscribe(evaluationPatch)
+                    bookinfo_btn_boring.setBackgroundColor(Color.parseColor(lightRed))
+                    bookinfo_btn_interesting.setBackgroundColor(Color.parseColor(lightYellow))
+                    bookinfo_btn_reading.setBackgroundColor(Color.parseColor(lightLime))
+                    bookinfo_btn_read.setBackgroundColor(Color.parseColor(lightMint))
+                }
+                // 해당 버튼을 선택하지 않은 경우
+                else {
+                    var evaluationPatch = EvaluationPatch(bsin, rating, 3)
+                    patchEvaluationSubscribe(evaluationPatch)
+                    bookinfo_btn_boring.setBackgroundColor(Color.parseColor(lightRed))
+                    bookinfo_btn_interesting.setBackgroundColor(Color.parseColor(lightYellow))
+                    bookinfo_btn_reading.setBackgroundColor(Color.parseColor(lightLime))
+                    bookinfo_btn_read.setBackgroundColor(Color.parseColor(mediumMint))
+                }
             }
         }
     }
 
     // setRatingbarEventListener : BookInfoActivity에서 Ratingbar Event를 처리하는 함수
     fun setRatingbarEventListener() {
+        var bsin = jsonObject.get("bsin").toString().replace("\"", "")
+        var genre = jsonObject.get("genre").toString().replace("\"", "")
+
         //Ratingbar Event를 처리하는 함수
         bookinfo_ratingbar_bookrating.onRatingBarChangeListener = RatingBar.OnRatingBarChangeListener()
         { ratingBar: RatingBar, postRating: Float, boolean: Boolean ->
             // 변경 전 평점 == 0 && 0 < 변경 후 평점 <= 5
             // 평가 데이터 생성
             if (preRating == 0.0f && (postRating > 0.0f && postRating <= 5.0f)) {
-                var evaluationCreate = EvaluationCreate(bookData.bsin, bookData.genre, postRating, preState)
+                var evaluationCreate = EvaluationCreate(bsin, genre, postRating, preState)
                 createEvaluationSubscribe(evaluationCreate)
             }
             // 0 < 변경 전(후) 평점 <= 5
             // 평가 데이터 수정
             else if ((preRating > 0.0f && preRating <= 5.0f) && (postRating > 0.0f && postRating <= 5.0f)) {
-                var evaluationPatch = EvaluationPatch(bookData.bsin, postRating, preState)
+                var evaluationPatch = EvaluationPatch(bsin, postRating, preState)
                 patchEvaluationSubscribe(evaluationPatch)
             }
             // 0 < 변경 전 평점 <= 5 && 변경 후 평점 == 0
@@ -228,42 +310,7 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
                         Looper.loop()
                     }
                 )
-        subscriptions.add(subscription)
-    }
-
-    // getEvaluationSubscribe : 하나의 평가 데이터 조회 관찰자를 구독하는 함수
-    private fun getEvaluationSubscribe() {
-        val subscription =
-            bookInfoPresenter.getEvaluationObservable(this, bookData.bsin)
-                .subscribeOn(Schedulers.io()).subscribe(
-                    { result ->
-                        if ((result.get("success").toString()).equals("true")) {
-                            // 서버에서 응답받은 데이터를 화면에 적용
-                            var jsonObject = (result.get("data")).asJsonObject
-                            var allAverage = jsonObject.get("all_average").toString().replace("\"", "").toFloat()
-                            var allCount = jsonObject.get("all_count").toString().replace("\"", "").toInt()
-                            var myRating = jsonObject.get("my_rating").toString().replace("\"", "").toFloat()
-                            var myState = jsonObject.get("my_state").toString().replace("\"", "").toInt()
-
-                            // 평가 개수 & 평균 별점 설정
-                            bookinfo_txtv_averagestar.text = "평균 ★ " + allAverage + " (" + allCount + "명)"
-
-                            // 내 평점 설정
-                            setEvaluation(myRating, myState)
-                        }
-                        // 설정 끝낸 후 프로그래스 바 종료
-                        Looper.prepare()
-                        setProgressOFF()
-                        showMessage(result.get("message").toString())
-                        Looper.loop()
-                    },
-                    { e ->
-                        Looper.prepare()
-                        showMessage("Get evaluation error!")
-                        Looper.loop()
-                    }
-                )
-        subscriptions.add(subscription)
+        disposables.add(subscription)
     }
 
     // patchEvaluationSubscribe : 하나의 평가 데이터 수정 관찰자를 구독하는 함수
@@ -289,16 +336,18 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
                     { e ->
                         Looper.prepare()
                         showMessage("Patch evaluation error!")
+                        println(e)
                         Looper.loop()
                     }
                 )
-        subscriptions.add(subscription)
+        disposables.add(subscription)
     }
 
     // deleteEvaluationSubscribe : 하나의 평가 데이터 삭제 관찰자를 구독하는 함수
     private fun deleteEvaluationSubscribe() {
+        var bsin = jsonObject.get("bsin").toString().replace("\"", "")
         val subscription =
-            bookInfoPresenter.deleteEvaluationObservable(this, bookData.bsin)
+            bookInfoPresenter.deleteEvaluationObservable(this, bsin)
                 .subscribeOn(Schedulers.io()).subscribe(
                     { result ->
                         if ((result.get("success").toString()).equals("true")) {
@@ -321,60 +370,57 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
                         Looper.loop()
                     }
                 )
-        subscriptions.add(subscription)
+        disposables.add(subscription)
     }
 
     // 화면에 도서 정보를 나타내는 함수
     private fun setBookData() {
-        var splitUrl = bookData.cover.split("/")
+        var cover = jsonObject.get("cover").toString().replace("\"", "")
+        var title = jsonObject.get("title").toString().replace("\"", "")
+        var author = jsonObject.get("author").toString().replace("\"", "")
+        var publisher = jsonObject.get("publisher").toString().replace("\"", "")
+//        var publication_date = jsonObject.get("publication_date").toString().replace("\"", "")
+        var introduction = jsonObject.get("introduction").toString().replace("\"", "")
+        var allAverage = jsonObject.get("all_average").toString().replace("\"", "").toFloat()
+        var allCount = jsonObject.get("all_count").toString().replace("\"", "").toInt()
+        var myRating = jsonObject.get("my_rating").toString().replace("\"", "").toFloat()
+        var myState = jsonObject.get("my_state").toString().replace("\"", "").toInt()
+
+        var splitUrl = cover.split("/")
         var coverUrl: String = "https://img.ridicdn.net/cover/" + splitUrl[4] + "/xxlarge"
         Glide.with(this).load(coverUrl).into(bookinfo_imgv_book)
-        bookinfo_txtv_booktitle.text = bookData.title
-        bookinfo_txtv_author.text = bookData.author
-        bookinfo_txtv_publisher.text = bookData.publisher
-        bookinfo_txtv_date.text = bookData.publication_date
-        bookinfo_txtv_introduction.text = bookData.introduction
+        bookinfo_txtv_booktitle.text = title
+        bookinfo_txtv_author.text = author
+        bookinfo_txtv_publisher.text = publisher
+//        bookinfo_txtv_date.text = publication_date
+        bookinfo_txtv_introduction.text = introduction
+
+        // 평가 개수 & 평균 별점 설정
+        bookinfo_txtv_averagestar.text = "평균 ★ " + allAverage + " (" + allCount + "명)"
+
+        when (myState) {
+            0 -> {
+                bookinfo_btn_boring.setBackgroundColor(Color.parseColor(mediumRed))
+            }
+            1 -> {
+                bookinfo_btn_interesting.setBackgroundColor(Color.parseColor(mediumYellow))
+            }
+            2 -> {
+                bookinfo_btn_reading.setBackgroundColor(Color.parseColor(mediumLime))
+            }
+            3 -> {
+                bookinfo_btn_read.setBackgroundColor(Color.parseColor(mediumMint))
+            }
+        }
+
+        // 평점 반영
+        setEvaluation(myRating, myState)
     }
 
     // 화면에 도서 평점을 나타내는 함수
     private fun setEvaluation(rating: Float, state: Int) {
         bookinfo_ratingbar_bookrating.rating = rating
 
-        // 이미 누른 버튼은 다시 누르지 못하도록 상태 변경
-        when (state) {
-            -1 -> {
-                bookinfo_btn_boring.isEnabled = true
-                bookinfo_btn_interesting.isEnabled = true
-                bookinfo_btn_reading.isEnabled = true
-                bookinfo_btn_read.isEnabled = true
-            }
-            0 -> {
-                bookinfo_btn_boring.isEnabled = false
-                bookinfo_btn_interesting.isEnabled = true
-                bookinfo_btn_reading.isEnabled = true
-                bookinfo_btn_read.isEnabled = true
-            }
-            1 -> {
-                bookinfo_btn_boring.isEnabled = true
-                bookinfo_btn_interesting.isEnabled = false
-                bookinfo_btn_reading.isEnabled = true
-                bookinfo_btn_read.isEnabled = true
-            }
-            2 -> {
-                bookinfo_btn_boring.isEnabled = true
-                bookinfo_btn_interesting.isEnabled = true
-                bookinfo_btn_reading.isEnabled = false
-                bookinfo_btn_read.isEnabled = true
-            }
-            3 -> {
-                bookinfo_btn_boring.isEnabled = true
-                bookinfo_btn_interesting.isEnabled = true
-                bookinfo_btn_reading.isEnabled = true
-                bookinfo_btn_read.isEnabled = false
-            }
-        }
-
-        // 변경된 평점, 상태 정보 반영
         preRating = rating
         preState = state
     }
@@ -383,6 +429,9 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
         super.onDestroy()
         // View가 Delete(Unbind) 되었다는 걸 Presenter에 전달
         bookInfoPresenter.dropView()
+
+        // 관리하고 있던 disposable 객체 전부 해제
+        disposables.clear()
     }
 
     // setProgressON :  공통으로 사용하는 Progress Bar의 시작을 정의하는 함수

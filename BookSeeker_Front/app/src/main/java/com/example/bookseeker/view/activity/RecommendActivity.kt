@@ -29,7 +29,7 @@ class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardv
     //recyclerview를 담을 빈 데이터 리스트 변수를 초기화
     private var recommendBookList: BookList? = null
     // Disposable 객체 지정
-    private var subscriptions = CompositeDisposable()
+    internal val disposables = CompositeDisposable()
 
     private val animationDuration = 300
     private var isToUndo = false
@@ -122,7 +122,7 @@ class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardv
                     Looper.loop()
                 }
             )
-        subscriptions.add(subscription)
+        disposables.add(subscription)
     }
 
     // RecommendCardvAdapter에서 Callback override
