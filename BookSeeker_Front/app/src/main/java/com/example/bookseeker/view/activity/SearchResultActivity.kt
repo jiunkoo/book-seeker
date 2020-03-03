@@ -22,6 +22,7 @@ import com.example.bookseeker.model.data.BookList
 import com.example.bookseeker.model.data.BooksSearch
 import com.example.bookseeker.presenter.SearchResultPresenter
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.JsonObject
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_search_result.*
@@ -31,7 +32,7 @@ class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDe
     // Activity와 함께 생성될 Presenter를 지연 초기화
     private lateinit var searchResultPresenter: SearchResultPresenter
     // Disposable 객체 지정
-    private var subscriptions = CompositeDisposable()
+    internal val disposables = CompositeDisposable()
     // RecyclerView Adapter 설정
     private val searchAdapter by lazy { SearchAdapter(this) }
     // Spinner Item Change Flag 설정
@@ -150,9 +151,9 @@ class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDe
     }
 
     // startBookInfoActivity : bookInfoActivity로 넘어가는 함수
-    fun startBookInfoActivity(bookData: BookData) {
+    fun startBookInfoActivity(jsonObject: JsonObject) {
         val nextIntent = Intent(this, BookInfoActivity::class.java)
-        nextIntent.putExtra("bookData", bookData)
+        nextIntent.putExtra("bookData", jsonObject.toString())
         startActivity(nextIntent)
     }
 
@@ -200,8 +201,8 @@ class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDe
     }
 
     override fun onItemSelected(bookData: BookData) {
-        // bookInfoActivity로 이동
-        startBookInfoActivity(bookData)
+        // 해당 도서 데이터 가져오기
+        getEvaluationSubscribe(bookData)
     }
 
     // booksSearchSubscribe : 관찰자에게서 발행된 데이터를 가져오는 함수
@@ -254,7 +255,39 @@ class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDe
                         Snackbar.make(recyclerView, e.message ?: "", Snackbar.LENGTH_LONG).show()
                     }
                 )
-        subscriptions.add(subscription)
+        disposables.add(subscription)
+    }
+
+    // getEvaluationSubscribe : 하나의 평가 데이터 조회 관찰자를 구독하는 함수
+    private fun getEvaluationSubscribe(bookData: BookData) {
+        val subscription =
+            searchResultPresenter.getEvaluationObservable(this, bookData.bsin)
+                .subscribeOn(Schedulers.io()).subscribe(
+                    { result ->
+                        if ((result.get("success").toString()).equals("true")) {
+                            // 서버에서 응답받은 데이터를 가져옴
+                            var jsonObject = (result.get("data")).asJsonObject
+
+                            Looper.prepare()
+                            setProgressOFF()
+                            showMessage(result.get("message").toString())
+                            startBookInfoActivity(jsonObject)
+                            Looper.loop()
+                        } else {
+                            Looper.prepare()
+                            setProgressOFF()
+                            showMessage(result.get("message").toString())
+                            Looper.loop()
+                        }
+                    },
+                    { e ->
+                        Looper.prepare()
+                        showMessage("Get evaluation error!")
+                        println(e)
+                        Looper.loop()
+                    }
+                )
+        disposables.add(subscription)
     }
 
     override fun onDestroy() {

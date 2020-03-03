@@ -20,7 +20,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View {
     // RegisterActivity와 함께 생성될 RegisterPresenter를 지연 초기화
     private lateinit var registerPresenter: RegisterPresenter
     // Disposable 객체 지정
-    private var subscriptions = CompositeDisposable()
+    internal val disposables = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -215,7 +215,14 @@ class RegisterActivity : BaseActivity(), RegisterContract.View {
                     Looper.loop()
                 }
             )
-        subscriptions.add(subscription)
+        disposables.add(subscription)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        // View가 Delete(Unbind) 되었다는 걸 Presenter에 전달
+        registerPresenter.dropView()
     }
 
     // setProgressON :  공통으로 사용하는 Progress Bar의 시작을 정의하는 함수

@@ -40,28 +40,6 @@ class BookInfoPresenter : BookInfoContract.Presenter {
         }
     }
 
-    // getEvaluationObservable : 하나의 평가 데이터 조회 요청을 관찰하는 함수
-    fun getEvaluationObservable(context: Context, bsin: String): Observable<JsonObject> {
-        val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
-        val retrofitInterface = RetrofitClient.retrofitInterface(client)
-
-        bookInfoView?.setProgressON("도서 정보를 가져오고 있습니다...")
-
-        return Observable.create { subscriber ->
-            // 데이터 생성을 위한 Create
-            val callResponse = retrofitInterface.getEvaluation(bsin)
-            val response = callResponse.execute()
-
-            if (response.isSuccessful) {
-                val result = response.body()!!
-                subscriber.onNext(result)
-                subscriber.onComplete() // 모든 데이터 발행이 완료되었음을 알림
-            } else {
-                subscriber.onError(Throwable(response.message()))
-            }
-        }
-    }
-
     // patchEvaluationObservable : 하나의 평가 데이터 수정 요청을 관찰하는 함수
     fun patchEvaluationObservable(context: Context, evaluationPatch: EvaluationPatch): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")

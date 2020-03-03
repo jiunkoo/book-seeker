@@ -14,6 +14,10 @@
     <color name="transparent">#00000000</color>
 
     <!-- Custom Color : More Lightness -->
+    <color name="lightnessRed">#ffc8d2</color>
+    <color name="lightnessYellow">#ffebc8</color>
+    <color name="lightnessLime">#dcf0dc</color>
+    <color name="lightnessMint">#bee6eb</color>
     <color name="lightnessAshblue">#e4e6e7</color>
 
     <!-- Custom Color : Light -->
