@@ -122,13 +122,13 @@ router.post('/', clientIp, isLoggedIn, async (req, res, next) => {
             return res.status(201).send(result);
         }
     } catch (e) {
-        winston.log('error', `[EVALUATION][${req.clientIp}|${req.body.email}] 도서 평가 Exception`);
+        winston.log('error', `[EVALUATION][${req.clientIp}|${req.user.email}] 도서 평가 Exception`);
 
         const result = new Object();
         result.success = false;
         result.data = 'NONE';
         result.message = 'INTERNAL SERVER ERROR';
-        winston.log('error', `[EVALUATION][${req.clientIp}|${req.body.email}] ${result.message}`);
+        winston.log('error', `[EVALUATION][${req.clientIp}|${req.user.email}] ${result.message}`);
         res.status(500).send(result);
         return next(e);
     }
@@ -196,13 +196,13 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
         winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] ${result.message}`);
         return res.status(200).send(result);
     } catch (e) {
-        winston.log('error', `[EVALUATION][${req.clientIp}|${req.body.email}] 평가한 전체 도서 목록 조회 Exception`);
+        winston.log('error', `[EVALUATION][${req.clientIp}|${req.user.email}] 평가한 전체 도서 목록 조회 Exception`);
 
         const result = new Object();
         result.success = false;
         result.data = 'NONE';
         result.message = 'INTERNAL SERVER ERROR';
-        winston.log('error', `[EVALUATION][${req.clientIp}|${req.body.email}] ${result.message}`);
+        winston.log('error', `[EVALUATION][${req.clientIp}|${req.user.email}] ${result.message}`);
         res.status(500).send(result);
         return next(e);
     }
@@ -283,13 +283,13 @@ router.get('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
         winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] ${result.message}`);
         return res.status(200).send(result);
     } catch (e) {
-        winston.log('error', `[EVALUATION][${req.clientIp}|${req.body.email}] 하나의 도서 평가 조회 Exception`);
+        winston.log('error', `[EVALUATION][${req.clientIp}|${req.user.email}] 하나의 도서 평가 조회 Exception`);
 
         const result = new Object();
         result.success = false;
         result.data = 'NONE';
         result.message = 'INTERNAL SERVER ERROR';
-        winston.log('error', `[EVALUATION][${req.clientIp}|${req.body.email}] ${result.message}`);
+        winston.log('error', `[EVALUATION][${req.clientIp}|${req.user.email}] ${result.message}`);
         res.status(500).send(result);
         return next(e);
     }
@@ -303,17 +303,20 @@ router.patch('/', clientIp, isLoggedIn, async (req, res, next) => {
 
         const bsin = req.body.bsin;
         const rating = req.body.rating;
+        const state = req.body.state;
 
         winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] 도서 평가 수정 Request`);
-        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] bsin : ${bsin}, rating : ${rating}`);
+        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] bsin : ${bsin}, rating : ${rating}, state : ${state}`);
 
         const returnData = Object();
         returnData.bsin = bsin;
         returnData.rating = rating;
+        returnData.state = state;
 
         // 도서 평가 수정
         await Evaluation.update({
             rating: rating,
+            state: state
         }, {
             where: {
                 user_uid: user_uid,
@@ -329,13 +332,13 @@ router.patch('/', clientIp, isLoggedIn, async (req, res, next) => {
         winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] ${result.message}`);
         return res.status(200).send(result);
     } catch (e) {
-        winston.log('error', `[EVALUATION][${req.clientIp}|${req.body.email}] 도서 평가 수정 Exception`);
+        winston.log('error', `[EVALUATION][${req.clientIp}|${req.user.email}] 도서 평가 수정 Exception`);
 
         const result = new Object();
         result.success = false;
         result.data = 'NONE';
         result.message = 'INTERNAL SERVER ERROR';
-        winston.log('error', `[EVALUATION][${req.clientIp}|${req.body.email}] ${result.message}`);
+        winston.log('error', `[EVALUATION][${req.clientIp}|${req.user.email}] ${result.message}`);
         res.status(500).send(result);
         return next(e);
     }
@@ -368,13 +371,13 @@ router.delete('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
         winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] ${result.message}`);
         return res.status(200).send(result);
     } catch (e) {
-        winston.log('error', `[EVALUATION][${req.clientIp}|${req.body.email}] 도서 평가 삭제 Exception`);
+        winston.log('error', `[EVALUATION][${req.clientIp}|${req.user.email}] 도서 평가 삭제 Exception`);
 
         const result = new Object();
         result.success = false;
         result.data = 'NONE';
         result.message = 'INTERNAL SERVER ERROR';
-        winston.log('error', `[EVALUATION][${req.clientIp}|${req.body.email}] ${result.message}`);
+        winston.log('error', `[EVALUATION][${req.clientIp}|${req.user.email}] ${result.message}`);
         res.status(500).send(result);
         return next(e);
     }
