@@ -251,13 +251,14 @@ router.get('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
         });
 
         // 평가한 데이터 갯수에 따라 반환 데이터 작성
-        if (evaluation == null) {
+        if (evaluation.dataValues == null) {
             returnData.all_count = 0;
             returnData.all_average = 0.0.toFixed(1);
         } else {
             returnData.all_count = evaluation.dataValues.count;
             returnData.all_average = (evaluation.dataValues.average).toFixed(1);
         }
+        console.log(evaluation);
 
         // 내가 평가한 값과 상태 가져오기
         const myEvaluation = await Evaluation.findOne({
