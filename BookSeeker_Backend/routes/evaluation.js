@@ -238,6 +238,7 @@ router.get('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
         returnData.keyword = book.keyword;
         returnData.adult = book.adult;
         returnData.genre = book.genre;
+        returnData.publication_date = book.publication_date;
         returnData.all_count = 0;
         returnData.all_average = 0.0.toFixed(1);
         returnData.my_rating = 0.0.toFixed(1);
