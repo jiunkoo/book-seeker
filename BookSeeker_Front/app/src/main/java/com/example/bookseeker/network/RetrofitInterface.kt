@@ -41,4 +41,8 @@ interface RetrofitInterface {
     // 하나의 평가 데이터 삭제
     @DELETE("/evaluation/{bsin}")
     fun deleteEvaluation(@Path("bsin") bsin: String): Call<JsonObject>
+
+    // 추천 도서 조회
+    @GET("/recommend/{genre}/{page}/{limit}")
+    fun getRecommend(@Path("genre") genre: String, @Path("page") page: Int, @Path("limit") limit: Int): Call<JsonObject>
 }

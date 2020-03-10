@@ -200,6 +200,7 @@ class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDe
         }
     }
 
+    // onItemSelected : recyclerview 아이템 선택 함수
     override fun onItemSelected(bookData: BookData) {
         // 해당 도서 데이터 가져오기
         getEvaluationSubscribe(bookData)
