@@ -121,8 +121,8 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <com.mindorks.placeholderview.SwipeDirectionalView
-            android:id="@+id/recommend_swipeview"
+    <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recommend_recyclerview"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_margin="@dimen/activity_margin"

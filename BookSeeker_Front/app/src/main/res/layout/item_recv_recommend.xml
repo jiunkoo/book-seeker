@@ -3,7 +3,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
 
-        android:id="@+id/cardv_recommend_layout_frame"
+        android:id="@+id/recv_recommend_layout_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
     <androidx.cardview.widget.CardView
@@ -13,7 +13,7 @@
             app:cardCornerRadius="8dp"
             app:cardElevation="1dp">
         <ImageView
-                android:id="@+id/cardv_recommend_item_imgv_bookimage"
+                android:id="@+id/recv_recommend_item_imgv_image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="fitXY"/>
@@ -25,7 +25,7 @@
                 android:layout_gravity="bottom"
                 android:gravity="center">
             <TextView
-                    android:id="@+id/cardv_recommend_item_txtv_booktitle"
+                    android:id="@+id/recv_recommend_item_txtv_title"
                     android:text="BOOK TITLE"
                     android:textSize="24sp"
                     android:textStyle="bold"
@@ -33,14 +33,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
             <TextView
-                    android:id="@+id/cardv_recommend_item_txtv_bookauthor"
+                    android:id="@+id/recv_recommend_item_txtv_author"
                     android:text="AUTHOR"
                     android:textSize="16sp"
                     android:textColor="@color/mediumAshblue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
             <TextView
-                    android:id="@+id/cardv_recommend_item_txtv_bookpublisher"
+                    android:id="@+id/recv_recommend_item_txtv_publisher"
                     android:text="PUBLISHER"
                     android:textSize="16sp"
                     android:textColor="@color/mediumAshblue"
@@ -49,9 +49,9 @@
 
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintBottom_toTopOf="@id/cardv_recommend_item_ratingbar_bookrating"/>
+                    app:layout_constraintBottom_toTopOf="@id/recv_recommend_item_ratingbar_rating"/>
             <RatingBar
-                    android:id="@+id/cardv_recommend_item_ratingbar_bookrating"
+                    android:id="@+id/recv_recommend_item_ratingbar_rating"
                     android:numStars="5"
                     android:stepSize="0.5"
                     android:layout_width="wrap_content"

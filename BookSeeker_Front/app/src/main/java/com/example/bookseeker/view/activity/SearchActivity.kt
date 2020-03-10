@@ -87,7 +87,7 @@ class SearchActivity : BaseActivity(), SearchContract.View {
         searchPresenter.dropView()
     }
 
-    // setProgressON :  공통으로 사용하는 Progress Bar의 시작을 정의하는 함수
+    // setProgressON : 공통으로 사용하는 Progress Bar의 시작을 정의하는 함수
     override fun setProgressON(msg: String){
         progressON(msg)
     }
