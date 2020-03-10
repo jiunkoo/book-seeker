@@ -1,6 +1,6 @@
 module.exports = {
     // 데이터 셋 트레이닝
-    trainingDataSet: (evaluationList) => {
+    trainingDataSet: (evaluationList, unEvaluationList) => {
         // trainedDataSet : 학습을 마친 데이터 객체
         // userBasedData : 사용자별 도서 평가 데이터 객체
         // bookBasedData : 도서별 도서 평가 사용자 데이터 객체
@@ -10,8 +10,9 @@ module.exports = {
         // trainSet : 도서 목록에서 추출한 학습 데이터 배열
         // testSet : 도서 목록에서 추출한 테스트 데이터 베열
         // bookRankingList : 전체 평가를 바탕으로 한 도서 순위 목록 배열
-        let bookRankingList = [], trainSet = [], testSet = [];
+        let bookRankingList = [], trainSet = [], testSet = [], unTrainSet = [];
 
+        /*
         // 데이터 셋을 불러온 후 8:2 비율로 트레이닝, 테스트 집합 분할
         for (let i = 0; i < evaluationList.length; i++) {
             if (Math.random() > 0.8) {
@@ -20,6 +21,16 @@ module.exports = {
             else {
                 trainSet.push(evaluationList[i]);
             }
+        }
+        */
+
+        // 데이터 셋을 불러와 저장
+        for (let i = 0; i < evaluationList.length; i++) {
+            trainSet.push(evaluationList[i]);
+        }
+
+        for (let i = 0; i < unEvaluationList.length; i++) {
+            unTrainSet.push(unEvaluationList[i]);
         }
 
         // 반복문을 돌려 트레이닝 집합에서 기준에 따라 데이터 분류
@@ -40,11 +51,21 @@ module.exports = {
             }
             bookBasedData[bsin].push({ user_uid: user_uid, rating: rating });
 
-            // 도서가 bookRatingRank에 없는 경우 새로운 1차원 배열을 생성하고 평가 데이터 합계를 저장
+            // 도서가 bookRatingRank에 없는 경우 평가 데이터 합계를 저장
             if (!bookRatingRank[bsin]) {
                 bookRatingRank[bsin] = 0;
             }
             bookRatingRank[bsin] += rating;
+        }
+
+        // 반복문을 돌려 unTrainSet에서 기준에 따라 데이터 분류
+        for (let i = 0; i < unTrainSet.length; i++) {
+            let bsin = unTrainSet[i]['bsin'];
+
+            // 도서가 bookRatingRank에 없는 경우 0점 저장
+            if (!bookRatingRank[bsin]) {
+                bookRatingRank[bsin] = 0;
+            }
         }
 
         // 반복문을 돌려 bookRatingRank에 있는 평점을 bookRankingList으로 옮기고 내림차순으로 정렬
@@ -62,7 +83,7 @@ module.exports = {
     },
 
     // 사용자에게 도서 추천
-    recommendBookList: (user_uid, trainedDataSet, count) => {
+    bookRecommend: (user_uid, trainedDataSet, page, limit) => {
         // 특정 사용자의 도서 평가 목록을 불러옴
         let userList = trainedDataSet.userBasedData[user_uid];
 
@@ -70,7 +91,7 @@ module.exports = {
         // 특정 사용자의 도서 평가 목록을 바탕으로 비슷한 사용자를 찾아 도서 추천
         if (userList) {
             // completionEvaluation : 특정 사용자의 도서 평가 목록(유사도 계산이 끝난 도서 목록)
-            // similarUsers :  특정 사용자와 같은 도서를 평가한 비슷한 사용자 유사도 목록 객체
+            // similarUsers : 특정 사용자와 같은 도서를 평가한 비슷한 사용자 유사도 목록 객체
             // estimatedEvaluation : 계산한 예상 도서 평점 목록 객체
             let completionEvaluation = {}, similarUsers = {}, estimatedEvaluation = {};
 
@@ -126,29 +147,80 @@ module.exports = {
             }
 
             // 예상 평점 목록을 결과 배열에 넣고 내림차순으로 정렬
-            // 특정 개수만큼 자름
             for (let bsin in estimatedEvaluation) {
                 returnData.push({ bsin: bsin, rating: Math.round(Math.log(estimatedEvaluation[bsin] + 1) * 100) / 100 });
+
+                // 정렬 과정에서 중복되는 값 랭킹 배열에서 제거
+                const itemToFind = trainedDataSet.bookRankingList.find(function (item) { return item.bsin === bsin })
+                const idx = trainedDataSet.bookRankingList.indexOf(itemToFind)
+                if (idx > -1)
+                    trainedDataSet.bookRankingList.splice(idx, 1)
             }
             returnData.sort((a, b) => b.rating - a.rating);
-            returnData.splice(count); 
 
-            // 반복문을 돌려 특정 개수만큼 채움
-            for (let i = 0; i < trainedDataSet.bookRankingList.length; i++) {
-                if (returnData.length >= count) {
-                    break;
+            console.log("예상 평점 정렬 끝");
+
+            // 페이징 변수 선언
+            let start = page * limit;
+
+            // 전체 예상 평점 개수가 요청하는 페이지의 마지막 원소 번호와 같거나 큰 경우
+            if (estimatedEvaluationCount >= start + 9) {
+                // limit 개수만큼 slice
+                returnData.splice(start, limit);
+            }
+            // 전체 예상 평점 개수가 요청하는 페이지의 마지막 원소 번호보다 작은 경우
+            else {
+                // 예상 평점의 몫과 나머지
+                let quotient = estimatedEvaluationCount / limit;
+                let remainder = estimatedEvaluationCount % limit + 1;
+
+                // 예상 평점의 몫과 페이지가 같은 경우
+                if (quotient == page) {
+                    // 나머지만큼 slice 후 남은 건 ranking으로 채우기
+                    returnData.splice(start, limit);
+
+                    // 반복문을 돌려 특정 개수만큼 채움
+                    for (let i = 0; i < trainedDataSet.bookRankingList.length; i++) {
+                        if (returnData.length >= limit) {
+                            break;
+                        }
+                        if (!estimatedEvaluation[trainedDataSet.bookRankingList[i].bsin]) {
+                            returnData.push(trainedDataSet.bookRankingList[i]);
+                        } else {
+                            console.log("중복이 제거되지 않았어요!");
+                        }
+                    }
                 }
-                if (!estimatedEvaluation[trainedDataSet.bookRankingList[i].bsin]) {
-                    returnData.push(trainedDataSet.bookRankingList[i]);
+                // 예상 평점의 몫과 페이지가 다른 경우
+                else {
+                    // 나머지가 없으므로 차이를 구해 차이만큼 반복문에서 데이터 뽑아냄
+                    for (let i = (page - quotient) * limit - remainder; i < trainedDataSet.bookRankingList.length; i++) {
+                        if (returnData.length >= limit) {
+                            break;
+                        }
+                        if (!estimatedEvaluation[trainedDataSet.bookRankingList[i].bsin]) {
+                            returnData.push(trainedDataSet.bookRankingList[i]);
+                        } else {
+                            console.log("중복이 제거되지 않았어요2!");
+                        }
+                    }
                 }
             }
-
             return returnData;
         }
         // 로그인 한 사용자의 도서 평가 목록이 없는 경우
         else {
-            // 페이징 후 랭킹 배열에서 선택한 개수만큼 반환
-            return JSON.parse(JSON.stringify(trainedDataSet.bookRankingList)).splice(0, count);
+            // returnData : 프론트에 반환할 결과값이 들어갈 배열
+            let returnData = [];
+
+            // 페이징 변수 선언
+            let start = page * limit;
+
+            // 반복문을 돌려 limit 개수만큼 집어넣음
+            for (let i = start; i < start + limit; i++) {
+                returnData.push(trainedDataSet.bookRankingList[i]);
+            }
+            return returnData;
         }
     }
 };
