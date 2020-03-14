@@ -6,6 +6,7 @@ import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
+import android.widget.RatingBar
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -166,6 +167,37 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
         }
     }
 
+    // onItemSelected : RecyclerView의 아이템이 선택된 경우
+    override fun onItemSelected(bookData: BookData) {
+        // bookInfoActivity로 이동
+        startBookInfoActivity(bookData)
+    }
+
+    // onItemSelected : RecyclerView의 아이템 별점이 선택된 경우
+    override fun onRatingBarChangeListener(ratingBar: RatingBar, float: Float, boolean: Boolean) {
+        // TODO : 평점 평가하면 반영되도록 함
+//        // showMessage("아이템 선택되었습니다! \n 평점은 " + recv_recommend_item_ratingbar_rating.rating + "입니다.")
+//        showMessage("평점은 " + float + "입니다.")
+//        val postRating = float
+//        // 변경 전 평점 == 0 && 0 < 변경 후 평점 <= 5
+//        // 평가 데이터 생성
+//        if (preRating == 0.0f && (postRating > 0.0f && postRating <= 5.0f)) {
+//            var evaluationCreate = EvaluationCreate(bsin, genre, postRating, preState)
+//            createEvaluationSubscribe(evaluationCreate)
+//        }
+//        // 0 < 변경 전(후) 평점 <= 5
+//        // 평가 데이터 수정
+//        else if ((preRating > 0.0f && preRating <= 5.0f) && (postRating > 0.0f && postRating <= 5.0f)) {
+//            var evaluationPatch = EvaluationPatch(bsin, postRating, preState)
+//            patchEvaluationSubscribe(evaluationPatch)
+//        }
+//        // 0 < 변경 전 평점 <= 5 && 변경 후 평점 == 0
+//        // 평가 데이터 삭제
+//        else if ((preRating > 0.0f && preRating <= 5.0f) && postRating == 0.0f) {
+//            deleteEvaluationSubscribe()
+//        }
+    }
+
     // requestBookData : 관찰자에게서 발행된 데이터를 가져오는 함수
     private fun getBooksSubscribe(recyclerView: RecyclerView) {
         // Tab Position에 따라 Genre 설정
@@ -234,12 +266,6 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
                     }
                 )
         subscriptions.add(subscription)
-    }
-
-    // onItemSelected : RecyclerView의 아이템이 선택된 경우
-    override fun onItemSelected(bookData: BookData) {
-        // bookInfoActivity로 이동
-        startBookInfoActivity(bookData)
     }
 
     override fun onDestroy() {

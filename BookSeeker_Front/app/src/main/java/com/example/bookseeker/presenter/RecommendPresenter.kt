@@ -5,6 +5,7 @@ import android.util.Log
 import com.example.bookseeker.contract.RecommendContract
 import com.example.bookseeker.model.data.BookData
 import com.example.bookseeker.model.data.BookList
+import com.example.bookseeker.model.data.EvaluationCreate
 import com.example.bookseeker.network.RetrofitClient
 import com.example.bookseeker.network.RetrofitClient.retrofitInterface
 import com.google.gson.JsonObject
@@ -27,6 +28,50 @@ class RecommendPresenter : RecommendContract.Presenter{
         return Observable.create { subscriber ->
             // 데이터 생성을 위한 Create
             val callResponse = retrofitInterface.getRecommend(genre, page, limit)
+            val response = callResponse.execute()
+
+            if (response.isSuccessful) {
+                val result = response.body()!!
+                subscriber.onNext(result)
+                subscriber.onComplete() // 모든 데이터 발행이 완료되었음을 알림
+            } else {
+                subscriber.onError(Throwable(response.message()))
+            }
+        }
+    }
+
+    // createEvaluationObservable : 하나의 평가 데이터 생성 요청을 관찰하는 함수
+    fun createEvaluationObservable(context: Context, evaluationCreate: EvaluationCreate): Observable<JsonObject> {
+        val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
+        val retrofitInterface = RetrofitClient.retrofitInterface(client)
+
+        recommendView?.setProgressON("도서 평가 중입니다...")
+
+        // 데이터 생성을 위한 Create
+        return Observable.create { subscriber ->
+            val callResponse = retrofitInterface.createEvaluation(evaluationCreate)
+            val response = callResponse.execute()
+
+            if (response.isSuccessful) {
+                val result = response.body()!!
+                subscriber.onNext(result)
+                subscriber.onComplete() // 모든 데이터 발행이 완료되었음을 알림
+            } else {
+                subscriber.onError(Throwable(response.message()))
+            }
+        }
+    }
+
+    // getEvaluationObservable : 하나의 평가 데이터 조회 요청을 관찰하는 함수
+    fun getEvaluationObservable(context: Context, bsin: String): Observable<JsonObject> {
+        val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
+        val retrofitInterface = RetrofitClient.retrofitInterface(client)
+
+        recommendView?.setProgressON("도서 정보를 가져오고 있습니다...")
+
+        return Observable.create { subscriber ->
+            // 데이터 생성을 위한 Create
+            val callResponse = retrofitInterface.getEvaluation(bsin)
             val response = callResponse.execute()
 
             if (response.isSuccessful) {

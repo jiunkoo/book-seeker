@@ -13,7 +13,7 @@ class LoadingDelegateAdapter : ViewTypeDelegateAdapter {
         return LoadingDelegateViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType) {}
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType, position: Int) {}
 
     class LoadingDelegateViewHolder(view: View) : RecyclerView.ViewHolder(view) {}
 }

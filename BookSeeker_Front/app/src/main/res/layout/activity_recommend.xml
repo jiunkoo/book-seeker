@@ -20,18 +20,6 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent">
 
-        <TextView
-                android:id="@+id/recommend_txtv_message"
-                android:text="MESSAGE"
-                android:textSize="48sp"
-                android:textStyle="bold"
-                android:textColor="@color/basicWhite"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="@dimen/activity_margin"
-                android:gravity="center"
-                android:visibility="invisible"/>
-
         <LinearLayout
                 android:id="@+id/recommend_layout_linear_category"
                 android:layout_width="match_parent"
@@ -40,6 +28,7 @@
                 android:padding="10dp">
 
             <LinearLayout
+                    android:id="@+id/recommend_layout_linear_comic"
                     android:orientation="vertical"
                     android:layout_weight="1"
                     android:layout_width="0dp"
@@ -61,6 +50,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="0dp"/>
             </LinearLayout>
+
             <View
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
@@ -68,6 +58,7 @@
                     android:background="@color/mediumAshblue"/>
 
             <LinearLayout
+                    android:id="@+id/recommend_layout_linear_romance"
                     android:orientation="vertical"
                     android:layout_weight="1"
                     android:layout_width="0dp"
@@ -97,6 +88,7 @@
                     android:background="@color/mediumAshblue"/>
 
             <LinearLayout
+                    android:id="@+id/recommend_layout_linear_fantasy"
                     android:orientation="vertical"
                     android:layout_weight="1"
                     android:layout_width="0dp"
