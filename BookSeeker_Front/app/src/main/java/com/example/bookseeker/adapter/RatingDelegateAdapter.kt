@@ -3,6 +3,7 @@ package com.example.bookseeker.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RatingBar
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.bookseeker.R
@@ -13,6 +14,7 @@ import kotlinx.android.synthetic.main.item_recv_rating.view.*
 class RatingDelegateAdapter(val viewActions: onViewSelectedListener) : ViewTypeDelegateAdapter {
     interface onViewSelectedListener {
         fun onItemSelected(bookData: BookData)
+        fun onRatingBarChangeListener(ratingBar: RatingBar, float: Float, boolean: Boolean)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder {
@@ -20,15 +22,15 @@ class RatingDelegateAdapter(val viewActions: onViewSelectedListener) : ViewTypeD
         return RatingDelegateViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType, position: Int) {
         holder as RatingDelegateViewHolder
-        holder.bind(item as BookData)
+        holder.bind(item as BookData, position)
     }
 
     inner class RatingDelegateViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        fun bind(bookData: BookData) = with(itemView) {
+        fun bind(bookData: BookData, position: Int) = with(itemView) {
             var splitUrl = bookData.cover.split("/")
-            var coverUrl:String = "https://img.ridicdn.net/cover/" + splitUrl[4] + "/xlarge"
+            var coverUrl: String = "https://img.ridicdn.net/cover/" + splitUrl[4] + "/xlarge"
 
             Glide.with(itemView.context).load(coverUrl).into(recv_rating_item_imgv_book)
             recv_rating_item_txtv_booktitle.text = bookData.title
@@ -36,7 +38,11 @@ class RatingDelegateAdapter(val viewActions: onViewSelectedListener) : ViewTypeD
             recv_rating_item_txtv_publisher.text = bookData.publisher
             recv_rating_item_ratingbar_bookrating.rating = 0.0f
 
-            super.itemView.setOnClickListener { viewActions.onItemSelected(bookData)}
+            super.itemView.setOnClickListener { viewActions.onItemSelected(bookData) }
+            recv_rating_item_ratingbar_bookrating.onRatingBarChangeListener =
+                RatingBar.OnRatingBarChangeListener { ratingBar: RatingBar, float: Float, boolean: Boolean ->
+                    viewActions.onRatingBarChangeListener(ratingBar, float, boolean)
+                }
         }
     }
 }

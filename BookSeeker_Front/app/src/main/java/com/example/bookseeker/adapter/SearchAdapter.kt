@@ -29,7 +29,7 @@ class SearchAdapter(listener: SearchDelegateAdapter.onViewSelectedListener) : Re
 
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        delegateAdapters.get(getItemViewType(position))!!.onBindViewHolder(holder, items[position])
+        delegateAdapters.get(getItemViewType(position))!!.onBindViewHolder(holder, items[position], position)
     }
 
     override fun getItemViewType(position: Int) = items[position].getViewType()

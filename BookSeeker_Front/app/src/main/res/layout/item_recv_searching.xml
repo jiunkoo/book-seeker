@@ -8,9 +8,9 @@
         android:layout_height="140dp">
     <ImageView
             android:id="@+id/recv_searching_item_imgv_book"
+            android:src="@drawable/img_novel1"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:src="@drawable/img_novel1"
 
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"

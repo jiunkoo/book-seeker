@@ -17,16 +17,16 @@ class SearchDelegateAdapter(val viewActions: onViewSelectedListener) : ViewTypeD
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_recv_searching, parent, false)
-        return RatingDelegateViewHolder(view)
+        return SearchDelegateViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType) {
-        holder as RatingDelegateViewHolder
-        holder.bind(item as BookData)
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType, position: Int) {
+        holder as SearchDelegateViewHolder
+        holder.bind(item as BookData, position)
     }
 
-    inner class RatingDelegateViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        fun bind(bookData: BookData) = with(itemView) {
+    inner class SearchDelegateViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        fun bind(bookData: BookData, position: Int) = with(itemView) {
             var splitUrl = bookData.cover.split("/")
             var coverUrl:String = "https://img.ridicdn.net/cover/" + splitUrl[4] + "/xlarge"
 

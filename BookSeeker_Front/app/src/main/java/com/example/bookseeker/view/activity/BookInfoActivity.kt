@@ -281,7 +281,6 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
                 deleteEvaluationSubscribe()
             }
         }
-
     }
 
     // createEvaluationSubscribe : 하나의 평가 데이터 생성 관찰자를 구독하는 함수
@@ -379,7 +378,7 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
         var title = jsonObject.get("title").toString().replace("\"", "")
         var author = jsonObject.get("author").toString().replace("\"", "")
         var publisher = jsonObject.get("publisher").toString().replace("\"", "")
-//        var publication_date = jsonObject.get("publication_date").toString().replace("\"", "")
+        var publication_date = jsonObject.get("publication_date").toString().replace("\"", "")
         var introduction = jsonObject.get("introduction").toString().replace("\"", "")
         var allAverage = jsonObject.get("all_average").toString().replace("\"", "").toFloat()
         var allCount = jsonObject.get("all_count").toString().replace("\"", "").toInt()
@@ -392,7 +391,7 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
         bookinfo_txtv_booktitle.text = title
         bookinfo_txtv_author.text = author
         bookinfo_txtv_publisher.text = publisher
-//        bookinfo_txtv_date.text = publication_date
+        bookinfo_txtv_date.text = publication_date
         bookinfo_txtv_introduction.text = introduction
 
         // 평가 개수 & 평균 별점 설정
