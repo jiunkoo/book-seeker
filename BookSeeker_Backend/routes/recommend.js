@@ -99,21 +99,43 @@ router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) 
         }
 
         let bookQuery =
+            'SELECT b.*, IFNULL(e.rating, -2) AS rating, IFNULL(e.state, -2) AS state ' +
+            'FROM (' +
             'SELECT * ' +
             'FROM books ' +
-            'WHERE bsin IN ' +
-            '( ' +
-            bookBsinList.join() +
-            ');';
+            'WHERE bsin IN ( ' + bookBsinList.join() + ')) AS b ' +
+            'LEFT OUTER JOIN evaluations AS e ' +
+            'ON b.bsin = e.bsin ' +
+            'AND e.user_uid=:user_uid ' +
+            'AND e.deletedAt IS NULL';
 
         const recommendBookList = await sequelize.query(bookQuery, {
+            replacements: {
+                user_uid: user_uid
+            },
             type: Sequelize.QueryTypes.SELECT,
             raw: true
         });
 
-        const returnData = Object();
-        returnData.bookRecommend = bookRecommend;
-        returnData.recommendBookList = recommendBookList;
+        const returnData = Array();
+        for(let i = 0; i<recommendBookList.length; i++){
+            const jsonObject = Object();
+            jsonObject.bsin = recommendBookList[i].bsin;
+            jsonObject.title = recommendBookList[i].title;
+            jsonObject.author = recommendBookList[i].author;
+            jsonObject.publisher = recommendBookList[i].publisher;
+            jsonObject.introduction = recommendBookList[i].introduction;
+            jsonObject.cover = recommendBookList[i].cover;
+            jsonObject.link = recommendBookList[i].link;
+            jsonObject.keyword = recommendBookList[i].keyword;
+            jsonObject.adult = recommendBookList[i].adult;
+            jsonObject.genre = recommendBookList[i].genre;
+            jsonObject.publication_date = recommendBookList[i].publication_date;
+            jsonObject.rating = recommendBookList[i].rating;
+            jsonObject.state = recommendBookList[i].state;
+            jsonObject.expect_rating = bookRecommend[i].rating;
+            returnData[i] = jsonObject;
+        }
 
         // 전체 도서 목록 조회 성공 메세지 반환
         const result = new Object();
