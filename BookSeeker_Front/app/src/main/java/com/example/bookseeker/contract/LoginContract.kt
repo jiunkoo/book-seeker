@@ -28,8 +28,5 @@ interface LoginContract {
     interface Presenter : BasePresenter<View> {
         // checkRegEx : LoginPresenter에서 EditText의 RegEx를 검사하는 함수
         fun checkRegEx(txtv: String, etxt: String): String
-
-        // checkLoginData : LoginPresenter에서 Email과 Password의 일치 여부를 비교하는 함수
-        fun checkLoginData(context: Context, login : Login): Observable<JsonObject>
     }
 }

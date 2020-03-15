@@ -23,7 +23,7 @@ class RecommendPresenter : RecommendContract.Presenter{
     // booksSearchObservable : SearchDetailPresenter에서 모든 검색 결과를 요청하는 함수
     fun getRecommendObservable(context: Context, genre: String, page: Int, limit: Int): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
-        val retrofitInterface = RetrofitClient.retrofitInterface(client)
+        val retrofitInterface = retrofitInterface(client)
 
         return Observable.create { subscriber ->
             // 데이터 생성을 위한 Create
@@ -45,8 +45,6 @@ class RecommendPresenter : RecommendContract.Presenter{
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
         val retrofitInterface = RetrofitClient.retrofitInterface(client)
 
-        recommendView?.setProgressON("도서 평가 중입니다...")
-
         // 데이터 생성을 위한 Create
         return Observable.create { subscriber ->
             val callResponse = retrofitInterface.createEvaluation(evaluationCreate)
@@ -62,16 +60,16 @@ class RecommendPresenter : RecommendContract.Presenter{
         }
     }
 
-    // getEvaluationObservable : 하나의 평가 데이터 조회 요청을 관찰하는 함수
-    fun getEvaluationObservable(context: Context, bsin: String): Observable<JsonObject> {
+    // getBookObservable : 하나의 평가 데이터 조회 요청을 관찰하는 함수
+    fun getBookObservable(context: Context, bsin: String): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
-        val retrofitInterface = RetrofitClient.retrofitInterface(client)
+        val retrofitInterface = retrofitInterface(client)
 
-        recommendView?.setProgressON("도서 정보를 가져오고 있습니다...")
+//        recommendView?.setProgressON("도서 정보를 가져오고 있습니다...")
 
         return Observable.create { subscriber ->
             // 데이터 생성을 위한 Create
-            val callResponse = retrofitInterface.getEvaluation(bsin)
+            val callResponse = retrofitInterface.getBook(bsin)
             val response = callResponse.execute()
 
             if (response.isSuccessful) {

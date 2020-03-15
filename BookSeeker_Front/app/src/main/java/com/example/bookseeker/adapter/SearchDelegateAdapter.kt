@@ -28,7 +28,7 @@ class SearchDelegateAdapter(val viewActions: onViewSelectedListener) : ViewTypeD
     inner class SearchDelegateViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(bookData: BookData, position: Int) = with(itemView) {
             var splitUrl = bookData.cover.split("/")
-            var coverUrl:String = "https://img.ridicdn.net/cover/" + splitUrl[4] + "/xlarge"
+            var coverUrl:String = "https://img.ridicdn.net/cover/" + splitUrl[4] + "/large"
 
             Glide.with(itemView.context).load(coverUrl).into(recv_searching_item_imgv_book)
             recv_searching_item_txtv_booktitle.text = bookData.title

@@ -7,6 +7,7 @@ import com.example.bookseeker.model.data.Login
 import com.example.bookseeker.network.RetrofitClient
 import com.google.gson.JsonObject
 import io.reactivex.Observable
+import io.reactivex.Observer
 import okhttp3.OkHttpClient
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -50,11 +51,9 @@ class LoginPresenter : LoginContract.Presenter {
     }
 
     // login : View에서 Login Data를 가져와 로그인 여부를 결정하는 함수
-    override fun checkLoginData(context: Context, login : Login): Observable<JsonObject> {
+    fun loginObservable(context: Context, login : Login): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "receiveCookie")
         val retrofitInterface = RetrofitClient.retrofitInterface(client)
-
-        loginView?.setProgressON("로그인을 진행중입니다...")
 
         // 데이터가 들어오는지 관찰
         return Observable.create { subscriber ->

@@ -21,6 +21,7 @@ import com.example.bookseeker.presenter.RatingPresenter
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_rating.*
 import com.google.android.material.tabs.TabLayout
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
@@ -28,8 +29,8 @@ import io.reactivex.schedulers.Schedulers
 class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapter.onViewSelectedListener {
     // RatingActivity와 함께 생성될 RatingPresenter를 지연 초기화
     private lateinit var ratingPresenter: RatingPresenter
-    // Disposable 객체 지정
-    private var subscriptions = CompositeDisposable()
+    // Disposable 객체 지연 초기화
+    private lateinit var disposables: CompositeDisposable
     // RecyclerView Adapter 설정
     private val ratingAdapter by lazy { RatingAdapter(this) }
     // Spinner Item Change Flag 설정
@@ -45,6 +46,9 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
 
         // View가 Create(Bind) 되었다는 걸 Presenter에 전달
         ratingPresenter.takeView(this)
+
+        // Disposable 객체 지정
+        disposables = CompositeDisposable()
 
         // Spinner, Recyclerview 설정
         val recyclerView = findViewById(R.id.rating_recyclerview) as RecyclerView
@@ -73,24 +77,28 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
                     nextIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     startActivity(nextIntent)
                     overridePendingTransition(0, 0)
+                    finish()
                 }
                 R.id.btmnavmenu_itm_recommend -> {
                     val nextIntent = Intent(baseContext, RecommendActivity::class.java)
                     nextIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     startActivity(nextIntent)
                     overridePendingTransition(0, 0)
+                    finish()
                 }
                 R.id.btmnavmenu_itm_rating -> {
                     val nextIntent = Intent(baseContext, RatingActivity::class.java)
                     nextIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     startActivity(nextIntent)
                     overridePendingTransition(0, 0)
+                    finish()
                 }
                 R.id.btmnavmenu_itm_mypage -> {
                     val nextIntent = Intent(baseContext, MypageActivity::class.java)
                     nextIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     startActivity(nextIntent)
                     overridePendingTransition(0, 0)
+                    finish()
                 }
             }
             false
@@ -211,8 +219,11 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
         }
 
         val subscription =
-            ratingPresenter.getBooksObservable(this, genre, filter, ratingAdapter.itemCount / 10 + 1, 10)
-                .subscribeOn(Schedulers.io()).subscribe(
+            ratingPresenter
+                .getBooksObservable(this, genre, filter, ratingAdapter.itemCount / 10 + 1, 10)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
                     { result ->
                         if ((result.get("success").toString()).equals("true")) {
                             // 반복문을 돌려 서버에서 응답받은 데이터를 recyclerview에 저장
@@ -233,13 +244,14 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
                                     jsonObject.get("adult").toString(),
                                     jsonObject.get("genre").toString(),
                                     jsonObject.get("publication_date").toString(),
-                                    0.0f
+                                    -2f,
+                                    -2
                                 )
                                 bookDataArray.add(bookData)
                             }
 
                             // 도서 목록 만들기
-                            val bookList = BookList(bookDataArray)
+                            val bookList = BookList(ratingAdapter.itemCount / 10 + 1, bookDataArray)
 
                             // TabLayout이 변경된 경우
                             if (tabFlag == true) {
@@ -257,21 +269,29 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
                                 (recyclerView.adapter as RatingAdapter).addBookList(bookList.results)
                             }
                         }
-                        Looper.prepare()
                         this.showMessage(result.get("message").toString())
-                        Looper.loop()
                     },
                     { e ->
                         Snackbar.make(recyclerView, e.message ?: "", Snackbar.LENGTH_LONG).show()
                     }
                 )
-        subscriptions.add(subscription)
+        disposables.add(subscription)
     }
 
     override fun onDestroy() {
         super.onDestroy()
+
         // View가 Delete(Unbind) 되었다는 걸 Presenter에 전달
         ratingPresenter.dropView()
+
+        println("평가 disposable 객체 해제 전 : [ONDESTROY]" + disposables.isDisposed)
+
+        // Disposable 객체 전부 해제
+        if(!disposables.isDisposed){
+            disposables.dispose()
+        }
+
+        println("평가 disposable 객체 해제 후 : [ONDESTROY]" + disposables.isDisposed)
     }
 
     // setProgressON :  공통으로 사용하는 Progress Bar의 시작을 정의하는 함수

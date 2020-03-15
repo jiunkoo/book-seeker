@@ -12,7 +12,8 @@ import java.io.Serializable
 @Parcelize
 data class BookList(
     // MutableList 쓰면 객체 하나하나에 접근 가능
-    val results: ArrayList<BookData>) : Parcelable {}
+    var page: Int,
+    val results: ArrayList<BookData>) : Parcelable
 
 @Parcelize
 data class BookData(
@@ -27,7 +28,8 @@ data class BookData(
     val adult: String,
     val genre: String,
     val publication_date: String,
-    val rating: Float
+    val rating: Float,
+    var state: Int
 ) : ViewType, Parcelable {
     override fun getViewType() = AdapterConstants.BOOKS
 }

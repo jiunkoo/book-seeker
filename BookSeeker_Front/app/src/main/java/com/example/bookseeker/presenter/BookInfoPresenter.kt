@@ -23,8 +23,6 @@ class BookInfoPresenter : BookInfoContract.Presenter {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
         val retrofitInterface = RetrofitClient.retrofitInterface(client)
 
-        bookInfoView?.setProgressON("도서 평가 중입니다...")
-
         // 데이터 생성을 위한 Create
         return Observable.create { subscriber ->
             val callResponse = retrofitInterface.createEvaluation(evaluationCreate)
@@ -45,8 +43,6 @@ class BookInfoPresenter : BookInfoContract.Presenter {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
         val retrofitInterface = RetrofitClient.retrofitInterface(client)
 
-        bookInfoView?.setProgressON("도서 평가 수정 중입니다...")
-
         // 데이터 생성을 위한 Create
         return Observable.create { subscriber ->
             val callResponse = retrofitInterface.patchEvaluation(evaluationPatch)
@@ -66,8 +62,6 @@ class BookInfoPresenter : BookInfoContract.Presenter {
     fun deleteEvaluationObservable(context: Context, bsin: String): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
         val retrofitInterface = RetrofitClient.retrofitInterface(client)
-
-        bookInfoView?.setProgressON("도서 평가 삭제 중입니다...")
 
         // 데이터 생성을 위한 Create
         return Observable.create { subscriber ->

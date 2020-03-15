@@ -12,22 +12,30 @@ import com.example.bookseeker.R
 import com.example.bookseeker.contract.LoginContract
 import com.example.bookseeker.model.data.Login
 import com.example.bookseeker.presenter.LoginPresenter
+import com.trello.rxlifecycle3.android.ActivityEvent
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_login.*
+import org.reactivestreams.Subscription
 
 class LoginActivity : BaseActivity(), LoginContract.View {
     // LoginActivity와 함께 생성될 LoginPresenter를 지연 초기화
     private lateinit var loginPresenter: LoginPresenter
-    // Disposable 객체 지정
-    internal val disposables = CompositeDisposable()
+    // Disposable 객체 지연 초기화
+    private lateinit var disposables: CompositeDisposable
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
+        println("로그인 액티비티 : [ONCREATE]")
+
         // View가 Create(Bind) 되었다는 걸 Presenter에 전달
         loginPresenter.takeView(this)
+
+        // Disposable 객체 지정
+        disposables = CompositeDisposable()
 
         // Button Event 처리
         setButtonEventListener()
@@ -52,7 +60,7 @@ class LoginActivity : BaseActivity(), LoginContract.View {
                 login_etxt_email.text.toString(),
                 login_etxt_password.text.toString()
             )
-            requestLoginResult(loginData)
+            loginSubscribe(loginData)
         }
     }
 
@@ -129,30 +137,32 @@ class LoginActivity : BaseActivity(), LoginContract.View {
     override fun startSearchActivity() {
         val nextIntent = Intent(this, SearchActivity::class.java)
         startActivity(nextIntent)
+        finish()
     }
 
     // startRegisterActivity : LoginActivity에서 SignUpActivity로 넘어가는 함수
     override fun startRegisterActivity() {
         val nextIntent = Intent(this@LoginActivity, RegisterActivity::class.java)
         startActivity(nextIntent)
+        finish()
     }
 
-    // requestLoginResult : 관찰자에게서 발행된 데이터를 가져오는 함수
-    fun requestLoginResult(login: Login) {
-        val subscription = loginPresenter.checkLoginData(this, login)
-            .subscribeOn(Schedulers.io()).subscribe(
+    // loginSubscribe : 관찰자에게서 발행된 데이터를 가져오는 함수
+    fun loginSubscribe(login: Login) {
+//        setProgressON("로그인을 진행중입니다...")
+
+        val subscription = loginPresenter
+            .loginObservable(this, login)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
                 { result ->
                     if((result.get("success").toString()).equals("true")){
-                        Looper.prepare()
-                        setProgressOFF()
+//                        setProgressOFF()
                         showMessage("로그인에 성공하였습니다.")
                         startSearchActivity()
-                        Looper.loop()
                     } else {
-                        Looper.prepare()
-                        setProgressOFF()
                         showMessage(result.get("message").toString())
-                        Looper.loop()
                     }
                 },
                 { e ->
@@ -164,18 +174,22 @@ class LoginActivity : BaseActivity(), LoginContract.View {
         disposables.add(subscription)
     }
 
-//    override fun onStop() {
-//        super.onStop()
-//
-//        // 관리하고 있던 disposable 객체 전부 해제
-//        disposables.clear()
-//    }
-
     override fun onDestroy() {
         super.onDestroy()
 
         // View가 Delete(Unbind) 되었다는 걸 Presenter에 전달
         loginPresenter.dropView()
+
+        println("[로그인][ONDESTROY] disposable 객체 해제 전 상태 : " + disposables.isDisposed)
+        println("[로그인][ONDESTROY] disposable 객체 해제 전 크기 : " + disposables.size())
+
+        // Disposable 객체 전부 해제
+        if(!disposables.isDisposed){
+            disposables.dispose()
+        }
+
+        println("[로그인][ONDESTROY] disposable 객체 해제 후 상태 : " + disposables.isDisposed)
+        println("[로그인][ONDESTROY] disposable 객체 해제 후 크기 : " + disposables.size())
     }
 
     // setProgressON :  공통으로 사용하는 Progress Bar의 시작을 정의하는 함수
