@@ -134,6 +134,132 @@ router.post('/', clientIp, isLoggedIn, async (req, res, next) => {
     }
 });
 
+// 전체 평가 도서 목록 조회
+router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res, next) => {
+    try {
+        const user_email = req.user.email;
+        const user_uid = req.user.user_uid;
+
+        const genre = req.parsms.genre;
+        const filter = parseInt(req.params.filter);
+        const page = parseInt(req.params.page);
+        const limit = parseInt(req.params.limit);
+
+        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] 전체 평가 도서 목록 Request`);
+        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}]  genre: ${genre}, filter : ${filter}, page : ${page}, limit : ${limit}`);
+
+        let offset = 0;
+        let order = 'publication_date ASC';
+
+        if (page > 1) {
+            offset = 10 * (page - 1);
+        }
+
+        // 필터에 따라 정렬 기준 변경
+        if (filter == 1) {
+            order = 'publication_date ASC';
+        } else if (filter == 2) {
+            order = 'publication_date DESC';
+        } else if (filter == 3) {
+            order = 'title ASC';
+        } else {
+            order = 'title DESC';
+        }
+
+        // 삭제 데이터를 제외한 전체 도서 평가 목록 불러오기
+        let query =
+            'SELECT * ' +
+            'FROM books ' +
+            'WHERE genre=:genre AND ' +
+            'bsin = (SELECT bsin FROM evaluations WHERE user_uid = :user_uid AND deletedAt IS NULL) ' +
+            'ORDER BY :order ' +
+            'LIMIT :limit ' +
+            'OFFSET :offset;';
+
+        const bookList = await sequelize.query(query, {
+            replacements: {
+                user_uid: user_uid,
+                genre: genre,
+                order: order,
+                limit: limit,
+                offset: offset
+            },
+            type: Sequelize.QueryTypes.SELECT,
+            raw: true
+        });
+
+        // 도서 검색 성공 메세지 반환
+        const result = new Object();
+        result.success = true;
+        result.data = bookList;
+        result.message = '전체 평가 도서 목록 조회를 성공했습니다.';
+        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] ${result.message}`);
+        return res.status(200).send(result);
+    } catch (e) {
+        winston.log('error', `[EVALUATION][${req.clientIp}|${req.user.email}] 전체 평가 도서 목록 조회 Exception`);
+
+        const result = new Object();
+        result.success = false;
+        result.data = 'NONE';
+        result.message = 'INTERNAL SERVER ERROR';
+        winston.log('error', `[EVALUATION][${req.clientIp}|${req.user.email}] ${result.message}`);
+        res.status(500).send(result);
+        return next(e);
+    }
+});
+
+// 개별 도서 평가 조회
+router.get('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
+    try {
+        const user_email = req.user.email;
+        const user_uid = req.user.user_uid;
+
+        const bsin = parseInt(req.params.bsin);
+
+        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] 개별 도서 평가 조회 Request`);
+        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}]  bsin: ${bsin}`);
+
+        let query =
+            'SELECT IFNULL(e2.rating, -2) AS rating, IFNULL(e2.state, -2) AS state, e1.count, e1.average ' +
+            'FROM (' +
+            'SELECT bsin, COUNT(bsin) AS count, IFNULL(AVG(rating), -2) AS average ' +
+            'FROM evaluations ' +
+            'WHERE bsin=:bsin' +
+            ') AS e1 ' +
+            'LEFT OUTER JOIN evaluations AS e2 ' +
+            'ON e1.bsin=e2.bsin ' +
+            'AND e2.user_uid=:user_uid ' +
+            'AND e2.deletedAt IS NULL;';
+
+        const book = await sequelize.query(query, {
+            replacements: {
+                bsin: bsin,
+                user_uid: user_uid
+            },
+            type: Sequelize.QueryTypes.SELECT,
+            raw: true
+        });
+
+        // 도서 검색 성공 메세지 반환
+        const result = new Object();
+        result.success = true;
+        result.data = book;
+        result.message = '개별 도서 조회를 성공했습니다.';
+        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] ${result.message}`);
+        return res.status(200).send(result);
+    } catch (e) {
+        winston.log('error', `[EVALUATION][${req.clientIp}|${req.user.email}] 개별 도서 조회 Exception`);
+
+        const result = new Object();
+        result.success = false;
+        result.data = 'NONE';
+        result.message = 'INTERNAL SERVER ERROR';
+        winston.log('error', `[EVALUATION][${req.clientIp}|${req.user.email}] ${result.message}`);
+        res.status(500).send(result);
+        return next(e);
+    }
+});
+
 // 도서 평가 수정
 router.patch('/', clientIp, isLoggedIn, async (req, res, next) => {
     try {
