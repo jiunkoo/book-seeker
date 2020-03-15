@@ -280,81 +280,7 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
     }
 });
 
-// 전체 평가 도서 목록 조회
-router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res, next) => {
-    try {
-        const user_email = req.user.email;
-        const user_uid = req.user.user_uid;
-
-        const genre = req.parsms.genre;
-        const filter = parseInt(req.params.filter);
-        const page = parseInt(req.params.page);
-        const limit = parseInt(req.params.limit);
-
-        winston.log('info', `[BOOK][${req.clientIp}|${user_email}] 전체 평가 도서 목록 Request`);
-        winston.log('info', `[BOOK][${req.clientIp}|${user_email}]  genre: ${genre}, filter : ${filter}, page : ${page}, limit : ${limit}`);
-
-        let offset = 0;
-        let order = 'publication_date ASC';
-
-        if (page > 1) {
-            offset = 10 * (page - 1);
-        }
-
-        // 필터에 따라 정렬 기준 변경
-        if (filter == 1) {
-            order = 'publication_date ASC';
-        } else if (filter == 2) {
-            order = 'publication_date DESC';
-        } else if (filter == 3) {
-            order = 'title ASC';
-        } else {
-            order = 'title DESC';
-        }
-
-        // 삭제 데이터를 제외한 전체 도서 평가 목록 불러오기
-        let query =
-            'SELECT * ' +
-            'FROM books ' +
-            'WHERE genre=:genre AND ' +
-            'bsin = (SELECT bsin FROM evaluations WHERE user_uid = :user_uid AND deletedAt IS NULL) ' +
-            'ORDER BY :order ' +
-            'LIMIT :limit ' +
-            'OFFSET :offset;';
-
-        const bookList = await sequelize.query(query, {
-            replacements: {
-                user_uid: user_uid,
-                genre: genre,
-                order: order,
-                limit: limit,
-                offset: offset
-            },
-            type: Sequelize.QueryTypes.SELECT,
-            raw: true
-        });
-
-        // 도서 검색 성공 메세지 반환
-        const result = new Object();
-        result.success = true;
-        result.data = bookList;
-        result.message = '내가 평가한 전체 도서 목록 조회를 성공했습니다.';
-        winston.log('info', `[BOOK][${req.clientIp}|${user_email}] ${result.message}`);
-        return res.status(200).send(result);
-    } catch (e) {
-        winston.log('error', `[BOOK][${req.clientIp}|${req.user.email}] 평가한 전체 도서 목록 조회 Exception`);
-
-        const result = new Object();
-        result.success = false;
-        result.data = 'NONE';
-        result.message = 'INTERNAL SERVER ERROR';
-        winston.log('error', `[BOOK][${req.clientIp}|${req.user.email}] ${result.message}`);
-        res.status(500).send(result);
-        return next(e);
-    }
-});
-
-// 하나의 도서 조회
+// 개별 도서 조회
 router.get('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
     try {
         const user_email = req.user.email;
@@ -362,18 +288,21 @@ router.get('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
 
         const bsin = parseInt(req.params.bsin);
 
-        winston.log('info', `[BOOK][${req.clientIp}|${user_email}] 하나의 도서 조회 Request`);
+        winston.log('info', `[BOOK][${req.clientIp}|${user_email}] 개별 도서 조회 Request`);
         winston.log('info', `[BOOK][${req.clientIp}|${user_email}]  bsin: ${bsin}`);
 
         let query =
-        'SELECT b.*, COUNT(e.bsin) AS count, IFNULL(AVG(e.rating), -2) AS average, ' +
-        'IFNULL(e.rating, -2) AS rating, IFNULL(e.state, -2) AS state ' +
-        'FROM (SELECT * FROM books WHERE bsin=:bsin) AS b ' +
-        'LEFT OUTER JOIN ' +
-        'evaluations AS e ' +
-        'ON b.bsin = e.bsin ' +
-        'AND e.user_uid=:user_uid ' +
-        'AND e.deletedAt IS NULL';
+            'SELECT b.*, COUNT(e.bsin) AS count, IFNULL(AVG(e.rating), -2) AS average ' +
+            'FROM (' +
+            'SELECT b.*, IFNULL(e.rating, -2) AS rating, IFNULL(e.state, -2) AS state ' +
+            'FROM (SELECT * FROM books WHERE bsin=:bsin) AS b ' +
+            'LEFT OUTER JOIN evaluations AS e ' +
+            'ON b.bsin = e.bsin ' +
+            'AND e.user_uid=:user_uid ' +
+            'AND e.deletedAt IS NULL' +
+            ') AS b ' +
+            'LEFT OUTER JOIN evaluations AS e ' +
+            'ON b.bsin = e.bsin;';
 
         const book = await sequelize.query(query, {
             replacements: {
@@ -388,11 +317,11 @@ router.get('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
         const result = new Object();
         result.success = true;
         result.data = book;
-        result.message = '하나의 도서 조회를 성공했습니다.';
+        result.message = '개별 도서 조회를 성공했습니다.';
         winston.log('info', `[BOOK][${req.clientIp}|${user_email}] ${result.message}`);
         return res.status(200).send(result);
     } catch (e) {
-        winston.log('error', `[BOOK][${req.clientIp}|${req.user.email}] 하나의 도서 조회 Exception`);
+        winston.log('error', `[BOOK][${req.clientIp}|${req.user.email}] 개별 도서 조회 Exception`);
 
         const result = new Object();
         result.success = false;
