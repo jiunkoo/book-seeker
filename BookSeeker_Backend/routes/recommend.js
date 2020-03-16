@@ -46,7 +46,12 @@ router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) 
         winston.log('info', `[RECOMMEND][${req.clientIp}|${user_email}]  추천 ${genre} 목록 조회 Request`);
         winston.log('info', `[RECOMMEND][${req.clientIp}|${user_email}] genre: ${genre}, page : ${page}, limit : ${limit}`);
 
-        // 평가 데이터 불러오기
+        // 평가 도서 목록 불러오기
+        /*
+        1) 추천 받을 사용자가 '관심 없어요' 체크한 데이터 제외
+        2) 평가가 0 이하인 데이터 제외(추천 알고리즘 정확도 증가)
+        3) 일반 사용자가 삭제한 데이터 제외
+        */
         // 내부 데이터 확인 : evaluationList[i].id
         let evaluationQuery =
             'SELECT * ' +
@@ -57,7 +62,9 @@ router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) 
             'FROM evaluations ' +
             'WHERE genre=:genre ' +
             'AND user_uid=:user_uid ' +
-            'AND state=:state);';
+            'AND state=:state) ' +
+            'AND rating > 0 ' +
+            'AND deletedAt IS NULL;';
 
         const evaluationList = await sequelize.query(evaluationQuery, {
             replacements: {
@@ -69,7 +76,7 @@ router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) 
             raw: true
         });
 
-        // 아무도 평가하지 않은 도서 목록 불러오기(사용자 평가 도서 제외)
+        // 평가하지 않은 도서 목록 불러오기(평가 도서 목록 제외)
         let unEvaluationQuery =
             'SELECT bsin ' +
             'FROM books ' +
@@ -77,7 +84,15 @@ router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) 
             'AND bsin NOT IN ' +
             '(SELECT bsin ' +
             'FROM evaluations ' +
-            'WHERE genre=:genre);';
+            'WHERE genre=:genre ' + 
+            'AND id NOT IN ' +
+            '(SELECT id ' +
+            'FROM evaluations ' +
+            'WHERE genre=:genre ' +
+            'AND user_uid=:user_uid ' +  
+            'AND state=:state) ' +
+            'AND rating > 0 ' +
+            'AND deletedAt IS NULL);';
 
         const unEvaluationList = await sequelize.query(unEvaluationQuery, {
             replacements: {

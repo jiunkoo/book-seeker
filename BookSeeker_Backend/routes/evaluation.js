@@ -42,8 +42,8 @@ router.post('/', clientIp, isLoggedIn, async (req, res, next) => {
         winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] 도서 평가 Request`);
         winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] bsin : ${bsin}, genre : ${genre}, rating : ${rating}, state : ${state}`);
 
-        // 별점이 0점 미만이거나 5점을 초과하는 경우
-        if (rating > 5 || rating < 0) {
+        // 별점이 -1점 미만이거나 5점을 초과하는 경우
+        if (rating > 5 || rating <= -2) {
             // 도서 평가 실패 메세지 반환
             const result = new Object();
             result.success = false;
