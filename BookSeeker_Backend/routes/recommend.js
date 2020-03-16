@@ -76,7 +76,11 @@ router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) 
             raw: true
         });
 
-        // 평가하지 않은 도서 목록 불러오기(평가 도서 목록 제외)
+        // 평가하지 않은 도서 목록 불러오기
+        /*
+        1) 추천 받을 사용자가 '관심 없어요' 체크한 데이터 제외
+        2) 평가 도서 목록 제외
+        */
         let unEvaluationQuery =
             'SELECT bsin ' +
             'FROM books ' +
@@ -85,12 +89,6 @@ router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) 
             '(SELECT bsin ' +
             'FROM evaluations ' +
             'WHERE genre=:genre ' + 
-            'AND id NOT IN ' +
-            '(SELECT id ' +
-            'FROM evaluations ' +
-            'WHERE genre=:genre ' +
-            'AND user_uid=:user_uid ' +  
-            'AND state=:state) ' +
             'AND rating > 0 ' +
             'AND deletedAt IS NULL);';
 
