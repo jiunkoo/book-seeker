@@ -23,7 +23,7 @@ interface RegisterContract {
         // checkRegEx : RegisterPresenter에서 EditText의 RegEx를 검사하는 함수
         fun checkRegEx(txtv: String, etxt: String): String
 
-        // insertRegisterData : RegisterPresenter에서 Register Data를 저장하는 함수
-        fun insertRegisterData(context: Context, register: Register): Observable<JsonObject>
+        // registerObservable : RegisterPresenter에서 Register Data를 저장하는 함수
+        fun registerObservable(context: Context, register: Register): Observable<JsonObject>
     }
 }

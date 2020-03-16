@@ -57,12 +57,10 @@ class RegisterPresenter : RegisterContract.Presenter {
         return checkRegExResult
     }
 
-    // insertRegisterData : SignUpActivity에서 User Data를 저장하는 함수
-    override fun insertRegisterData(context: Context, register: Register): Observable<JsonObject> {
+    // registerObservable : SignUpActivity에서 User Data를 저장하는 함수
+    override fun registerObservable(context: Context, register: Register): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "NONE")
         val retrofitInterface = RetrofitClient.retrofitInterface(client)
-
-        registerView?.setProgressON("회원가입을 진행중입니다...")
 
         return Observable.create { subscriber ->
             // 데이터 생성을 위한 Create

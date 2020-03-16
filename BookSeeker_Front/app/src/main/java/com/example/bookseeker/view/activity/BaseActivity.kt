@@ -1,10 +1,10 @@
 package com.example.bookseeker.view.activity
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import com.example.bookseeker.view.BaseApplication
+import com.trello.rxlifecycle3.components.support.RxAppCompatActivity
 
-abstract class BaseActivity : AppCompatActivity(){
+abstract class BaseActivity : RxAppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initPresenter()

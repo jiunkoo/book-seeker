@@ -20,17 +20,14 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_bookinfo.*
 import java.io.Serializable
 import com.google.gson.JsonParser
-
-
-
-
+import io.reactivex.android.schedulers.AndroidSchedulers
 
 
 class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
     // Activity와 함께 생성될 Presenter를 지연 초기화
     private lateinit var bookInfoPresenter: BookInfoPresenter
-    // Disposable 객체 지정
-    internal val disposables = CompositeDisposable()
+    // Disposable 객체 지연 초기화
+    private lateinit var disposables: CompositeDisposable
     // 변경 전 평점
     private var preRating = 0.0f
     // 변경 전 상태
@@ -54,6 +51,9 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
 
         // View가 Create(Bind) 되었다는 걸 Presenter에 전달
         bookInfoPresenter.takeView(this)
+
+        // Disposable 객체 지정
+        disposables = CompositeDisposable()
 
         // BottomNavigationView 이벤트 처리
         switchBottomNavigationView()
@@ -95,24 +95,28 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
                     nextIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     startActivity(nextIntent)
                     overridePendingTransition(0, 0)
+                    finish()
                 }
                 R.id.btmnavmenu_itm_recommend -> {
                     val nextIntent = Intent(baseContext, RecommendActivity::class.java)
                     nextIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     startActivity(nextIntent)
                     overridePendingTransition(0, 0)
+                    finish()
                 }
                 R.id.btmnavmenu_itm_rating -> {
                     val nextIntent = Intent(baseContext, RatingActivity::class.java)
                     nextIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     startActivity(nextIntent)
                     overridePendingTransition(0, 0)
+                    finish()
                 }
                 R.id.btmnavmenu_itm_mypage -> {
                     val nextIntent = Intent(baseContext, MypageActivity::class.java)
                     nextIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     startActivity(nextIntent)
                     overridePendingTransition(0, 0)
+                    finish()
                 }
             }
             false
@@ -286,8 +290,11 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
     // createEvaluationSubscribe : 하나의 평가 데이터 생성 관찰자를 구독하는 함수
     private fun createEvaluationSubscribe(evaluationCreate: EvaluationCreate) {
         val subscription =
-            bookInfoPresenter.createEvaluationObservable(this, evaluationCreate)
-                .subscribeOn(Schedulers.io()).subscribe(
+            bookInfoPresenter
+                .createEvaluationObservable(this, evaluationCreate)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
                     { result ->
                         if ((result.get("success").toString()).equals("true")) {
                             var jsonObject = (result.get("data")).asJsonObject
@@ -298,15 +305,10 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
                             setEvaluation(rating, state)
                         }
                         // 설정 끝낸 후 프로그래스 바 종료
-                        Looper.prepare()
-                        setProgressOFF()
                         showMessage(result.get("message").toString())
-                        Looper.loop()
                     },
                     { e ->
-                        Looper.prepare()
                         showMessage("Create evaluation error!")
-                        Looper.loop()
                     }
                 )
         disposables.add(subscription)
@@ -315,8 +317,11 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
     // patchEvaluationSubscribe : 하나의 평가 데이터 수정 관찰자를 구독하는 함수
     private fun patchEvaluationSubscribe(evaluationPatch: EvaluationPatch) {
         val subscription =
-            bookInfoPresenter.patchEvaluationObservable(this, evaluationPatch)
-                .subscribeOn(Schedulers.io()).subscribe(
+            bookInfoPresenter
+                .patchEvaluationObservable(this, evaluationPatch)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
                     { result ->
                         if ((result.get("success").toString()).equals("true")) {
                             var jsonObject = (result.get("data")).asJsonObject
@@ -327,16 +332,11 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
                             setEvaluation(rating, state)
                         }
                         // 설정 끝낸 후 프로그래스 바 종료
-                        Looper.prepare()
-                        setProgressOFF()
                         showMessage(result.get("message").toString())
-                        Looper.loop()
                     },
                     { e ->
-                        Looper.prepare()
                         showMessage("Patch evaluation error!")
                         println(e)
-                        Looper.loop()
                     }
                 )
         disposables.add(subscription)
@@ -346,8 +346,11 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
     private fun deleteEvaluationSubscribe() {
         var bsin = jsonObject.get("bsin").toString().replace("\"", "")
         val subscription =
-            bookInfoPresenter.deleteEvaluationObservable(this, bsin)
-                .subscribeOn(Schedulers.io()).subscribe(
+            bookInfoPresenter
+                .deleteEvaluationObservable(this, bsin)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
                     { result ->
                         if ((result.get("success").toString()).equals("true")) {
                             // 삭제의 경우 반환값이 bsin이므로 특별한 반영 없음
@@ -358,15 +361,10 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
                             setEvaluation(rating, state)
                         }
                         // 설정 끝낸 후 프로그래스 바 종료
-                        Looper.prepare()
-                        setProgressOFF()
                         showMessage(result.get("message").toString())
-                        Looper.loop()
                     },
                     { e ->
-                        Looper.prepare()
                         showMessage("Delete evaluation error!")
-                        Looper.loop()
                     }
                 )
         disposables.add(subscription)
@@ -380,10 +378,10 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
         var publisher = jsonObject.get("publisher").toString().replace("\"", "")
         var publication_date = jsonObject.get("publication_date").toString().replace("\"", "")
         var introduction = jsonObject.get("introduction").toString().replace("\"", "")
-        var allAverage = jsonObject.get("all_average").toString().replace("\"", "").toFloat()
-        var allCount = jsonObject.get("all_count").toString().replace("\"", "").toInt()
-        var myRating = jsonObject.get("my_rating").toString().replace("\"", "").toFloat()
-        var myState = jsonObject.get("my_state").toString().replace("\"", "").toInt()
+        var myRating = jsonObject.get("rating").toString().replace("\"", "").toFloat()
+        var myState = jsonObject.get("state").toString().replace("\"", "").toInt()
+        var allCount = jsonObject.get("count").toString().replace("\"", "").toInt()
+        var allAverage = jsonObject.get("average").toString().replace("\"", "").toFloat()
 
         var splitUrl = cover.split("/")
         var coverUrl: String = "https://img.ridicdn.net/cover/" + splitUrl[4] + "/xxlarge"
@@ -426,11 +424,18 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
 
     override fun onDestroy() {
         super.onDestroy()
+
         // View가 Delete(Unbind) 되었다는 걸 Presenter에 전달
         bookInfoPresenter.dropView()
 
-        // 관리하고 있던 disposable 객체 전부 해제
-        disposables.clear()
+        println("한 개 도서 disposable 객체 해제 전 : [ONDESTROY]" + disposables.isDisposed)
+
+        // Disposable 객체 전부 해제
+        if(!disposables.isDisposed){
+            disposables.dispose()
+        }
+
+        println("한 개 도서 disposable 객체 해제 후 : [ONDESTROY]" + disposables.isDisposed)
     }
 
     // setProgressON :  공통으로 사용하는 Progress Bar의 시작을 정의하는 함수

@@ -12,6 +12,7 @@ import android.os.Looper
 import android.util.Log
 import com.example.bookseeker.R
 import com.example.bookseeker.model.data.*
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_register.*
@@ -19,8 +20,8 @@ import kotlinx.android.synthetic.main.activity_register.*
 class RegisterActivity : BaseActivity(), RegisterContract.View {
     // RegisterActivity와 함께 생성될 RegisterPresenter를 지연 초기화
     private lateinit var registerPresenter: RegisterPresenter
-    // Disposable 객체 지정
-    internal val disposables = CompositeDisposable()
+    // Disposable 객체 지연 초기화
+    private lateinit var disposables: CompositeDisposable
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +29,9 @@ class RegisterActivity : BaseActivity(), RegisterContract.View {
 
         // View가 Create(Bind) 되었다는 걸 Presenter에 전달
         registerPresenter.takeView(this)
+
+        // Disposable 객체 지정
+        disposables = CompositeDisposable()
 
         // Button Event 처리
         setButtonEventListener()
@@ -193,20 +197,21 @@ class RegisterActivity : BaseActivity(), RegisterContract.View {
 
     // requestRegisterResult : 관찰자에게서 발행된 데이터를 가져오는 함수
     fun requestSignUpResult(register: Register) {
-        val subscription = registerPresenter.insertRegisterData(this, register)
-            .subscribeOn(Schedulers.io()).subscribe(
+//        setProgressON("회원가입을 진행중입니다...")
+
+        val subscription = registerPresenter
+            .registerObservable(this, register)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
                 { result ->
+//                    setProgressOFF()
                     if((result.get("success").toString()).equals("true")) {
-                        Looper.prepare()
                         setProgressOFF()
                         showMessage("성공적으로 회원가입을 완료했습니다.")
                         startLoginActivity()
-                        Looper.loop()
                     } else {
-                        Looper.prepare()
-                        setProgressOFF()
                         showMessage(result.get("message").toString())
-                        Looper.loop()
                     }
                 },
                 { e ->
@@ -223,6 +228,15 @@ class RegisterActivity : BaseActivity(), RegisterContract.View {
 
         // View가 Delete(Unbind) 되었다는 걸 Presenter에 전달
         registerPresenter.dropView()
+
+        println("회원가입 disposable 객체 해제 전 : [ONDESTROY]" + disposables.isDisposed)
+
+        // Disposable 객체 전부 해제
+        if(!disposables.isDisposed){
+            disposables.dispose()
+        }
+
+        println("회원가입 disposable 객체 해제 후 : [ONDESTROY]" + disposables.isDisposed)
     }
 
     // setProgressON :  공통으로 사용하는 Progress Bar의 시작을 정의하는 함수

@@ -19,7 +19,17 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent">
-
+        <TextView
+                android:id="@+id/recommend_txtv_message"
+                android:text="MESSAGE"
+                android:textSize="48sp"
+                android:textStyle="bold"
+                android:textColor="@color/basicWhite"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="@dimen/activity_margin"
+                android:gravity="center"
+                android:visibility="invisible"/>
         <LinearLayout
                 android:id="@+id/recommend_layout_linear_category"
                 android:layout_width="match_parent"
@@ -113,8 +123,19 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recommend_recyclerview"
+    <!--<androidx.recyclerview.widget.RecyclerView-->
+            <!--android:id="@+id/recommend_recyclerview"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="0dp"-->
+            <!--android:layout_margin="@dimen/activity_margin"-->
+
+            <!--app:layout_constraintVertical_weight="1"-->
+            <!--app:layout_constraintTop_toBottomOf="@id/recommend_cardview_category"-->
+            <!--app:layout_constraintLeft_toLeftOf="parent"-->
+            <!--app:layout_constraintRight_toRightOf="parent"-->
+            <!--app:layout_constraintBottom_toTopOf="@id/recommend_btmnavview_menu"/>-->
+    <com.mindorks.placeholderview.SwipeDirectionalView
+            android:id="@+id/recommend_swipeview"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_margin="@dimen/activity_margin"
@@ -124,7 +145,6 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintBottom_toTopOf="@id/recommend_btmnavview_menu"/>
-
     <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/recommend_btmnavview_menu"
             android:layout_width="match_parent"

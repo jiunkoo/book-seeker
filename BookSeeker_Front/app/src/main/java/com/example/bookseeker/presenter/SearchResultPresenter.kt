@@ -37,16 +37,14 @@ class SearchResultPresenter : SearchResultContract.Presenter {
         }
     }
 
-    // getEvaluationObservable : 하나의 평가 데이터 조회 요청을 관찰하는 함수
-    fun getEvaluationObservable(context: Context, bsin: String): Observable<JsonObject> {
+    // getBookObservable : 하나의 평가 데이터 조회 요청을 관찰하는 함수
+    fun getBookObservable(context: Context, bsin: String): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
         val retrofitInterface = RetrofitClient.retrofitInterface(client)
 
-        searchResultView?.setProgressON("도서 정보를 가져오고 있습니다...")
-
         return Observable.create { subscriber ->
             // 데이터 생성을 위한 Create
-            val callResponse = retrofitInterface.getEvaluation(bsin)
+            val callResponse = retrofitInterface.getBook(bsin)
             val response = callResponse.execute()
 
             if (response.isSuccessful) {

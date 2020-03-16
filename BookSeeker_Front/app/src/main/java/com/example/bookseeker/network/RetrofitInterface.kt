@@ -22,6 +22,10 @@ interface RetrofitInterface {
     @GET("/books/{genre}/{filter}/{page}/{limit}")
     fun getBooks(@Path("genre") genre: String, @Path("filter") filter: Int, @Path("page") page: Int, @Path("limit") limit: Int): Call<JsonObject>
 
+    // 하나의 도서 조회
+    @GET("/books/{bsin}")
+    fun getBook(@Path("bsin") bsin: String): Call<JsonObject>
+
     // 하나의 평가 데이터 생성
     @POST("/evaluation")
     fun createEvaluation(@Body evaluationCreate: EvaluationCreate): Call<JsonObject>

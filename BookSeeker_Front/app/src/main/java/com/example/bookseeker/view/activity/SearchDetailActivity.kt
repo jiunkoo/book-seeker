@@ -101,24 +101,28 @@ class SearchDetailActivity : BaseActivity(), SearchDetailContract.View {
                     nextIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     startActivity(nextIntent)
                     overridePendingTransition(0, 0)
+                    finish()
                 }
                 R.id.btmnavmenu_itm_recommend -> {
                     val nextIntent = Intent(baseContext, RecommendActivity::class.java)
                     nextIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     startActivity(nextIntent)
                     overridePendingTransition(0, 0)
+                    finish()
                 }
                 R.id.btmnavmenu_itm_rating -> {
                     val nextIntent = Intent(baseContext, RatingActivity::class.java)
                     nextIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     startActivity(nextIntent)
                     overridePendingTransition(0, 0)
+                    finish()
                 }
                 R.id.btmnavmenu_itm_mypage -> {
                     val nextIntent = Intent(baseContext, MypageActivity::class.java)
                     nextIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     startActivity(nextIntent)
                     overridePendingTransition(0, 0)
+                    finish()
                 }
             }
             false

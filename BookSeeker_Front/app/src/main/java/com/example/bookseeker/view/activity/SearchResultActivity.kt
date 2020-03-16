@@ -23,6 +23,7 @@ import com.example.bookseeker.model.data.BooksSearch
 import com.example.bookseeker.presenter.SearchResultPresenter
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.JsonObject
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_search_result.*
@@ -31,8 +32,8 @@ import kotlinx.android.synthetic.main.activity_search_result.*
 class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDelegateAdapter.onViewSelectedListener {
     // Activity와 함께 생성될 Presenter를 지연 초기화
     private lateinit var searchResultPresenter: SearchResultPresenter
-    // Disposable 객체 지정
-    internal val disposables = CompositeDisposable()
+    // Disposable 객체 지연 초기화
+    private lateinit var disposables: CompositeDisposable
     // RecyclerView Adapter 설정
     private val searchAdapter by lazy { SearchAdapter(this) }
     // Spinner Item Change Flag 설정
@@ -45,6 +46,9 @@ class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDe
 
         // View가 Create(Bind) 되었다는 걸 Presenter에 전달
         searchResultPresenter.takeView(this)
+
+        // Disposable 객체 지정
+        disposables = CompositeDisposable()
 
         // SearchDetailActivity에서 데이터 받아오기
         val intent = intent
@@ -85,24 +89,28 @@ class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDe
                     nextIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     startActivity(nextIntent)
                     overridePendingTransition(0, 0)
+                    finish()
                 }
                 R.id.btmnavmenu_itm_recommend -> {
                     val nextIntent = Intent(baseContext, RecommendActivity::class.java)
                     nextIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     startActivity(nextIntent)
                     overridePendingTransition(0, 0)
+                    finish()
                 }
                 R.id.btmnavmenu_itm_rating -> {
                     val nextIntent = Intent(baseContext, RatingActivity::class.java)
                     nextIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     startActivity(nextIntent)
                     overridePendingTransition(0, 0)
+                    finish()
                 }
                 R.id.btmnavmenu_itm_mypage -> {
                     val nextIntent = Intent(baseContext, MypageActivity::class.java)
                     nextIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     startActivity(nextIntent)
                     overridePendingTransition(0, 0)
+                    finish()
                 }
             }
             false
@@ -203,15 +211,18 @@ class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDe
     // onItemSelected : recyclerview 아이템 선택 함수
     override fun onItemSelected(bookData: BookData) {
         // 해당 도서 데이터 가져오기
-        getEvaluationSubscribe(bookData)
+        getBookSubscribe(bookData)
     }
 
     // booksSearchSubscribe : 관찰자에게서 발행된 데이터를 가져오는 함수
     private fun booksSearchSubscribe(keyword: String, recyclerView: RecyclerView) {
         var searchRequest = BooksSearch(keyword)
         val subscription =
-            searchResultPresenter.booksSearchObservable(this, searchRequest, filter, searchAdapter.itemCount / 10 + 1, 10)
-                .subscribeOn(Schedulers.io()).subscribe(
+            searchResultPresenter
+                .booksSearchObservable(this, searchRequest, filter, searchAdapter.itemCount / 10 + 1, 10)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
                     { result ->
                         if ((result.get("success").toString()).equals("true")) {
                             // 반복문을 돌려 서버에서 응답받은 데이터를 recyclerview에 저장
@@ -226,20 +237,21 @@ class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDe
                                     jsonObject.get("title").toString().replace("\"", ""),
                                     jsonObject.get("author").toString().replace("\"", ""),
                                     jsonObject.get("publisher").toString().replace("\"", ""),
-                                    jsonObject.get("introduction").toString().replace("\"", ""),
+                                    jsonObject.get("introduction").toString(),
                                     jsonObject.get("cover").toString().replace("\"", ""),
                                     jsonObject.get("link").toString().replace("\"", ""),
                                     jsonObject.get("keyword").toString().replace("\"", ""),
                                     jsonObject.get("adult").toString().replace("\"", ""),
                                     jsonObject.get("genre").toString().replace("\"", ""),
                                     jsonObject.get("publication_date").toString().replace("\"", ""),
-                                    0.0f
+                                    -2f,
+                                    -2
                                 )
                                 bookDataArray.add(bookData)
                             }
 
                             // 도서 목록 만들기
-                            val bookList = BookList(bookDataArray)
+                            val bookList = BookList(searchAdapter.itemCount / 10 + 1, bookDataArray)
 
                             if (spinnerFlag == true) {
                                 (recyclerView.adapter as SearchAdapter).clearAndAddBookList(bookList.results)
@@ -248,9 +260,7 @@ class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDe
                                 (recyclerView.adapter as SearchAdapter).addBookList(bookList.results)
                             }
                         }
-                        Looper.prepare()
                         this.showMessage(result.get("message").toString())
-                        Looper.loop()
                     },
                     { e ->
                         Snackbar.make(recyclerView, e.message ?: "", Snackbar.LENGTH_LONG).show()
@@ -259,33 +269,28 @@ class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDe
         disposables.add(subscription)
     }
 
-    // getEvaluationSubscribe : 하나의 평가 데이터 조회 관찰자를 구독하는 함수
-    private fun getEvaluationSubscribe(bookData: BookData) {
+    // getBookSubscribe : 하나의 평가 데이터 조회 관찰자를 구독하는 함수
+    private fun getBookSubscribe(bookData: BookData) {
         val subscription =
-            searchResultPresenter.getEvaluationObservable(this, bookData.bsin)
-                .subscribeOn(Schedulers.io()).subscribe(
+            searchResultPresenter
+                .getBookObservable(this, bookData.bsin)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
                     { result ->
                         if ((result.get("success").toString()).equals("true")) {
                             // 서버에서 응답받은 데이터를 가져옴
                             var jsonObject = (result.get("data")).asJsonObject
 
-                            Looper.prepare()
-                            setProgressOFF()
                             showMessage(result.get("message").toString())
                             startBookInfoActivity(jsonObject)
-                            Looper.loop()
                         } else {
-                            Looper.prepare()
-                            setProgressOFF()
                             showMessage(result.get("message").toString())
-                            Looper.loop()
                         }
                     },
                     { e ->
-                        Looper.prepare()
                         showMessage("Get evaluation error!")
                         println(e)
-                        Looper.loop()
                     }
                 )
         disposables.add(subscription)
@@ -295,6 +300,15 @@ class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDe
         super.onDestroy()
         // View가 Delete(Unbind) 되었다는 걸 Presenter에 전달
         searchResultPresenter.dropView()
+
+        println("검색 disposable 객체 해제 전 : [ONDESTROY]" + disposables.isDisposed)
+
+        // Disposable 객체 전부 해제
+        if(!disposables.isDisposed){
+            disposables.dispose()
+        }
+
+        println("검색 disposable 객체 해제 후 : [ONDESTROY]" + disposables.isDisposed)
     }
 
     // setProgressON :  공통으로 사용하는 Progress Bar의 시작을 정의하는 함수
