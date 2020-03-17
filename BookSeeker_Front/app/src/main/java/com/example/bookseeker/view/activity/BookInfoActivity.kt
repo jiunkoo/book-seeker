@@ -137,34 +137,42 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
             val webIntent = Intent(Intent.ACTION_VIEW, Uri.parse(combinationUri))
             startActivity(webIntent)
         }
+
         // BookInfo State Button Event를 처리하는 함수
         // '관심 없어요' 버튼
         bookinfo_btn_boring.setOnClickListener {
             var rating = bookinfo_ratingbar_bookrating.rating
             // 별점이 없는 경우 평가 생성
             if (rating == 0.0f) {
-                var evaluationCreate = EvaluationCreate(bsin, genre, rating, 0)
+                var evaluationCreate = EvaluationCreate(bsin, genre, -1f, 0)
                 createEvaluationSubscribe(evaluationCreate)
+
+                bookinfo_btn_boring.setBackgroundColor(Color.parseColor(mediumRed))
+                bookinfo_btn_interesting.setBackgroundColor(Color.parseColor(lightYellow))
+                bookinfo_btn_reading.setBackgroundColor(Color.parseColor(lightLime))
+                bookinfo_btn_read.setBackgroundColor(Color.parseColor(lightMint))
             }
             // 별점이 있는 경우 평가 수정
             else {
                 // 이미 해당 버튼을 선택한 경우
                 if(preState == 0){
-                    var evaluationPatch = EvaluationPatch(bsin, rating, -1)
-                    patchEvaluationSubscribe(evaluationPatch)
                     bookinfo_btn_boring.setBackgroundColor(Color.parseColor(lightRed))
                     bookinfo_btn_interesting.setBackgroundColor(Color.parseColor(lightYellow))
                     bookinfo_btn_reading.setBackgroundColor(Color.parseColor(lightLime))
                     bookinfo_btn_read.setBackgroundColor(Color.parseColor(lightMint))
+
+                    var evaluationPatch = EvaluationPatch(bsin, rating, -1)
+                    patchEvaluationSubscribe(evaluationPatch)
                 }
                 // 해당 버튼을 선택하지 않은 경우
                 else {
-                    var evaluationPatch = EvaluationPatch(bsin, rating, 0)
-                    patchEvaluationSubscribe(evaluationPatch)
                     bookinfo_btn_boring.setBackgroundColor(Color.parseColor(mediumRed))
                     bookinfo_btn_interesting.setBackgroundColor(Color.parseColor(lightYellow))
                     bookinfo_btn_reading.setBackgroundColor(Color.parseColor(lightLime))
                     bookinfo_btn_read.setBackgroundColor(Color.parseColor(lightMint))
+
+                    var evaluationPatch = EvaluationPatch(bsin, rating, 0)
+                    patchEvaluationSubscribe(evaluationPatch)
                 }
             }
         }
@@ -173,28 +181,35 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
             var rating = bookinfo_ratingbar_bookrating.rating
             // 별점이 없는 경우 평가 생성
             if (rating == 0.0f) {
-                var evaluationCreate = EvaluationCreate(bsin, genre, rating, 1)
+                var evaluationCreate = EvaluationCreate(bsin, genre, -1f, 1)
                 createEvaluationSubscribe(evaluationCreate)
+
+                bookinfo_btn_boring.setBackgroundColor(Color.parseColor(lightRed))
+                bookinfo_btn_interesting.setBackgroundColor(Color.parseColor(mediumYellow))
+                bookinfo_btn_reading.setBackgroundColor(Color.parseColor(lightLime))
+                bookinfo_btn_read.setBackgroundColor(Color.parseColor(lightMint))
             }
             // 별점이 있는 경우 평가 수정
             else {
                 // 이미 해당 버튼을 선택한 경우
                 if(preState == 1){
-                    var evaluationPatch = EvaluationPatch(bsin, rating, -1)
-                    patchEvaluationSubscribe(evaluationPatch)
                     bookinfo_btn_boring.setBackgroundColor(Color.parseColor(lightRed))
                     bookinfo_btn_interesting.setBackgroundColor(Color.parseColor(lightYellow))
                     bookinfo_btn_reading.setBackgroundColor(Color.parseColor(lightLime))
                     bookinfo_btn_read.setBackgroundColor(Color.parseColor(lightMint))
+
+                    var evaluationPatch = EvaluationPatch(bsin, rating, -1)
+                    patchEvaluationSubscribe(evaluationPatch)
                 }
                 // 해당 버튼을 선택하지 않은 경우
                 else {
-                    var evaluationPatch = EvaluationPatch(bsin, rating, 1)
-                    patchEvaluationSubscribe(evaluationPatch)
                     bookinfo_btn_boring.setBackgroundColor(Color.parseColor(lightRed))
                     bookinfo_btn_interesting.setBackgroundColor(Color.parseColor(mediumYellow))
                     bookinfo_btn_reading.setBackgroundColor(Color.parseColor(lightLime))
                     bookinfo_btn_read.setBackgroundColor(Color.parseColor(lightMint))
+
+                    var evaluationPatch = EvaluationPatch(bsin, rating, 1)
+                    patchEvaluationSubscribe(evaluationPatch)
                 }
             }
         }
@@ -203,28 +218,35 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
             var rating = bookinfo_ratingbar_bookrating.rating
             // 별점이 없는 경우 평가 생성
             if (rating == 0.0f) {
-                var evaluationCreate = EvaluationCreate(bsin, genre, rating, 2)
+                var evaluationCreate = EvaluationCreate(bsin, genre, -1f, 2)
                 createEvaluationSubscribe(evaluationCreate)
+
+                bookinfo_btn_boring.setBackgroundColor(Color.parseColor(lightRed))
+                bookinfo_btn_interesting.setBackgroundColor(Color.parseColor(lightYellow))
+                bookinfo_btn_reading.setBackgroundColor(Color.parseColor(mediumLime))
+                bookinfo_btn_read.setBackgroundColor(Color.parseColor(lightMint))
             }
             // 별점이 있는 경우 평가 수정
             else {
                 // 이미 해당 버튼을 선택한 경우
                 if(preState == 2){
-                    var evaluationPatch = EvaluationPatch(bsin, rating, -1)
-                    patchEvaluationSubscribe(evaluationPatch)
                     bookinfo_btn_boring.setBackgroundColor(Color.parseColor(lightRed))
                     bookinfo_btn_interesting.setBackgroundColor(Color.parseColor(lightYellow))
                     bookinfo_btn_reading.setBackgroundColor(Color.parseColor(lightLime))
                     bookinfo_btn_read.setBackgroundColor(Color.parseColor(lightMint))
+
+                    var evaluationPatch = EvaluationPatch(bsin, rating, -1)
+                    patchEvaluationSubscribe(evaluationPatch)
                 }
                 // 해당 버튼을 선택하지 않은 경우
                 else {
-                    var evaluationPatch = EvaluationPatch(bsin, rating, 2)
-                    patchEvaluationSubscribe(evaluationPatch)
                     bookinfo_btn_boring.setBackgroundColor(Color.parseColor(lightRed))
                     bookinfo_btn_interesting.setBackgroundColor(Color.parseColor(lightYellow))
                     bookinfo_btn_reading.setBackgroundColor(Color.parseColor(mediumLime))
                     bookinfo_btn_read.setBackgroundColor(Color.parseColor(lightMint))
+
+                    var evaluationPatch = EvaluationPatch(bsin, rating, 2)
+                    patchEvaluationSubscribe(evaluationPatch)
                 }
             }
         }
@@ -239,21 +261,23 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
             else {
                 // 이미 해당 버튼을 선택한 경우
                 if(preState == 3){
-                    var evaluationPatch = EvaluationPatch(bsin, rating, -1)
-                    patchEvaluationSubscribe(evaluationPatch)
                     bookinfo_btn_boring.setBackgroundColor(Color.parseColor(lightRed))
                     bookinfo_btn_interesting.setBackgroundColor(Color.parseColor(lightYellow))
                     bookinfo_btn_reading.setBackgroundColor(Color.parseColor(lightLime))
                     bookinfo_btn_read.setBackgroundColor(Color.parseColor(lightMint))
+
+                    var evaluationPatch = EvaluationPatch(bsin, rating, -1)
+                    patchEvaluationSubscribe(evaluationPatch)
                 }
                 // 해당 버튼을 선택하지 않은 경우
                 else {
-                    var evaluationPatch = EvaluationPatch(bsin, rating, 3)
-                    patchEvaluationSubscribe(evaluationPatch)
                     bookinfo_btn_boring.setBackgroundColor(Color.parseColor(lightRed))
                     bookinfo_btn_interesting.setBackgroundColor(Color.parseColor(lightYellow))
                     bookinfo_btn_reading.setBackgroundColor(Color.parseColor(lightLime))
                     bookinfo_btn_read.setBackgroundColor(Color.parseColor(mediumMint))
+
+                    var evaluationPatch = EvaluationPatch(bsin, rating, 3)
+                    patchEvaluationSubscribe(evaluationPatch)
                 }
             }
         }

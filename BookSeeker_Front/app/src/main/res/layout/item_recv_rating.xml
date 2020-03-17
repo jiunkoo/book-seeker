@@ -81,9 +81,12 @@
             android:id="@+id/recv_rating_item_ratingbar_bookrating"
             android:numStars="5"
             android:stepSize="0.5"
+            android:isIndicator="false"
+            android:theme="@style/RatingBar"
             android:layout_marginLeft="8dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+
             style="@style/Widget.AppCompat.RatingBar.Indicator"
 
             app:layout_constraintTop_toBottomOf="@id/recv_rating_item_txtv_publisher"
