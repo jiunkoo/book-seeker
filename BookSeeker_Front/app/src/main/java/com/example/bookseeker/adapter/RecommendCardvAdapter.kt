@@ -4,12 +4,12 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.Point
 import android.util.Log
-import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.RatingBar
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.example.bookseeker.R
-import com.example.bookseeker.model.data.BookData
+import com.example.bookseeker.model.data.RecommendData
 import com.mindorks.placeholderview.SwipeDirection
 import com.mindorks.placeholderview.annotations.*
 import com.mindorks.placeholderview.annotations.swipe.*
@@ -18,7 +18,7 @@ import kotlin.math.sqrt
 @Layout(R.layout.item_cardv_recommend)
 class RecommendCardvAdapter(
     private val context: Context,
-    private val bookData: BookData,
+    private val recommendData: RecommendData,
     private val cardViewHolderSize: Point,
     private val callback: Callback
 ) {
@@ -39,14 +39,14 @@ class RecommendCardvAdapter(
     @View(R.id.cardv_recommend_item_txtv_publisher)
     lateinit var publisher: TextView
 
-    @View(R.id.cardv_recommend_item_txtv_rating)
-    lateinit var rating: TextView
+    @View(R.id.cardv_recommend_item_txtv_expect_rating)
+    lateinit var expectRating: TextView
 
-    @View(R.id.cardv_recommend_item_ibtn_boring)
-    lateinit var boring: ImageButton
+    @View(R.id.cardv_recommend_item_imgv_interesting)
+    lateinit var interesting: ImageView
 
-    @View(R.id.cardv_recommend_item_ibtn_interesting)
-    lateinit var interesting: ImageButton
+    @View(R.id.cardv_recommend_item_ratingbar)
+    lateinit var ratingBar: RatingBar
 
     @SwipeView
     lateinit var swipeView: android.view.View
@@ -57,41 +57,46 @@ class RecommendCardvAdapter(
 
     @Resolve
     fun onResolved() {
-        var splitUrl = bookData.cover.split("/")
+        swipeView.alpha = 1f
+
+        var splitUrl = recommendData.cover.split("/")
         var coverUrl: String = "https://img.ridicdn.net/cover/" + splitUrl[4] + "/xlarge"
 
         Glide.with(context).load(coverUrl).into(image)
-        title!!.text = bookData.title
-        author!!.text = bookData.author
-        publisher!!.text = bookData.publisher
-        rating!!.text = bookData.rating.toString()
+        title.text = recommendData.title
+        author.text = recommendData.author
+        publisher.text = recommendData.publisher
+        expectRating.text = recommendData.expect_rating.toString()
+        ratingBar.rating = recommendData.rating
 
-        when(bookData.state){
-                // 아무것도 아닌 경우
-                -2 -> {
-                    boring.setColorFilter(Color.parseColor("#ffffff"))
-                    interesting.setImageResource(R.drawable.icon_interesting_border)
-                    interesting.setColorFilter(Color.parseColor("#ffffff"))
-                }
-                // '관심 없어요'인 경우
-                0 -> {
-                    boring.setColorFilter(Color.parseColor("#e02947"))
-                    interesting.setImageResource(R.drawable.icon_interesting_border)
-                    interesting.setColorFilter(Color.parseColor("#ffffff"))
-                }
-                // '관심 있어요'인 경우
-                1 -> {
-                    boring.setColorFilter(Color.parseColor("#ffffff"))
-                    interesting.setImageResource(R.drawable.icon_interesting)
-                    interesting.setColorFilter(Color.parseColor("#e02947"))
-                }
+        when (recommendData.state) {
+            // '관심 있어요'인 경우
+            1 -> {
+                interesting.visibility = android.view.View.VISIBLE
+                interesting.setColorFilter(Color.parseColor("#f7b73c"))
             }
-        swipeView.alpha = 1f
+            // '읽고 있어요'인 경우
+            2 -> {
+                interesting.visibility = android.view.View.VISIBLE
+                interesting.setColorFilter(Color.parseColor("#80c783"))
+            }
+            // '읽었어요'인 경우
+            3 -> {
+                interesting.visibility = android.view.View.VISIBLE
+                interesting.setColorFilter(Color.parseColor("#03738c"))
+            }
+        }
+
+        ratingBar.onRatingBarChangeListener =
+            RatingBar.OnRatingBarChangeListener { ratingBar, float, boolean ->
+                callback.onRatingBarChangeListener(ratingBar, float, boolean)
+            }
     }
 
     @Click(R.id.cardv_recommend_item_imgv_image)
     fun onClick() {
         Log.d("EVENT", "imageView click")
+        callback.onItemSelected(recommendData)
     }
 
     // 왼쪽 or 맨위
@@ -134,7 +139,6 @@ class RecommendCardvAdapter(
             Math.pow(xCurrent.toDouble() - xStart.toDouble(), 2.0)
                     + (Math.pow(yCurrent.toDouble() - yStart, 2.0))
         )
-
         val alpha = 1 - distance / cardHolderDiagonalLength
 
         Log.d(
@@ -158,5 +162,7 @@ class RecommendCardvAdapter(
         fun onSwipeRight()
         fun onSwipeBottom()
         fun onSwipeNone()
+        fun onItemSelected(recommendData: RecommendData)
+        fun onRatingBarChangeListener(ratingBar: RatingBar, float: Float, boolean: Boolean)
     }
 }

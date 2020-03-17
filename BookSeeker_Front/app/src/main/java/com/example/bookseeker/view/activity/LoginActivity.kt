@@ -149,8 +149,6 @@ class LoginActivity : BaseActivity(), LoginContract.View {
 
     // loginSubscribe : 관찰자에게서 발행된 데이터를 가져오는 함수
     fun loginSubscribe(login: Login) {
-//        setProgressON("로그인을 진행중입니다...")
-
         val subscription = loginPresenter
             .loginObservable(this, login)
             .subscribeOn(Schedulers.io())
@@ -158,7 +156,6 @@ class LoginActivity : BaseActivity(), LoginContract.View {
             .subscribe(
                 { result ->
                     if((result.get("success").toString()).equals("true")){
-//                        setProgressOFF()
                         showMessage("로그인에 성공하였습니다.")
                         startSearchActivity()
                     } else {
@@ -166,9 +163,7 @@ class LoginActivity : BaseActivity(), LoginContract.View {
                     }
                 },
                 { e ->
-                    Looper.prepare()
                     showMessage("Login Error!")
-                    Looper.loop()
                 }
             )
         disposables.add(subscription)
