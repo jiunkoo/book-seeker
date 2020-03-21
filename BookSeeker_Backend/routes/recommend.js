@@ -77,7 +77,7 @@ router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) 
 
         // 평가하지 않은 도서 목록 불러오기
         /*
-        1) 추천 받을 사용자가 '관심 없어요', '읽었어요' 체크한 데이터 제외
+        1) 추천 받을 사용자가 '관심 없어요', '읽었어요' 평가한 데이터 제외
         2) 평가 도서 목록 제외
         3) 일반 사용자가 삭제한 데이터 제외
         */
@@ -96,7 +96,7 @@ router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) 
             'FROM evaluations ' +
             'WHERE genre=:genre ' +
             'AND user_uid=:user_uid ' +
-            'AND (state = 0 OR state = 4) ' +
+            'AND (state=0 OR state=3) ' +
             'AND deletedAt IS NULL))';
 
         const unEvaluationList = await sequelize.query(unEvaluationQuery, {
@@ -108,7 +108,7 @@ router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) 
             raw: true
         });
 
-        const trainedDataSet = await RF.trainingDataSet(evaluationList, unEvaluationList);
+        const trainedDataSet = await RF.trainingDataSet(user_uid, evaluationList, unEvaluationList);
         const bookRecommend = await RF.bookRecommend(user_uid, trainedDataSet, page, limit);
 
         // Database에서 검사할 BsinList
