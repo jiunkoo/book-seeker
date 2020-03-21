@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="rating_spinner_item">
-        <item>랜덤 도서</item>
-        <item>최신 도서</item>
-        <item>오래된 도서</item>
-        <item>내가 평가한 도서</item>
-        <item>내가 평가하지 않은 도서</item>
+        <item>랜덤</item>
+        <item>최신순</item>
+        <item>오래된순</item>
+        <item>ㄱ-ㅎ</item>
+        <item>ㅎ-ㄱ</item>
     </string-array>
     <string-array name="search_result_spinner_item">
         <item>최신순</item>

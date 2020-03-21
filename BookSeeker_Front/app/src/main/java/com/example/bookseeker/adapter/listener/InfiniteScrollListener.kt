@@ -3,6 +3,7 @@ package com.example.bookseeker.adapter.listener
 import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_DRAGGING
 
 class InfiniteScrollListener(
     val func: () -> Unit,

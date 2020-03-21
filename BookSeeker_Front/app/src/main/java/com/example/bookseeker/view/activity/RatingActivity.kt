@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.Looper
 import android.util.Log
 import android.view.View
+import android.widget.AbsListView.OnScrollListener.SCROLL_STATE_IDLE
 import android.widget.AdapterView
 import android.widget.RatingBar
 import android.widget.Toast
@@ -196,31 +197,31 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
     // onItemSelected : RecyclerView의 아이템 별점이 선택된 경우
     override fun onRatingBarChangeListener(bookData: BookData, position: Int,
                                            ratingBar: RatingBar, postRating: Float, boolean: Boolean) {
-        if(ratingFlag){
-            // 변경 전 평점 == -1 && 0 < 변경 후 평점 <= 5
-            // 평가 데이터 생성
-            if (bookData.rating == -1f && (postRating > 0.0f && postRating <= 5.0f)) {
-                println("최초")
-                var evaluationCreate = EvaluationCreate(bookData.bsin, bookData.genre, postRating, bookData.state)
-                createEvaluationSubscribe(bookData, position, evaluationCreate)
-            }
-            // 0 < 변경 전(후) 평점 <= 5 && 변경 전 평점 != 변경 후 평점
-            // 평가 데이터 수정
-            else if ((bookData.rating > 0.0f && bookData.rating <= 5.0f) && (postRating > 0.0f && postRating <= 5.0f)
-                && bookData.rating != postRating
-            ) {
-                println("수정")
-                var evaluationPatch = EvaluationPatch(bookData.bsin, postRating, bookData.state)
-                patchEvaluationSubscribe(bookData, position, evaluationPatch)
-            }
-            // 0 < 변경 전 평점 <= 5 && 변경 후 평점 == 0
-            // 평가 데이터 삭제
-            else if ((bookData.rating > 0.0f && bookData.rating <= 5.0f) && postRating == 0.0f) {
-                println("삭제")
-                deleteEvaluationSubscribe(bookData, position)
+        // 스크롤을 움직이고 있지 않을 때
+        if(recyclerView.scrollState == SCROLL_STATE_IDLE) {
+            if (ratingFlag && bookData.rating != postRating) {
+                // 변경 전 평점 == -1 && 0 < 변경 후 평점 <= 5
+                // 평가 데이터 생성
+                if (bookData.rating == -1f && (postRating > 0.0f && postRating <= 5.0f)) {
+                    println("최초 : " + bookData.title)
+                    var evaluationCreate = EvaluationCreate(bookData.bsin, bookData.genre, postRating, bookData.state)
+                    createEvaluationSubscribe(bookData, position, evaluationCreate)
+                }
+                // 0 < 변경 전(후) 평점 <= 5 && 변경 전 평점 != 변경 후 평점
+                // 평가 데이터 수정
+                else if ((bookData.rating > 0.0f && bookData.rating <= 5.0f) && (postRating > 0.0f && postRating <= 5.0f)) {
+                    println("수정 : " + bookData.title)
+                    var evaluationPatch = EvaluationPatch(bookData.bsin, postRating, bookData.state)
+                    patchEvaluationSubscribe(bookData, position, evaluationPatch)
+                }
+                // 0 < 변경 전 평점 <= 5 && 변경 후 평점 == 0
+                // 평가 데이터 삭제
+                else if ((bookData.rating > 0.0f && bookData.rating <= 5.0f) && postRating == 0.0f) {
+                    println("삭제 : " + bookData.title)
+                    deleteEvaluationSubscribe(bookData, position)
+                }
             }
         }
-//        showMessage("평점은 " + float + "입니다.")
     }
 
     // requestBookData : 관찰자에게서 발행된 데이터를 가져오는 함수
@@ -264,8 +265,8 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
                                     jsonObject.get("adult").toString().replace("\"", ""),
                                     jsonObject.get("genre").toString().replace("\"", ""),
                                     jsonObject.get("publication_date").toString().replace("\"", ""),
-                                    -2f,
-                                    -2
+                                    -1f,
+                                    -1
                                 )
                                 bookDataArray.add(bookData)
                             }

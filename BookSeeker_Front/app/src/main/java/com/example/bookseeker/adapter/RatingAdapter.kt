@@ -50,7 +50,7 @@ class RatingAdapter(listener: RatingDelegateAdapter.onViewSelectedListener) : Re
 
     fun modifyBookList(bookData: BookData, position: Int) {
         items[position] = bookData
-        notifyItemChanged(position)
+        println("수정된 아이템 : " + items[position])
     }
 
     fun clearAndAddBookList(bookData: List<BookData>) {
