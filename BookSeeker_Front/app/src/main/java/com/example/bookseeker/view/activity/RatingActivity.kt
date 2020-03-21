@@ -185,8 +185,8 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
 
     // onItemSelected : RecyclerView의 아이템 별점이 선택된 경우
     override fun onRatingBarChangeListener(ratingBar: RatingBar, float: Float, boolean: Boolean) {
-        // TODO : 평점 평가하면 반영되도록 함
-         showMessage("아이템 선택되었습니다! \n 평점은 " + float + "입니다.")
+        showMessage("아이템 선택되었습니다! \n 평점은 " + float + "입니다.")
+        // TODO : 평점 평가하면 반영되도록
 //        showMessage("평점은 " + float + "입니다.")
 //        val postRating = float
 //        // 변경 전 평점 == 0 && 0 < 변경 후 평점 <= 5
