@@ -38,18 +38,19 @@ module.exports = {
             let user_uid = trainSet[i]['user_uid'];
             let bsin = trainSet[i]['bsin'];
             let rating = trainSet[i]['rating'] * 1;
+            let state = trainSet[i]['state'];
 
             // 사용자가 userBasedData에 없는 경우 새로운 1차원 배열을 생성하고, 평가 데이터 저장
             if (!userBasedData[user_uid]) {
                 userBasedData[user_uid] = [];
             }
-            userBasedData[user_uid].push({ bsin: bsin, rating: rating });
+            userBasedData[user_uid].push({ bsin: bsin, rating: rating, state: state });
 
             // 도서가 bookBasedData에 없는 경우 새로운 1차원 배열을 생성하고 평가 데이터 저장
             if (!bookBasedData[bsin]) {
                 bookBasedData[bsin] = [];
             }
-            bookBasedData[bsin].push({ user_uid: user_uid, rating: rating });
+            bookBasedData[bsin].push({ user_uid: user_uid, rating: rating, state: state });
 
             // 도서가 bookRatingRank에 없는 경우 평가 데이터 합계를 저장
             if (!bookRatingRank[bsin]) {
@@ -90,10 +91,11 @@ module.exports = {
         // 특정 사용자의 도서 평가 목록이 있는 경우
         // 특정 사용자의 도서 평가 목록을 바탕으로 비슷한 사용자를 찾아 도서 추천
         if (userList) {
+            // userState : 특정 사용자의 도서 상태 객체
             // completionEvaluation : 특정 사용자의 도서 평가 목록(유사도 계산이 끝난 도서 목록)
             // similarUsers : 특정 사용자와 같은 도서를 평가한 비슷한 사용자 유사도 목록 객체
             // estimatedEvaluation : 계산한 예상 도서 평점 목록 객체
-            let completionEvaluation = {}, similarUsers = {}, estimatedEvaluation = {};
+            let userState = {}, completionEvaluation = {}, similarUsers = {}, estimatedEvaluation = {};
 
             // relatedUsers : 전체 유사도 계산을 바탕으로 한 특정 사용자와 비슷한 사용자 간 유사도 배열
             // returnData : 프론트에 반환할 결과값이 들어갈 배열
@@ -101,6 +103,13 @@ module.exports = {
 
             // estimatedEvaluationCount : 예상 도서 평점 목록 객체 개수
             let estimatedEvaluationCount = 0;
+
+            // 예상 도서 평점 필터링을 위한 도서 상태 객체 분류
+            for(let i = 0; i<userList.length; i++) {
+                if (!userState[userList[i].bsin]) {
+                    userState[userList[i].bsin] = userList[i].state;
+                }
+            }
 
             // 반복문을 돌려 특정 사용자와 같은 도서를 평가한 비슷한 사용자 목록 추출
             for (let i = 0; i < userList.length; i++) {
@@ -126,28 +135,34 @@ module.exports = {
 
             // 반복문을 돌려 사용자 간 유사도 배열을 바탕으로 사용자의 도서 평가 목록 추출
             for (let i = 0; i < relatedUsers.length; i++) {
-                let user_uid = relatedUsers[i].user_uid;
-                let rating = relatedUsers[i].rating;
-                let userList = trainedDataSet.userBasedData[user_uid];
+                let related_uuid = relatedUsers[i].user_uid;
+                let related_rating = relatedUsers[i].rating;
+                let relatedUserList = trainedDataSet.userBasedData[related_uuid];
 
                 // 반복문을 돌려 추출한 도서 평가 목록을 바탕으로 도서 예상 평점 계산
                 // 예상 평점 계산 : 평점 합계
-                for (let j = 0; j < userList.length; j++) {
+                for (let j = 0; j < relatedUserList.length; j++) {
                     // 이미 평점 계산이 끝난 도서인 경우
-                    if (completionEvaluation[userList[j].bsin]) {
+                    if (completionEvaluation[relatedUserList[j].bsin]) {
                         continue;
                     }
                     // 아직 예상 평점 계산을 하지 않은 도서의 경우 평점 계산
-                    if (!estimatedEvaluation[userList[j].bsin]) {
-                        estimatedEvaluation[userList[j].bsin] = 0;
+                    if (!estimatedEvaluation[relatedUserList[j].bsin]) {
+                        estimatedEvaluation[relatedUserList[j].bsin] = 0;
                         estimatedEvaluationCount++;
                     }
-                    estimatedEvaluation[userList[j].bsin] += rating;
+                    estimatedEvaluation[relatedUserList[j].bsin] += related_rating;
                 }
             }
 
             // 예상 평점 목록을 결과 배열에 넣고 내림차순으로 정렬
             for (let bsin in estimatedEvaluation) {
+                // 특정 사용자 평가가 있는 경우
+                if(userState[bsin]) {
+                    if(userState[bsin] == 0 | userState[bsin] == 4) {
+                        continue; // push 생략
+                    }
+                }
                 returnData.push({ bsin: bsin, rating: Math.round(Math.log(estimatedEvaluation[bsin] + 1) * 100) / 100 });
 
                 // 정렬 과정에서 중복되는 값 랭킹 배열에서 제거

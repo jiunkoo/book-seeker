@@ -62,15 +62,14 @@ router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) 
             'FROM evaluations ' +
             'WHERE genre=:genre ' +
             'AND user_uid=:user_uid ' +
-            'AND state=:state) ' +
+            'AND state=0) ' +
             'AND rating > 0 ' +
             'AND deletedAt IS NULL;';
 
         const evaluationList = await sequelize.query(evaluationQuery, {
             replacements: {
                 genre: genre,
-                user_uid: user_uid,
-                state: 0
+                user_uid: user_uid
             },
             type: Sequelize.QueryTypes.SELECT,
             raw: true
@@ -78,19 +77,27 @@ router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) 
 
         // 평가하지 않은 도서 목록 불러오기
         /*
-        1) 추천 받을 사용자가 '관심 없어요' 체크한 데이터 제외
+        1) 추천 받을 사용자가 '관심 없어요', '읽었어요' 체크한 데이터 제외
         2) 평가 도서 목록 제외
+        3) 일반 사용자가 삭제한 데이터 제외
         */
         let unEvaluationQuery =
             'SELECT bsin ' +
             'FROM books ' +
             'WHERE genre=:genre ' +
             'AND bsin NOT IN ' +
+            '((SELECT bsin ' +
+            'FROM evaluations ' +
+            'WHERE genre=:genre ' +
+            'AND rating > 0 ' +
+            'AND deletedAt IS NULL) ';
+            'UNION ' +
             '(SELECT bsin ' +
             'FROM evaluations ' +
-            'WHERE genre=:genre ' + 
-            'AND rating > 0 ' +
-            'AND deletedAt IS NULL);';
+            'WHERE genre=:genre ' +
+            'AND user_uid=:user_uid ' +
+            'AND (state = 0 OR state = 4) ' +
+            'AND deletedAt IS NULL))';
 
         const unEvaluationList = await sequelize.query(unEvaluationQuery, {
             replacements: {
@@ -131,7 +138,7 @@ router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) 
         });
 
         const returnData = Array();
-        for(let i = 0; i<recommendBookList.length; i++){
+        for (let i = 0; i < recommendBookList.length; i++) {
             const jsonObject = Object();
             jsonObject.bsin = recommendBookList[i].bsin;
             jsonObject.title = recommendBookList[i].title;

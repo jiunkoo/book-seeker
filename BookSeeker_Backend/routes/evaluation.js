@@ -220,11 +220,12 @@ router.get('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
         winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}]  bsin: ${bsin}`);
 
         let query =
-            'SELECT IFNULL(e2.rating, -2) AS rating, IFNULL(e2.state, -2) AS state, e1.count, e1.average ' +
+            'SELECT IFNULL(e2.rating, -1) AS rating, IFNULL(e2.state, -1) AS state, e1.count, e1.average ' +
             'FROM (' +
-            'SELECT bsin, COUNT(bsin) AS count, IFNULL(AVG(rating), -2) AS average ' +
+            'SELECT bsin, COUNT(bsin) AS count, IFNULL(AVG(rating), -1) AS average ' +
             'FROM evaluations ' +
             'WHERE bsin=:bsin' +
+            'AND rating > 0' +
             ') AS e1 ' +
             'LEFT OUTER JOIN evaluations AS e2 ' +
             'ON e1.bsin=e2.bsin ' +
