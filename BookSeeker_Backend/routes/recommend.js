@@ -120,7 +120,7 @@ router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) 
         }
 
         let bookQuery =
-            'SELECT b.*, IFNULL(e.rating, -2) AS rating, IFNULL(e.state, -2) AS state ' +
+            'SELECT b.*, IFNULL(e.rating, -1) AS rating, IFNULL(e.state, -1) AS state ' +
             'FROM (' +
             'SELECT * ' +
             'FROM books ' +

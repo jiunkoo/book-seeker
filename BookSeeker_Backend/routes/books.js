@@ -296,7 +296,7 @@ router.get('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
             'FROM ' +
             '(SELECT IFNULL(e2.rating, -1) AS rating, IFNULL(e2.state, -1) AS state, e1.count, e1.average ' +
             'FROM ( ' +
-            'SELECT bsin, COUNT(bsin) AS count, IFNULL(AVG(rating), -1) AS average ' +
+            'SELECT bsin, COUNT(bsin) AS count, IFNULL(AVG(rating), 0) AS average ' +
             'FROM evaluations ' +
             'WHERE bsin=:bsin ' +
             'AND rating > 0 ' +

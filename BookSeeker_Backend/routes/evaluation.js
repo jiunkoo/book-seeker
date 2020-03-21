@@ -135,18 +135,19 @@ router.post('/', clientIp, isLoggedIn, async (req, res, next) => {
 });
 
 // 전체 평가 도서 목록 조회
-router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res, next) => {
+router.get('/:genre/:filter/:state/:page/:limit', clientIp, isLoggedIn, async (req, res, next) => {
     try {
         const user_email = req.user.email;
         const user_uid = req.user.user_uid;
 
         const genre = req.parsms.genre;
         const filter = parseInt(req.params.filter);
+        const state = parseInt(req.params.state);
         const page = parseInt(req.params.page);
         const limit = parseInt(req.params.limit);
 
         winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] 전체 평가 도서 목록 Request`);
-        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}]  genre: ${genre}, filter : ${filter}, page : ${page}, limit : ${limit}`);
+        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}]  genre: ${genre}, filter : ${filter},  state : ${state}, page : ${page}, limit : ${limit}`);
 
         let offset = 0;
         let order = 'publication_date ASC';
@@ -170,8 +171,9 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
         let query =
             'SELECT * ' +
             'FROM books ' +
-            'WHERE genre=:genre AND ' +
-            'bsin = (SELECT bsin FROM evaluations WHERE user_uid = :user_uid AND deletedAt IS NULL) ' +
+            'WHERE genre=:genre ' +
+            'AND bsin=(SELECT bsin FROM evaluations WHERE user_uid = :user_uid AND deletedAt IS NULL) ' +
+            'AND state=:state ' +
             'ORDER BY :order ' +
             'LIMIT :limit ' +
             'OFFSET :offset;';
@@ -179,6 +181,7 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
         const bookList = await sequelize.query(query, {
             replacements: {
                 user_uid: user_uid,
+                state: state,
                 genre: genre,
                 order: order,
                 limit: limit,
@@ -222,7 +225,7 @@ router.get('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
         let query =
             'SELECT IFNULL(e2.rating, -1) AS rating, IFNULL(e2.state, -1) AS state, e1.count, e1.average ' +
             'FROM (' +
-            'SELECT bsin, COUNT(bsin) AS count, IFNULL(AVG(rating), -1) AS average ' +
+            'SELECT bsin, COUNT(bsin) AS count, IFNULL(AVG(rating), 0) AS average ' +
             'FROM evaluations ' +
             'WHERE bsin=:bsin' +
             'AND rating > 0' +
