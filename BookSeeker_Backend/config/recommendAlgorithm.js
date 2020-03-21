@@ -62,11 +62,12 @@ module.exports = {
 
         // 특정 사용자의 도서 평가 목록을 불러옴
         let userList = userBasedData[user_uid];
-
-        // 예상 도서 평점 필터링을 위한 도서 상태 객체 분류
-        for (let i = 0; i < userList.length; i++) {
-            if (!userState[userList[i].bsin]) {
-                userState[userList[i].bsin] = userList[i].state;
+        if(userList){
+            // 예상 도서 평점 필터링을 위한 도서 상태 객체 분류
+            for (let i = 0; i < userList.length; i++) {
+                if (!userState[userList[i].bsin]) {
+                    userState[userList[i].bsin] = userList[i].state;
+                }
             }
         }
 
