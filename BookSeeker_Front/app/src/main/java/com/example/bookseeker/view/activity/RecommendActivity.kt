@@ -250,20 +250,20 @@ class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardv
         isToUndo = false
     }
 
-    override fun onSwipeLeft() {
+    override fun onSwipeRight() {
         recommend_layout_linear_category.visibility = INVISIBLE
         recommend_txtv_message.visibility = VISIBLE
-        recommend_txtv_message.text = "읽고 싶어요"
-        recommend_cardview_category.setCardBackgroundColor(Color.parseColor("#f7b73c")) // mediumYellow
+        recommend_txtv_message.text = "읽고 있어요"
+        recommend_cardview_category.setCardBackgroundColor(Color.parseColor("#80c783")) // mediumLime
         state = 2
         isToUndo = false
     }
 
-    override fun onSwipeRight() {
+    override fun onSwipeLeft() {
         recommend_layout_linear_category.visibility = INVISIBLE
         recommend_txtv_message.visibility = VISIBLE
-        recommend_txtv_message.text = "읽는 중"
-        recommend_cardview_category.setCardBackgroundColor(Color.parseColor("#80c783")) // mediumLime
+        recommend_txtv_message.text = "관심 있어요"
+        recommend_cardview_category.setCardBackgroundColor(Color.parseColor("#f7b73c")) // mediumYellow
         state = 1
         isToUndo = false
     }
@@ -294,7 +294,7 @@ class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardv
     // onItemSelected : Item Select Event를 처리하는 함수
     override fun onItemSelected(recommendData: RecommendData) {
         // 해당 도서 데이터 가져오기
-        getBookSubscribe(recommendData)
+        startBookInfoActivity(recommendData)
     }
 
     // setCategoryEventListener : EditText Event를 처리하는 함수
@@ -497,9 +497,11 @@ class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardv
     }
 
     // startBookInfoActivity : bookInfoActivity로 넘어가는 함수
-    fun startBookInfoActivity(jsonObject: JsonObject) {
+    fun startBookInfoActivity(recommendData: RecommendData) {
         val nextIntent = Intent(this, BookInfoActivity::class.java)
-        nextIntent.putExtra("bookData", jsonObject.toString())
+        nextIntent.putExtra("bsin", recommendData.bsin)
+        nextIntent.putExtra("genre", recommendData.genre)
+        nextIntent.putExtra("link", recommendData.link)
         startActivity(nextIntent)
     }
 
@@ -576,34 +578,6 @@ class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardv
                     },
                     { e ->
                         showMessage("Create evaluation error!")
-                    }
-                )
-        disposables.add(subscription)
-    }
-
-    // getBookSubscribe : 하나의 평가 데이터 조회 관찰자를 구독하는 함수
-    private fun getBookSubscribe(recommendData: RecommendData) {
-        val subscription =
-            recommendPresenter
-                .getBookObservable(this, recommendData.bsin)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { result ->
-                        if ((result.get("success").toString()).equals("true")) {
-                            // 서버에서 응답받은 데이터를 가져옴
-                            var jsonArray = (result.get("data")).asJsonArray
-                            var jsonObject = jsonArray[0].asJsonObject
-
-                            showMessage(result.get("message").toString())
-                            startBookInfoActivity(jsonObject)
-                        } else {
-                            showMessage(result.get("message").toString())
-                        }
-                    },
-                    { e ->
-                        showMessage("Get evaluation error!")
-                        println(e)
                     }
                 )
         disposables.add(subscription)

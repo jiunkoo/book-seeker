@@ -109,7 +109,9 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
     // startBookInfoActivity : bookInfoActivity로 넘어가는 함수
     fun startBookInfoActivity(bookData: BookData) {
         val nextIntent = Intent(this, BookInfoActivity::class.java)
-        nextIntent.putExtra("bookData", bookData)
+        nextIntent.putExtra("bsin", bookData.bsin)
+        nextIntent.putExtra("genre", bookData.genre)
+        nextIntent.putExtra("link", bookData.link)
         startActivity(nextIntent)
     }
 
@@ -184,7 +186,7 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
     // onItemSelected : RecyclerView의 아이템 별점이 선택된 경우
     override fun onRatingBarChangeListener(ratingBar: RatingBar, float: Float, boolean: Boolean) {
         // TODO : 평점 평가하면 반영되도록 함
-//        // showMessage("아이템 선택되었습니다! \n 평점은 " + recv_recommend_item_ratingbar_rating.rating + "입니다.")
+         showMessage("아이템 선택되었습니다! \n 평점은 " + float + "입니다.")
 //        showMessage("평점은 " + float + "입니다.")
 //        val postRating = float
 //        // 변경 전 평점 == 0 && 0 < 변경 후 평점 <= 5
@@ -232,18 +234,21 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
 
                             for (i in 0 until jsonArray.size()) {
                                 var jsonObject = jsonArray[i].asJsonObject
+
+                                // 데이터 가공 처리(큰따옴표 제거)
                                 var bookData = BookData(
-                                    jsonObject.get("bsin").toString(),
-                                    jsonObject.get("title").toString(),
-                                    jsonObject.get("author").toString(),
-                                    jsonObject.get("publisher").toString(),
-                                    jsonObject.get("introduction").toString(),
-                                    jsonObject.get("cover").toString(),
-                                    jsonObject.get("link").toString(),
-                                    jsonObject.get("keyword").toString(),
-                                    jsonObject.get("adult").toString(),
-                                    jsonObject.get("genre").toString(),
-                                    jsonObject.get("publication_date").toString(),
+                                    jsonObject.get("bsin").toString().replace("\"", ""),
+                                    jsonObject.get("title").toString().replace("\"", ""),
+                                    jsonObject.get("author").toString().replace("\"", ""),
+                                    jsonObject.get("publisher").toString().replace("\"", ""),
+                                    jsonObject.get("introduction").toString()
+                                        .replace("\"", "").replace("\\n", "\n"),
+                                    jsonObject.get("cover").toString().replace("\"", ""),
+                                    jsonObject.get("link").toString().replace("\"", ""),
+                                    jsonObject.get("keyword").toString().replace("\"", ""),
+                                    jsonObject.get("adult").toString().replace("\"", ""),
+                                    jsonObject.get("genre").toString().replace("\"", ""),
+                                    jsonObject.get("publication_date").toString().replace("\"", ""),
                                     -2f,
                                     -2
                                 )

@@ -4,7 +4,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
-import android.os.Looper
 import android.util.Log
 import android.widget.RatingBar
 import android.widget.Toast
@@ -19,7 +18,6 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_bookinfo.*
 import java.io.Serializable
-import com.google.gson.JsonParser
 import io.reactivex.android.schedulers.AndroidSchedulers
 
 
@@ -28,10 +26,14 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
     private lateinit var bookInfoPresenter: BookInfoPresenter
     // Disposable 객체 지연 초기화
     private lateinit var disposables: CompositeDisposable
+    // 도서 정보
+    private lateinit var jsonObject: JsonObject
     // 변경 전 평점
-    private var preRating = 0.0f
+    private var preRating = -1f
     // 변경 전 상태
     private var preState = -1
+    // 도서 상태 설정 플래그
+    private var preFlag = false
     // 색상
     val lightRed = "#ffc8d2"
     val lightYellow = "#ffebc8"
@@ -41,9 +43,6 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
     val mediumYellow = "#ffbe50"
     val mediumLime = "#80c783"
     val mediumMint = "#03738c"
-
-    // 가져올 도서 정보 객체
-    private lateinit var jsonObject: JsonObject
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,17 +59,18 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
 
         // SearchResultActivity에서 데이터 받아오기
         val intent = intent
-        var bookData = intent.getStringExtra("bookData")
-        jsonObject = JsonParser().parse(bookData).asJsonObject
+        val bsin = intent.getStringExtra("bsin")
+        val genre = intent.getStringExtra("genre")
+        val link = intent.getStringExtra("link")
 
-        // 화면에 도서 정보 뿌리기
-        setBookData()
+        // 도서 정보 가져오기
+        getBookSubscribe(bsin)
 
         // Button Event 처리
-        setButtonEventListener()
+        setButtonEventListener(bsin, genre, link)
 
         // Rating bar Event 처리
-        setRatingbarEventListener()
+        setRatingbarEventListener(bsin, genre)
     }
 
     // initPresenter : View와 상호작용할 Presenter를 주입하기 위한 함수
@@ -125,11 +125,7 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
     }
 
     // setButtonEventListener : BookInfoActivity에서 Button Event를 처리하는 함수
-    fun setButtonEventListener() {
-        var link = jsonObject.get("link").toString().replace("\"", "")
-        var bsin = jsonObject.get("bsin").toString().replace("\"", "")
-        var genre = jsonObject.get("genre").toString().replace("\"", "")
-
+    fun setButtonEventListener(bsin: String, genre: String, link: String) {
         // BookInfo Link Button Event를 처리하는 함수
         bookinfo_btn_link.setOnClickListener {
             // 해당 도서 구매 페이지로 연결
@@ -284,31 +280,63 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
     }
 
     // setRatingbarEventListener : BookInfoActivity에서 Ratingbar Event를 처리하는 함수
-    fun setRatingbarEventListener() {
-        var bsin = jsonObject.get("bsin").toString().replace("\"", "")
-        var genre = jsonObject.get("genre").toString().replace("\"", "")
-
+    fun setRatingbarEventListener(bsin: String, genre: String) {
         //Ratingbar Event를 처리하는 함수
         bookinfo_ratingbar_bookrating.onRatingBarChangeListener = RatingBar.OnRatingBarChangeListener()
         { ratingBar: RatingBar, postRating: Float, boolean: Boolean ->
-            // 변경 전 평점 == 0 && 0 < 변경 후 평점 <= 5
-            // 평가 데이터 생성
-            if (preRating == 0.0f && (postRating > 0.0f && postRating <= 5.0f)) {
-                var evaluationCreate = EvaluationCreate(bsin, genre, postRating, preState)
-                createEvaluationSubscribe(evaluationCreate)
-            }
-            // 0 < 변경 전(후) 평점 <= 5
-            // 평가 데이터 수정
-            else if ((preRating > 0.0f && preRating <= 5.0f) && (postRating > 0.0f && postRating <= 5.0f)) {
-                var evaluationPatch = EvaluationPatch(bsin, postRating, preState)
-                patchEvaluationSubscribe(evaluationPatch)
-            }
-            // 0 < 변경 전 평점 <= 5 && 변경 후 평점 == 0
-            // 평가 데이터 삭제
-            else if ((preRating > 0.0f && preRating <= 5.0f) && postRating == 0.0f) {
-                deleteEvaluationSubscribe()
+            if(preFlag) {
+                // 변경 전 평점 == -1 && 0 < 변경 후 평점 <= 5
+                // 평가 데이터 생성
+                if (preRating == -1f && (postRating > 0.0f && postRating <= 5.0f)) {
+                    println("최초")
+                    var evaluationCreate = EvaluationCreate(bsin, genre, postRating, preState)
+                    createEvaluationSubscribe(evaluationCreate)
+                }
+                // 0 < 변경 전(후) 평점 <= 5 && 변경 전 평점 != 변경 후 평점
+                // 평가 데이터 수정
+                else if ((preRating > 0.0f && preRating <= 5.0f) && (postRating > 0.0f && postRating <= 5.0f)
+                    && preRating != postRating
+                ) {
+                    println("수정")
+                    var evaluationPatch = EvaluationPatch(bsin, postRating, preState)
+                    patchEvaluationSubscribe(evaluationPatch)
+                }
+                // 0 < 변경 전 평점 <= 5 && 변경 후 평점 == 0
+                // 평가 데이터 삭제
+                else if ((preRating > 0.0f && preRating <= 5.0f) && postRating == 0.0f) {
+                    println("삭제")
+                    deleteEvaluationSubscribe()
+                }
             }
         }
+    }
+
+    // getBookSubscribe : 하나의 평가 데이터 조회 관찰자를 구독하는 함수
+    private fun getBookSubscribe(bsin: String) {
+        val subscription =
+            bookInfoPresenter
+                .getBookObservable(this, bsin)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { result ->
+                        if ((result.get("success").toString()).equals("true")) {
+                            // 서버에서 응답받은 데이터를 가져옴
+                            var jsonArray = (result.get("data")).asJsonArray
+                            jsonObject = jsonArray[0].asJsonObject
+
+                            setBookData()
+
+                            preFlag = true
+                        }
+                        showMessage(result.get("message").toString())
+                    },
+                    { e ->
+                        showMessage("Get evaluation error!")
+                        println(e)
+                    }
+                )
+        disposables.add(subscription)
     }
 
     // createEvaluationSubscribe : 하나의 평가 데이터 생성 관찰자를 구독하는 함수
@@ -378,7 +406,7 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
                     { result ->
                         if ((result.get("success").toString()).equals("true")) {
                             // 삭제의 경우 반환값이 bsin이므로 특별한 반영 없음
-                            var rating = 0.0f
+                            var rating = -1f
                             var state = -1
 
                             // 변경된 평점 반영
@@ -401,7 +429,8 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
         var author = jsonObject.get("author").toString().replace("\"", "")
         var publisher = jsonObject.get("publisher").toString().replace("\"", "")
         var publication_date = jsonObject.get("publication_date").toString().replace("\"", "")
-        var introduction = jsonObject.get("introduction").toString().replace("\"", "")
+        var introduction = jsonObject.get("introduction").toString()
+            .replace("\"", "").replace("\\n", "\n")
         var myRating = jsonObject.get("rating").toString().replace("\"", "").toFloat()
         var myState = jsonObject.get("state").toString().replace("\"", "").toInt()
         var allCount = jsonObject.get("count").toString().replace("\"", "").toInt()
@@ -420,18 +449,10 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
         bookinfo_txtv_averagestar.text = "평균 ★ " + allAverage + " (" + allCount + "명)"
 
         when (myState) {
-            0 -> {
-                bookinfo_btn_boring.setBackgroundColor(Color.parseColor(mediumRed))
-            }
-            1 -> {
-                bookinfo_btn_interesting.setBackgroundColor(Color.parseColor(mediumYellow))
-            }
-            2 -> {
-                bookinfo_btn_reading.setBackgroundColor(Color.parseColor(mediumLime))
-            }
-            3 -> {
-                bookinfo_btn_read.setBackgroundColor(Color.parseColor(mediumMint))
-            }
+            0 -> { bookinfo_btn_boring.setBackgroundColor(Color.parseColor(mediumRed)) }
+            1 -> { bookinfo_btn_interesting.setBackgroundColor(Color.parseColor(mediumYellow)) }
+            2 -> { bookinfo_btn_reading.setBackgroundColor(Color.parseColor(mediumLime)) }
+            3 -> { bookinfo_btn_read.setBackgroundColor(Color.parseColor(mediumMint)) }
         }
 
         // 평점 반영

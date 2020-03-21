@@ -6,6 +6,7 @@ import com.example.bookseeker.contract.BookInfoContract
 import com.example.bookseeker.model.data.EvaluationCreate
 import com.example.bookseeker.model.data.EvaluationPatch
 import com.example.bookseeker.network.RetrofitClient
+import com.example.bookseeker.network.RetrofitClient.retrofitInterface
 import com.google.gson.JsonObject
 import io.reactivex.Observable
 import okhttp3.OkHttpClient
@@ -18,10 +19,30 @@ class BookInfoPresenter : BookInfoContract.Presenter {
         bookInfoView = view
     }
 
+    // getBookObservable : 하나의 평가 데이터 조회 요청을 관찰하는 함수
+    fun getBookObservable(context: Context, bsin: String): Observable<JsonObject> {
+        val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
+        val retrofitInterface = retrofitInterface(client)
+
+        return Observable.create { subscriber ->
+            // 데이터 생성을 위한 Create
+            val callResponse = retrofitInterface.getBook(bsin)
+            val response = callResponse.execute()
+
+            if (response.isSuccessful) {
+                val result = response.body()!!
+                subscriber.onNext(result)
+                subscriber.onComplete() // 모든 데이터 발행이 완료되었음을 알림
+            } else {
+                subscriber.onError(Throwable(response.message()))
+            }
+        }
+    }
+
     // createEvaluationObservable : 하나의 평가 데이터 생성 요청을 관찰하는 함수
     fun createEvaluationObservable(context: Context, evaluationCreate: EvaluationCreate): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
-        val retrofitInterface = RetrofitClient.retrofitInterface(client)
+        val retrofitInterface = retrofitInterface(client)
 
         // 데이터 생성을 위한 Create
         return Observable.create { subscriber ->
@@ -41,7 +62,7 @@ class BookInfoPresenter : BookInfoContract.Presenter {
     // patchEvaluationObservable : 하나의 평가 데이터 수정 요청을 관찰하는 함수
     fun patchEvaluationObservable(context: Context, evaluationPatch: EvaluationPatch): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
-        val retrofitInterface = RetrofitClient.retrofitInterface(client)
+        val retrofitInterface = retrofitInterface(client)
 
         // 데이터 생성을 위한 Create
         return Observable.create { subscriber ->
@@ -61,7 +82,7 @@ class BookInfoPresenter : BookInfoContract.Presenter {
     // deleteEvaluationObservable : 하나의 평가 데이터 삭제 요청을 관찰하는 함수
     fun deleteEvaluationObservable(context: Context, bsin: String): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
-        val retrofitInterface = RetrofitClient.retrofitInterface(client)
+        val retrofitInterface = retrofitInterface(client)
 
         // 데이터 생성을 위한 Create
         return Observable.create { subscriber ->
