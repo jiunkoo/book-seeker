@@ -325,7 +325,39 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
                             var jsonArray = (result.get("data")).asJsonArray
                             jsonObject = jsonArray[0].asJsonObject
 
-                            setBookData()
+                            var cover = jsonObject.get("cover").toString().replace("\"", "")
+                            var title = jsonObject.get("title").toString().replace("\"", "")
+                            var author = jsonObject.get("author").toString().replace("\"", "")
+                            var publisher = jsonObject.get("publisher").toString().replace("\"", "")
+                            var publication_date = jsonObject.get("publication_date").toString().replace("\"", "")
+                            var introduction = jsonObject.get("introduction").toString()
+                                .replace("\"", "").replace("\\n", "\n")
+                            var myRating = jsonObject.get("rating").toString().replace("\"", "").toFloat()
+                            var myState = jsonObject.get("state").toString().replace("\"", "").toInt()
+                            var allAverage = jsonObject.get("average").toString().replace("\"", "").toFloat()
+                            var allCount = jsonObject.get("count").toString().replace("\"", "").toInt()
+
+                            var splitUrl = cover.split("/")
+                            var coverUrl: String = "https://img.ridicdn.net/cover/" + splitUrl[4] + "/xxlarge"
+                            Glide.with(this).load(coverUrl).into(bookinfo_imgv_book)
+                            bookinfo_txtv_booktitle.text = title
+                            bookinfo_txtv_author.text = author
+                            bookinfo_txtv_publisher.text = publisher
+                            bookinfo_txtv_date.text = publication_date
+                            bookinfo_txtv_introduction.text = introduction
+
+                            // 평가 개수 & 평균 별점 설정
+                            bookinfo_txtv_averagestar.text = "평균 ★ " + allAverage + " (" + allCount + "명)"
+
+                            when (myState) {
+                                0 -> { bookinfo_btn_boring.setBackgroundColor(Color.parseColor(mediumRed)) }
+                                1 -> { bookinfo_btn_interesting.setBackgroundColor(Color.parseColor(mediumYellow)) }
+                                2 -> { bookinfo_btn_reading.setBackgroundColor(Color.parseColor(mediumLime)) }
+                                3 -> { bookinfo_btn_read.setBackgroundColor(Color.parseColor(mediumMint)) }
+                            }
+
+                            // 평점 반영
+                            setEvaluation(myRating, myState)
 
                             preFlag = true
                         }
@@ -352,6 +384,11 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
                             var jsonObject = (result.get("data")).asJsonObject
                             var rating = jsonObject.get("rating").toString().replace("\"", "").toFloat()
                             var state = jsonObject.get("state").toString().replace("\"", "").toInt()
+                            var allAverage = jsonObject.get("average").toString().replace("\"", "").toFloat()
+                            var allCount = jsonObject.get("count").toString().replace("\"", "").toInt()
+
+                            // 평가 개수 & 평균 별점 설정
+                            bookinfo_txtv_averagestar.text = "평균 ★ " + allAverage + " (" + allCount + "명)"
 
                             // 변경된 평점 반영
                             setEvaluation(rating, state)
@@ -379,6 +416,11 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
                             var jsonObject = (result.get("data")).asJsonObject
                             var rating = jsonObject.get("rating").toString().replace("\"", "").toFloat()
                             var state = jsonObject.get("state").toString().replace("\"", "").toInt()
+                            var allAverage = jsonObject.get("average").toString().replace("\"", "").toFloat()
+                            var allCount = jsonObject.get("count").toString().replace("\"", "").toInt()
+
+                            // 평가 개수 & 평균 별점 설정
+                            bookinfo_txtv_averagestar.text = "평균 ★ " + allAverage + " (" + allCount + "명)"
 
                             // 변경된 평점 반영
                             setEvaluation(rating, state)
@@ -406,8 +448,13 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
                     { result ->
                         if ((result.get("success").toString()).equals("true")) {
                             // 삭제의 경우 반환값이 bsin이므로 특별한 반영 없음
-                            var rating = -1f
-                            var state = -1
+                            var rating = jsonObject.get("rating").toString().replace("\"", "").toFloat()
+                            var state = jsonObject.get("state").toString().replace("\"", "").toInt()
+                            var allAverage = jsonObject.get("average").toString().replace("\"", "").toFloat()
+                            var allCount = jsonObject.get("count").toString().replace("\"", "").toInt()
+
+                            // 평가 개수 & 평균 별점 설정
+                            bookinfo_txtv_averagestar.text = "평균 ★ " + allAverage + " (" + allCount + "명)"
 
                             // 변경된 평점 반영
                             setEvaluation(rating, state)
@@ -420,43 +467,6 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
                     }
                 )
         disposables.add(subscription)
-    }
-
-    // 화면에 도서 정보를 나타내는 함수
-    private fun setBookData() {
-        var cover = jsonObject.get("cover").toString().replace("\"", "")
-        var title = jsonObject.get("title").toString().replace("\"", "")
-        var author = jsonObject.get("author").toString().replace("\"", "")
-        var publisher = jsonObject.get("publisher").toString().replace("\"", "")
-        var publication_date = jsonObject.get("publication_date").toString().replace("\"", "")
-        var introduction = jsonObject.get("introduction").toString()
-            .replace("\"", "").replace("\\n", "\n")
-        var myRating = jsonObject.get("rating").toString().replace("\"", "").toFloat()
-        var myState = jsonObject.get("state").toString().replace("\"", "").toInt()
-        var allCount = jsonObject.get("count").toString().replace("\"", "").toInt()
-        var allAverage = jsonObject.get("average").toString().replace("\"", "").toFloat()
-
-        var splitUrl = cover.split("/")
-        var coverUrl: String = "https://img.ridicdn.net/cover/" + splitUrl[4] + "/xxlarge"
-        Glide.with(this).load(coverUrl).into(bookinfo_imgv_book)
-        bookinfo_txtv_booktitle.text = title
-        bookinfo_txtv_author.text = author
-        bookinfo_txtv_publisher.text = publisher
-        bookinfo_txtv_date.text = publication_date
-        bookinfo_txtv_introduction.text = introduction
-
-        // 평가 개수 & 평균 별점 설정
-        bookinfo_txtv_averagestar.text = "평균 ★ " + allAverage + " (" + allCount + "명)"
-
-        when (myState) {
-            0 -> { bookinfo_btn_boring.setBackgroundColor(Color.parseColor(mediumRed)) }
-            1 -> { bookinfo_btn_interesting.setBackgroundColor(Color.parseColor(mediumYellow)) }
-            2 -> { bookinfo_btn_reading.setBackgroundColor(Color.parseColor(mediumLime)) }
-            3 -> { bookinfo_btn_read.setBackgroundColor(Color.parseColor(mediumMint)) }
-        }
-
-        // 평점 반영
-        setEvaluation(myRating, myState)
     }
 
     // 화면에 도서 평점을 나타내는 함수
