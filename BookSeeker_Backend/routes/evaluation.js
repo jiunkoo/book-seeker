@@ -54,12 +54,12 @@ router.post('/', clientIp, isLoggedIn, async (req, res, next) => {
         }
 
         // 기존 사용자의 평가 데이터가 있는지 검색
-        let query =
+        let searchQuery =
             'SELECT * ' +
             'FROM evaluations ' +
             'WHERE user_uid=:user_uid AND bsin=:bsin; ';
 
-        const evaluation = await sequelize.query(query, {
+        const evaluation = await sequelize.query(searchQuery, {
             replacements: {
                 user_uid: user_uid,
                 bsin: bsin
@@ -71,12 +71,12 @@ router.post('/', clientIp, isLoggedIn, async (req, res, next) => {
         // 평가 데이터가 있는 경우
         if (evaluation[0] != null) {
             // 기존의 평가 데이터 수정
-            let query =
+            let updateQuery =
                 'UPDATE evaluations ' +
                 'SET rating=:rating, state=:state, deletedAt=null ' +
                 'WHERE user_uid=:user_uid AND bsin=:bsin; ';
 
-            await sequelize.query(query, {
+            await sequelize.query(updateQuery, {
                 replacements: {
                     user_uid: user_uid,
                     bsin: bsin,
@@ -87,12 +87,30 @@ router.post('/', clientIp, isLoggedIn, async (req, res, next) => {
                 raw: true
             });
 
-            const returnData = await Evaluation.findOne({
-                where: {
-                    user_uid: user_uid,
+            // 도서 평균 평점, 인원 수 조회
+            let averageQuery =
+                'SELECT IFNULL(AVG(rating), 0) as average, COUNT(bsin) AS count ' +
+                'FROM evaluations ' +
+                'WHERE bsin=:bsin ' +
+                'AND rating > 0 ' +
+                'AND deletedAt IS NULL';
+
+            const average = await sequelize.query(averageQuery, {
+                replacements: {
                     bsin: bsin
-                }
+                },
+                type: Sequelize.QueryTypes.SELECT,
+                raw: true
             });
+
+            console.log(average);
+
+            const returnData = new Object();
+            returnData.bsin = bsin;
+            returnData.rating = rating;
+            returnData.state = state;
+            returnData.average = average[0].average;
+            returnData.count = average[0].count;
 
             // 도서 평가 성공 메세지 반환
             const result = new Object();
@@ -105,7 +123,7 @@ router.post('/', clientIp, isLoggedIn, async (req, res, next) => {
         // 평가 데이터가 없는 경우
         else {
             // 평가 데이터 생성
-            const createEvaluation = await Evaluation.create({
+            await Evaluation.create({
                 user_uid: user_uid,
                 bsin: bsin,
                 genre: genre,
@@ -113,10 +131,33 @@ router.post('/', clientIp, isLoggedIn, async (req, res, next) => {
                 state: state
             });
 
+            // 도서 평균 평점, 인원 수 조회
+            let averageQuery =
+                'SELECT IFNULL(AVG(rating), 0) as average, COUNT(bsin) AS count ' +
+                'FROM evaluations ' +
+                'WHERE bsin=:bsin ' +
+                'AND rating > 0 ' +
+                'AND deletedAt IS NULL';
+
+            const average = await sequelize.query(averageQuery, {
+                replacements: {
+                    bsin: bsin
+                },
+                type: Sequelize.QueryTypes.SELECT,
+                raw: true
+            });
+
+            const returnData = new Object();
+            returnData.bsin = bsin;
+            returnData.rating = rating;
+            returnData.state = state;
+            returnData.average = average[0].average;
+            returnData.count = average[0].count;
+
             // 도서 평가 성공 메세지 반환
             const result = new Object();
             result.success = true;
-            result.data = createEvaluation;
+            result.data = returnData;
             result.message = '도서 평가를 성공했습니다.';
             winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] ${result.message}`);
             return res.status(201).send(result);
@@ -223,18 +264,18 @@ router.get('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
         winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}]  bsin: ${bsin}`);
 
         let query =
-            'SELECT e1.bsin, e1.rating, e1.state, IFNULL(AVG(e2.rating), 0) as average, COUNT(e2.bsin) AS count '
-            'FROM ('
-            'SELECT * '
-            'FROM evaluations '
-            'WHERE user_uid=:user_uid '
-            'AND bsin=:bsin'
-            ') AS e1 '
-            'LEFT OUTER JOIN ('
-            'SELECT * '
-            'FROM evaluations '
-            'WHERE rating > 0'
-            ') AS e2 '
+            'SELECT e1.bsin, e1.rating, e1.state, IFNULL(AVG(e2.rating), 0) as average, COUNT(e2.bsin) AS count ' +
+            'FROM (' +
+            'SELECT * ' +
+            'FROM evaluations ' +
+            'WHERE user_uid=:user_uid ' +
+            'AND bsin=:bsin' +
+            ') AS e1 ' +
+            'LEFT OUTER JOIN (' +
+            'SELECT * ' +
+            'FROM evaluations ' +
+            'WHERE rating > 0' +
+            ') AS e2 ' +
             'ON e1.bsin = e2.bsin;';
 
         const book = await sequelize.query(query, {
@@ -279,11 +320,6 @@ router.patch('/', clientIp, isLoggedIn, async (req, res, next) => {
         winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] 도서 평가 수정 Request`);
         winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] bsin : ${bsin}, rating : ${rating}, state : ${state}`);
 
-        const returnData = Object();
-        returnData.bsin = bsin;
-        returnData.rating = rating;
-        returnData.state = state;
-
         // 도서 평가 수정
         await Evaluation.update({
             rating: rating,
@@ -294,6 +330,29 @@ router.patch('/', clientIp, isLoggedIn, async (req, res, next) => {
                 bsin: bsin
             }
         });
+
+        // 도서 평균 평점, 인원 수 조회
+        let averageQuery =
+            'SELECT IFNULL(AVG(rating), 0) as average, COUNT(bsin) AS count ' +
+            'FROM evaluations ' +
+            'WHERE bsin=:bsin ' +
+            'AND rating > 0 ' +
+            'AND deletedAt IS NULL';
+
+        const average = await sequelize.query(averageQuery, {
+            replacements: {
+                bsin: bsin
+            },
+            type: Sequelize.QueryTypes.SELECT,
+            raw: true
+        });
+
+        const returnData = new Object();
+        returnData.bsin = bsin;
+        returnData.rating = rating;
+        returnData.state = state;
+        returnData.average = average[0].average;
+        returnData.count = average[0].count;
 
         // 도서 검색 성공 메세지 반환
         const result = new Object();
@@ -326,6 +385,16 @@ router.delete('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
         winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] 도서 평가 삭제 Request`);
         winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] bsin : ${bsin}`);
 
+        // 도서 평가 변경
+        await Evaluation.update({
+            rating: -1
+        }, {
+            where: {
+                user_uid: user_uid,
+                bsin: bsin
+            }
+        });
+
         // 도서 평가 삭제
         await Evaluation.destroy({
             where: {
@@ -334,10 +403,33 @@ router.delete('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
             }
         });
 
+        // 도서 평균 평점, 인원 수 조회
+        let averageQuery =
+            'SELECT IFNULL(AVG(rating), 0) as average, COUNT(bsin) AS count ' +
+            'FROM evaluations ' +
+            'WHERE bsin=:bsin ' +
+            'AND rating > 0 ' +
+            'AND deletedAt IS NULL';
+
+        const average = await sequelize.query(averageQuery, {
+            replacements: {
+                bsin: bsin
+            },
+            type: Sequelize.QueryTypes.SELECT,
+            raw: true
+        });
+
+        const returnData = new Object();
+        returnData.bsin = bsin;
+        returnData.rating = -1;
+        returnData.state = -1;
+        returnData.average = average[0].average;
+        returnData.count = average[0].count;
+
         // 도서 검색 성공 메세지 반환
         const result = new Object();
         result.success = true;
-        result.data = bsin;
+        result.data = returnData;
         result.message = '도서 평가 삭제를 성공했습니다.';
         winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] ${result.message}`);
         return res.status(200).send(result);
