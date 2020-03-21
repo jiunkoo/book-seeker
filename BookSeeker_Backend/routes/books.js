@@ -301,10 +301,13 @@ router.get('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
             'WHERE bsin=:bsin ' +
             'AND rating > 0 ' +
             ') AS e1 ' +
-            'LEFT OUTER JOIN evaluations AS e2 ' +
-            'ON e1.bsin=e2.bsin ' +
-            'AND e2.user_uid=:user_uid ' +
-            'AND e2.deletedAt IS NULL) AS e ' +
+            'LEFT OUTER JOIN (' +
+            'SELECT * ' +
+            'FROM evaluations ' +
+            'WHERE user_uid=:user_uid ' +
+            'AND deletedAt IS NULL' +
+            ') AS e2 ' +
+            'ON e1.bsin=e2.bsin) AS e ' +
             'LEFT OUTER JOIN books AS b ' +
             'ON b.bsin=:bsin;';
 
