@@ -124,8 +124,15 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
                     'SELECT * ' +
                     'FROM books ' +
                     'WHERE genre=:genre AND ' +
-                    'bsin NOT IN(SELECT bsin FROM bookhistories WHERE user_uid=:user_uid) AND ' +
-                    'bsin NOT IN(SELECT bsin FROM ratings WHERE user_uid=:user_uid AND deletedAt IS NULL) ' +
+                    'bsin NOT IN(' +
+                    'SELECT bsin ' +
+                    'FROM bookhistories ' +
+                    'WHERE user_uid=:user_uid' +
+                    ') AND bsin NOT IN(' +
+                    'SELECT bsin ' +
+                    'FROM evaluations ' +
+                    'WHERE user_uid=:user_uid ' +
+                    'AND deletedAt IS NULL) ' +
                     'ORDER BY :order ' +
                     'LIMIT :limit ' +
                     'OFFSET :offset;';
@@ -174,8 +181,12 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
                 let query =
                     'SELECT * ' +
                     'FROM books ' +
-                    'WHERE genre=:genre AND ' +
-                    'bsin NOT IN(SELECT bsin FROM ratings WHERE user_uid=:user_uid AND deletedAt IS NULL) ' +
+                    'WHERE genre=:genre ' +
+                    'AND bsin NOT IN(' +
+                    'SELECT bsin ' +
+                    'FROM evaluations ' +
+                    'WHERE user_uid=:user_uid ' +
+                    'AND deletedAt IS NULL) ' +
                     'ORDER BY :order ' +
                     'LIMIT :limit ' +
                     'OFFSET :offset;';
@@ -242,7 +253,11 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
                 'SELECT * ' +
                 'FROM books ' +
                 'WHERE genre=:genre AND ' +
-                'bsin NOT IN(SELECT bsin FROM ratings WHERE user_uid=:user_uid AND deletedAt IS NULL) ' +
+                'bsin NOT IN(' +
+                'SELECT bsin ' +
+                'FROM evaluations ' +
+                'WHERE user_uid=:user_uid ' +
+                'AND deletedAt IS NULL) ' +
                 'ORDER BY :order ' +
                 'LIMIT :limit ' +
                 'OFFSET :offset;';
@@ -299,12 +314,14 @@ router.get('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
             'SELECT * ' +
             'FROM evaluations ' +
             'WHERE user_uid=:user_uid ' +
-            'AND bsin=:bsin' +
+            'AND bsin=:bsin ' +
+            'AND deletedAt IS NULL' +
             ') AS e1 ' +
             'LEFT OUTER JOIN (' +
             'SELECT * ' +
             'FROM evaluations ' +
-            'WHERE rating > 0' +
+            'WHERE rating > 0 ' +
+            'AND deletedAt IS NULL' +
             ') AS e2 ' +
             'ON e1.bsin = e2.bsin' +
             ') as e ' +
