@@ -292,17 +292,21 @@ router.get('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
         winston.log('info', `[BOOK][${req.clientIp}|${user_email}]  bsin: ${bsin}`);
 
         let query =
-            'SELECT b.*, COUNT(e.bsin) AS count, IFNULL(AVG(e.rating), -2) AS average ' +
-            'FROM (' +
-            'SELECT b.*, IFNULL(e.rating, -2) AS rating, IFNULL(e.state, -2) AS state ' +
-            'FROM (SELECT * FROM books WHERE bsin=:bsin) AS b ' +
-            'LEFT OUTER JOIN evaluations AS e ' +
-            'ON b.bsin = e.bsin ' +
-            'AND e.user_uid=:user_uid ' +
-            'AND e.deletedAt IS NULL' +
-            ') AS b ' +
-            'LEFT OUTER JOIN evaluations AS e ' +
-            'ON b.bsin = e.bsin;';
+            'SELECT b.*, e.* ' +
+            'FROM ' +
+            '(SELECT IFNULL(e2.rating, -1) AS rating, IFNULL(e2.state, -1) AS state, e1.count, e1.average ' +
+            'FROM ( ' +
+            'SELECT bsin, COUNT(bsin) AS count, IFNULL(AVG(rating), -1) AS average ' +
+            'FROM evaluations ' +
+            'WHERE bsin=:bsin ' +
+            'AND rating > 0 ' +
+            ') AS e1 ' +
+            'LEFT OUTER JOIN evaluations AS e2 ' +
+            'ON e1.bsin=e2.bsin ' +
+            'AND e2.user_uid=:user_uid ' +
+            'AND e2.deletedAt IS NULL) AS e ' +
+            'LEFT OUTER JOIN books AS b ' +
+            'ON b.bsin=:bsin;';
 
         const book = await sequelize.query(query, {
             replacements: {
