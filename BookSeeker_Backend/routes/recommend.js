@@ -101,6 +101,7 @@ router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) 
 
         const unEvaluationList = await sequelize.query(unEvaluationQuery, {
             replacements: {
+                user_uid: user_uid,
                 genre: genre
             },
             type: Sequelize.QueryTypes.SELECT,
