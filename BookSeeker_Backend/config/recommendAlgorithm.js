@@ -83,8 +83,12 @@ module.exports = {
 
         // 반복문을 돌려 bookRatingRank에 있는 평점을 bookRankingList으로 옮기고 내림차순으로 정렬
         for (let bsin in bookRatingRank) {
-            if(userState[bsin] == 3){
-                continue;
+            if(userState[bsin]){
+                if(userState[bsin] >= 0 && userState[bsin] <= 3){
+                    continue;
+                } else {
+                    bookRankingList.push({ bsin: bsin, rating: bookRatingRank[bsin] });
+                }
             }else {
                 bookRankingList.push({ bsin: bsin, rating: bookRatingRank[bsin] });
             }
@@ -168,7 +172,7 @@ module.exports = {
             for (let bsin in estimatedEvaluation) {
                 // 특정 사용자 평가가 있는 경우
                 if (trainedDataset.userState[bsin]) {
-                    if (trainedDataset.userState[bsin] == 0 | trainedDataset.userState[bsin] == 3) {
+                    if (trainedDataset.userState[bsin] >= 0 && trainedDataset.userState[bsin] <= 3) {
                         continue; // push 생략
                     } else {
                         returnData.push({ bsin: bsin, rating: Math.round(Math.log(estimatedEvaluation[bsin] + 1) * 100) / 100 });
