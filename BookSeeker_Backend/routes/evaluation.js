@@ -252,50 +252,62 @@ router.get('/:genre/:filter/:state/:page/:limit', clientIp, isLoggedIn, async (r
     }
 });
 
-// 개별 도서 평가 조회
-router.get('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
+// 장르별 도서 평가 개수 조회
+router.get('/count/genre', clientIp, isLoggedIn, async (req, res, next) => {
     try {
         const user_email = req.user.email;
         const user_uid = req.user.user_uid;
 
-        const bsin = parseInt(req.params.bsin);
+        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] 장르별 도서 평가 개수 조회 Request`);
 
-        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] 개별 도서 평가 조회 Request`);
-        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}]  bsin: ${bsin}`);
-
-        let query =
-            'SELECT e1.bsin, e1.rating, e1.state, IFNULL(AVG(e2.rating), 0) as average, COUNT(e2.bsin) AS count ' +
-            'FROM (' +
-            'SELECT * ' +
+        let countQuery =
+            'SELECT COUNT(*) AS count ' +
             'FROM evaluations ' +
             'WHERE user_uid=:user_uid ' +
-            'AND bsin=:bsin' +
-            ') AS e1 ' +
-            'LEFT OUTER JOIN (' +
-            'SELECT * ' +
-            'FROM evaluations ' +
-            'WHERE rating > 0' +
-            ') AS e2 ' +
-            'ON e1.bsin = e2.bsin;';
+            'AND genre=:genre ' +
+            'AND deletedAt IS NULL';
 
-        const book = await sequelize.query(query, {
+        const countComic = await sequelize.query(countQuery, {
             replacements: {
-                bsin: bsin,
-                user_uid: user_uid
+                user_uid: user_uid,
+                genre: "COMIC"
             },
             type: Sequelize.QueryTypes.SELECT,
             raw: true
         });
 
+        const countRomance = await sequelize.query(countQuery, {
+            replacements: {
+                user_uid: user_uid,
+                genre: "ROMANCE"
+            },
+            type: Sequelize.QueryTypes.SELECT,
+            raw: true
+        });
+
+        const countFantasy = await sequelize.query(countQuery, {
+            replacements: {
+                user_uid: user_uid,
+                genre: "FANTASY"
+            },
+            type: Sequelize.QueryTypes.SELECT,
+            raw: true
+        });
+
+        returnData = new Object();
+        returnData.comic = countComic[0].count;
+        returnData.romance = countRomance[0].count;
+        returnData.fantasy = countFantasy[0].count;
+
         // 도서 검색 성공 메세지 반환
         const result = new Object();
         result.success = true;
-        result.data = book;
-        result.message = '개별 도서 조회를 성공했습니다.';
+        result.data = returnData;
+        result.message = '장르별 도서 평가 개수 조회를 성공했습니다.';
         winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] ${result.message}`);
         return res.status(200).send(result);
     } catch (e) {
-        winston.log('error', `[EVALUATION][${req.clientIp}|${req.user.email}] 개별 도서 조회 Exception`);
+        winston.log('error', `[EVALUATION][${req.clientIp}|${req.user.email}] 장르별 도서 평가 개수 조회 Exception`);
 
         const result = new Object();
         result.success = false;
@@ -306,6 +318,84 @@ router.get('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
         return next(e);
     }
 });
+
+// 상태별 도서 평가 개수 조회
+router.get('/count/state', clientIp, isLoggedIn, async (req, res, next) => {
+    try {
+        const user_email = req.user.email;
+        const user_uid = req.user.user_uid;
+
+        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] 상태별 도서 평가 개수 조회 Request`);
+
+        let countQuery =
+            'SELECT COUNT(*) AS count ' +
+            'FROM evaluations ' +
+            'WHERE user_uid=:user_uid ' +
+            'AND state=:state ' +
+            'AND deletedAt IS NULL';
+
+        const countBoring = await sequelize.query(countQuery, {
+            replacements: {
+                user_uid: user_uid,
+                state: 0
+            },
+            type: Sequelize.QueryTypes.SELECT,
+            raw: true
+        });
+
+        const countInteresting = await sequelize.query(countQuery, {
+            replacements: {
+                user_uid: user_uid,
+                state: 1
+            },
+            type: Sequelize.QueryTypes.SELECT,
+            raw: true
+        });
+
+        const countReading = await sequelize.query(countQuery, {
+            replacements: {
+                user_uid: user_uid,
+                state: 2
+            },
+            type: Sequelize.QueryTypes.SELECT,
+            raw: true
+        });
+
+        const countRead = await sequelize.query(countQuery, {
+            replacements: {
+                user_uid: user_uid,
+                state: 3
+            },
+            type: Sequelize.QueryTypes.SELECT,
+            raw: true
+        });
+
+        returnData = new Object();
+        returnData.boring = countBoring[0].count;
+        returnData.interesting = countInteresting[0].count;
+        returnData.reading = countReading[0].count;
+        returnData.read = countRead[0].count;
+
+        // 도서 검색 성공 메세지 반환
+        const result = new Object();
+        result.success = true;
+        result.data = returnData;
+        result.message = '상태별 도서 평가 개수 조회를 성공했습니다.';
+        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] ${result.message}`);
+        return res.status(200).send(result);
+    } catch (e) {
+        winston.log('error', `[EVALUATION][${req.clientIp}|${req.user.email}] 상태별 도서 평가 개수 조회 Exception`);
+
+        const result = new Object();
+        result.success = false;
+        result.data = 'NONE';
+        result.message = 'INTERNAL SERVER ERROR';
+        winston.log('error', `[EVALUATION][${req.clientIp}|${req.user.email}] ${result.message}`);
+        res.status(500).send(result);
+        return next(e);
+    }
+});
+
 
 // 도서 평가 수정
 router.patch('/', clientIp, isLoggedIn, async (req, res, next) => {
