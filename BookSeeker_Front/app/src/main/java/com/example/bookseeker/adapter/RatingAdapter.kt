@@ -48,6 +48,11 @@ class RatingAdapter(listener: RatingDelegateAdapter.onViewSelectedListener) : Re
         notifyItemRangeChanged(initPosition, items.size + 1 /* plus loading item */)
     }
 
+    fun modifyBookList(bookData: BookData, position: Int) {
+        items[position] = bookData
+        notifyItemChanged(position)
+    }
+
     fun clearAndAddBookList(bookData: List<BookData>) {
         println("도서 목록을 삭제하고 추가하였습니다.")
         items.clear()
