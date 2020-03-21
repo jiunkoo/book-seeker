@@ -175,6 +175,22 @@ router.get('/mine', clientIp, isLoggedIn, async (req, res, next) => {
       tutorial: req.user.tutorial
     }
 
+    let countQuery =
+      'SELECT COUNT(*) AS count ' +
+      'FROM evaluations ' +
+      'WHERE user_uid=:user_uid ' +
+      'AND deletedAt IS NULL '
+      'GROUP BY genre';
+
+    const evaluationCount = await sequelize.query(countQuery, {
+      replacements: {
+        user_uid: user_uid,
+        genre: genre
+      },
+      type: Sequelize.QueryTypes.SELECT,
+      raw: true
+    });
+
     // 로그인 성공 메세지 리턴
     const result = new Object();
     result.success = true;
