@@ -17,6 +17,8 @@ import com.example.bookseeker.adapter.listener.InfiniteScrollListener
 import com.example.bookseeker.contract.RatingContract
 import com.example.bookseeker.model.data.BookData
 import com.example.bookseeker.model.data.BookList
+import com.example.bookseeker.model.data.EvaluationCreate
+import com.example.bookseeker.model.data.EvaluationPatch
 import com.example.bookseeker.presenter.RatingPresenter
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_rating.*
@@ -31,6 +33,8 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
     private lateinit var ratingPresenter: RatingPresenter
     // Disposable 객체 지연 초기화
     private lateinit var disposables: CompositeDisposable
+    // RecyclerView 설정
+    private lateinit var recyclerView: RecyclerView
     // RecyclerView Adapter 설정
     private val ratingAdapter by lazy { RatingAdapter(this) }
     // Spinner Item Change Flag 설정
@@ -39,6 +43,8 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
     // Tab Item Change Flag 설정
     private var tabPosition = 0
     private var tabFlag = false
+    // Rating Flag 설정
+    private var ratingFlag = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,16 +57,16 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
         disposables = CompositeDisposable()
 
         // Spinner, Recyclerview 설정
-        val recyclerView = findViewById(R.id.rating_recyclerview) as RecyclerView
+        recyclerView = findViewById(R.id.rating_recyclerview) as RecyclerView
 
         // BottomNavigationView 이벤트 처리
         switchBottomNavigationView()
 
         // Tab Layout 이벤트 처리
-        setTabLayout(recyclerView, savedInstanceState)
+        setTabLayout(savedInstanceState)
 
         // Spinner 처리
-        setSpinner(recyclerView, savedInstanceState)
+        setSpinner(savedInstanceState)
     }
 
     // initPresenter : View와 상호작용할 Presenter를 주입하기 위한 함수
@@ -116,7 +122,7 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
     }
 
     // setTabLayout : RatingActivity에서 Tab Layout Event를 처리하는 함수
-    fun setTabLayout(recyclerView: RecyclerView, savedInstanceState: Bundle?) {
+    fun setTabLayout(savedInstanceState: Bundle?) {
         rating_tablayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 var position = tab.position
@@ -125,10 +131,12 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
                 if (tabPosition != position) {
                     tabPosition = position
                     tabFlag = true
+                    ratingFlag = false
                 } else {
                     tabFlag = false
+                    ratingFlag = true
                 }
-                setRecyclerView(recyclerView, savedInstanceState)
+                setRecyclerView(savedInstanceState)
             }
             override fun onTabUnselected(tab: TabLayout.Tab) {}
             override fun onTabReselected(tab: TabLayout.Tab) {}
@@ -136,24 +144,26 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
     }
 
     // setSpinner : 평가할 도서 목록에 대한 Spinner를 초기화 및 정의하는 함수
-    fun setSpinner(recyclerView: RecyclerView, savedInstanceState: Bundle?) {
+    fun setSpinner(savedInstanceState: Bundle?) {
         rating_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 // 이전 카테고리와 현재 포지션과 다른 경우 변경
                 if (filter != position) {
                     filter = position
                     spinnerFlag = true
+                    ratingFlag = false
                 } else {
                     spinnerFlag = false
+                    ratingFlag = true
                 }
-                setRecyclerView(recyclerView, savedInstanceState)
+                setRecyclerView(savedInstanceState)
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
     }
 
     // setRecyclerView : 검색한 도서 목록에 대한 RecyclerView를 초기화 및 정의하는 함수
-    fun setRecyclerView(recyclerView: RecyclerView, savedInstanceState: Bundle?) {
+    fun setRecyclerView(savedInstanceState: Bundle?) {
         // Layout Manager 설정
         recyclerView.setHasFixedSize(true)
         val linearLayout = LinearLayoutManager(this)
@@ -162,7 +172,7 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
         recyclerView.clearOnScrollListeners() // 아이템 끝까지 도달되었을 때 클리어
         recyclerView.addOnScrollListener(
             InfiniteScrollListener(
-                { getBooksSubscribe(recyclerView) },
+                { getBooksSubscribe() },
                 linearLayout
             )
         ) // 다시 갱신
@@ -173,7 +183,7 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
         }
 
         if (savedInstanceState == null) {
-            getBooksSubscribe(recyclerView)
+            getBooksSubscribe()
         }
     }
 
@@ -184,32 +194,37 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
     }
 
     // onItemSelected : RecyclerView의 아이템 별점이 선택된 경우
-    override fun onRatingBarChangeListener(ratingBar: RatingBar, float: Float, boolean: Boolean) {
-        showMessage("아이템 선택되었습니다! \n 평점은 " + float + "입니다.")
-        // TODO : 평점 평가하면 반영되도록
+    override fun onRatingBarChangeListener(bookData: BookData, position: Int,
+                                           ratingBar: RatingBar, postRating: Float, boolean: Boolean) {
+        if(ratingFlag){
+            // 변경 전 평점 == -1 && 0 < 변경 후 평점 <= 5
+            // 평가 데이터 생성
+            if (bookData.rating == -1f && (postRating > 0.0f && postRating <= 5.0f)) {
+                println("최초")
+                var evaluationCreate = EvaluationCreate(bookData.bsin, bookData.genre, postRating, bookData.state)
+                createEvaluationSubscribe(bookData, position, evaluationCreate)
+            }
+            // 0 < 변경 전(후) 평점 <= 5 && 변경 전 평점 != 변경 후 평점
+            // 평가 데이터 수정
+            else if ((bookData.rating > 0.0f && bookData.rating <= 5.0f) && (postRating > 0.0f && postRating <= 5.0f)
+                && bookData.rating != postRating
+            ) {
+                println("수정")
+                var evaluationPatch = EvaluationPatch(bookData.bsin, postRating, bookData.state)
+                patchEvaluationSubscribe(bookData, position, evaluationPatch)
+            }
+            // 0 < 변경 전 평점 <= 5 && 변경 후 평점 == 0
+            // 평가 데이터 삭제
+            else if ((bookData.rating > 0.0f && bookData.rating <= 5.0f) && postRating == 0.0f) {
+                println("삭제")
+                deleteEvaluationSubscribe(bookData, position)
+            }
+        }
 //        showMessage("평점은 " + float + "입니다.")
-//        val postRating = float
-//        // 변경 전 평점 == 0 && 0 < 변경 후 평점 <= 5
-//        // 평가 데이터 생성
-//        if (preRating == 0.0f && (postRating > 0.0f && postRating <= 5.0f)) {
-//            var evaluationCreate = EvaluationCreate(bsin, genre, postRating, preState)
-//            createEvaluationSubscribe(evaluationCreate)
-//        }
-//        // 0 < 변경 전(후) 평점 <= 5
-//        // 평가 데이터 수정
-//        else if ((preRating > 0.0f && preRating <= 5.0f) && (postRating > 0.0f && postRating <= 5.0f)) {
-//            var evaluationPatch = EvaluationPatch(bsin, postRating, preState)
-//            patchEvaluationSubscribe(evaluationPatch)
-//        }
-//        // 0 < 변경 전 평점 <= 5 && 변경 후 평점 == 0
-//        // 평가 데이터 삭제
-//        else if ((preRating > 0.0f && preRating <= 5.0f) && postRating == 0.0f) {
-//            deleteEvaluationSubscribe()
-//        }
     }
 
     // requestBookData : 관찰자에게서 발행된 데이터를 가져오는 함수
-    private fun getBooksSubscribe(recyclerView: RecyclerView) {
+    private fun getBooksSubscribe() {
         // Tab Position에 따라 Genre 설정
         var genre: String
         if (tabPosition == 0) {
@@ -262,6 +277,7 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
                             if (tabFlag == true) {
                                 (recyclerView.adapter as RatingAdapter).clearAndAddBookList(bookList.results)
                                 tabFlag = false
+                                ratingFlag = true
                             } else {
                                 (recyclerView.adapter as RatingAdapter).addBookList(bookList.results)
                             }
@@ -270,6 +286,7 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
                             if (spinnerFlag == true) {
                                 (recyclerView.adapter as RatingAdapter).clearAndAddBookList(bookList.results)
                                 spinnerFlag = false
+                                ratingFlag = true
                             } else {
                                 (recyclerView.adapter as RatingAdapter).addBookList(bookList.results)
                             }
@@ -278,6 +295,97 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
                     },
                     { e ->
                         Snackbar.make(recyclerView, e.message ?: "", Snackbar.LENGTH_LONG).show()
+                    }
+                )
+        disposables.add(subscription)
+    }
+
+    // createEvaluationSubscribe : 하나의 평가 데이터 생성 관찰자를 구독하는 함수
+    private fun createEvaluationSubscribe(bookData: BookData, position: Int, evaluationCreate: EvaluationCreate) {
+        val subscription =
+            ratingPresenter
+                .createEvaluationObservable(this, evaluationCreate)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { result ->
+                        if ((result.get("success").toString()).equals("true")) {
+                            var jsonObject = (result.get("data")).asJsonObject
+                            var rating = jsonObject.get("rating").toString().replace("\"", "").toFloat()
+                            var state = jsonObject.get("state").toString().replace("\"", "").toInt()
+
+                            bookData.rating = rating
+                            bookData.state = state
+
+                            // recyclerview에 바뀐 도서 평점 적용
+                            (recyclerView.adapter as RatingAdapter).modifyBookList(bookData, position)
+                        }
+                        // 설정 끝낸 후 프로그래스 바 종료
+                        showMessage(result.get("message").toString())
+                    },
+                    { e ->
+                        showMessage("Create evaluation error!")
+                    }
+                )
+        disposables.add(subscription)
+    }
+
+    // patchEvaluationSubscribe : 하나의 평가 데이터 수정 관찰자를 구독하는 함수
+    private fun patchEvaluationSubscribe(bookData: BookData, position: Int, evaluationPatch: EvaluationPatch) {
+        val subscription =
+            ratingPresenter
+                .patchEvaluationObservable(this, evaluationPatch)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { result ->
+                        if ((result.get("success").toString()).equals("true")) {
+                            var jsonObject = (result.get("data")).asJsonObject
+                            var rating = jsonObject.get("rating").toString().replace("\"", "").toFloat()
+                            var state = jsonObject.get("state").toString().replace("\"", "").toInt()
+
+                            bookData.rating = rating
+                            bookData.state = state
+
+                            // recyclerview에 바뀐 도서 평점 적용
+                            (recyclerView.adapter as RatingAdapter).modifyBookList(bookData, position)
+                        }
+                        // 설정 끝낸 후 프로그래스 바 종료
+                        showMessage(result.get("message").toString())
+                    },
+                    { e ->
+                        showMessage("Patch evaluation error!")
+                        println(e)
+                    }
+                )
+        disposables.add(subscription)
+    }
+
+    // deleteEvaluationSubscribe : 하나의 평가 데이터 삭제 관찰자를 구독하는 함수
+    private fun deleteEvaluationSubscribe(bookData: BookData, position: Int) {
+        val subscription =
+            ratingPresenter
+                .deleteEvaluationObservable(this, bookData.bsin)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { result ->
+                        if ((result.get("success").toString()).equals("true")) {
+                            var jsonObject = (result.get("data")).asJsonObject
+                            var rating = jsonObject.get("rating").toString().replace("\"", "").toFloat()
+                            var state = jsonObject.get("state").toString().replace("\"", "").toInt()
+
+                            bookData.rating = rating
+                            bookData.state = state
+
+                            // recyclerview에 바뀐 도서 평점 적용
+                            (recyclerView.adapter as RatingAdapter).modifyBookList(bookData, position)
+                        }
+                        // 설정 끝낸 후 프로그래스 바 종료
+                        showMessage(result.get("message").toString())
+                    },
+                    { e ->
+                        showMessage("Delete evaluation error!")
                     }
                 )
         disposables.add(subscription)

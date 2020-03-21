@@ -28,12 +28,10 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
     private lateinit var disposables: CompositeDisposable
     // 도서 정보
     private lateinit var jsonObject: JsonObject
-    // 변경 전 평점
+    // 도서 평점 및 상태 설정 플래그
     private var preRating = -1f
-    // 변경 전 상태
     private var preState = -1
-    // 도서 상태 설정 플래그
-    private var preFlag = false
+    private var ratingFlag = false
     // 색상
     val lightRed = "#ffc8d2"
     val lightYellow = "#ffebc8"
@@ -284,7 +282,7 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
         //Ratingbar Event를 처리하는 함수
         bookinfo_ratingbar_bookrating.onRatingBarChangeListener = RatingBar.OnRatingBarChangeListener()
         { ratingBar: RatingBar, postRating: Float, boolean: Boolean ->
-            if(preFlag) {
+            if(ratingFlag) {
                 // 변경 전 평점 == -1 && 0 < 변경 후 평점 <= 5
                 // 평가 데이터 생성
                 if (preRating == -1f && (postRating > 0.0f && postRating <= 5.0f)) {
@@ -359,7 +357,7 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
                             // 평점 반영
                             setEvaluation(myRating, myState)
 
-                            preFlag = true
+                            ratingFlag = true
                         }
                         showMessage(result.get("message").toString())
                     },

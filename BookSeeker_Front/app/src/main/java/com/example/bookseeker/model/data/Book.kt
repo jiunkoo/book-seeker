@@ -28,7 +28,7 @@ data class BookData(
     val adult: String,
     val genre: String,
     val publication_date: String,
-    val rating: Float,
+    var rating: Float,
     var state: Int
 ) : ViewType, Parcelable {
     override fun getViewType() = AdapterConstants.BOOKS

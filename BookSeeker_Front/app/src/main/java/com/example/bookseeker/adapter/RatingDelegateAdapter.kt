@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.item_recv_rating.view.*
 class RatingDelegateAdapter(val viewActions: onViewSelectedListener) : ViewTypeDelegateAdapter {
     interface onViewSelectedListener {
         fun onItemSelected(bookData: BookData)
-        fun onRatingBarChangeListener(ratingBar: RatingBar, float: Float, boolean: Boolean)
+        fun onRatingBarChangeListener(bookData: BookData, position: Int, ratingBar: RatingBar, float: Float, boolean: Boolean)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder {
@@ -36,12 +36,16 @@ class RatingDelegateAdapter(val viewActions: onViewSelectedListener) : ViewTypeD
             recv_rating_item_txtv_booktitle.text = bookData.title
             recv_rating_item_txtv_author.text = bookData.author
             recv_rating_item_txtv_publisher.text = bookData.publisher
-            recv_rating_item_ratingbar_bookrating.rating = 0.0f
+            if(bookData.rating < 0){
+                recv_rating_item_ratingbar_bookrating.rating = 0.0f
+            } else {
+                recv_rating_item_ratingbar_bookrating.rating = bookData.rating
+            }
 
             super.itemView.setOnClickListener { viewActions.onItemSelected(bookData) }
             recv_rating_item_ratingbar_bookrating.onRatingBarChangeListener =
                 RatingBar.OnRatingBarChangeListener { ratingBar: RatingBar, float: Float, boolean: Boolean ->
-                    viewActions.onRatingBarChangeListener(ratingBar, float, boolean)
+                    viewActions.onRatingBarChangeListener(bookData, position, ratingBar, float, boolean)
                 }
         }
     }

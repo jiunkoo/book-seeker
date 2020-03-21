@@ -3,7 +3,10 @@ package com.example.bookseeker.presenter
 import android.content.Context
 import android.util.Log
 import com.example.bookseeker.contract.RatingContract
+import com.example.bookseeker.model.data.EvaluationCreate
+import com.example.bookseeker.model.data.EvaluationPatch
 import com.example.bookseeker.network.RetrofitClient
+import com.example.bookseeker.network.RetrofitClient.retrofitInterface
 import com.google.gson.JsonObject
 import io.reactivex.Observable
 import okhttp3.OkHttpClient
@@ -24,6 +27,66 @@ class RatingPresenter : RatingContract.Presenter {
         return Observable.create { subscriber ->
             // 데이터 생성을 위한 Create
             val callResponse = retrofitInterface.getBooks(genre, filter, page, limit)
+            val response = callResponse.execute()
+
+            if (response.isSuccessful) {
+                val result = response.body()!!
+                subscriber.onNext(result)
+                subscriber.onComplete() // 모든 데이터 발행이 완료되었음을 알림
+            } else {
+                subscriber.onError(Throwable(response.message()))
+            }
+        }
+    }
+
+    // createEvaluationObservable : 하나의 평가 데이터 생성 요청을 관찰하는 함수
+    fun createEvaluationObservable(context: Context, evaluationCreate: EvaluationCreate): Observable<JsonObject> {
+        val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
+        val retrofitInterface = retrofitInterface(client)
+
+        // 데이터 생성을 위한 Create
+        return Observable.create { subscriber ->
+            val callResponse = retrofitInterface.createEvaluation(evaluationCreate)
+            val response = callResponse.execute()
+
+            if (response.isSuccessful) {
+                val result = response.body()!!
+                subscriber.onNext(result)
+                subscriber.onComplete() // 모든 데이터 발행이 완료되었음을 알림
+            } else {
+                subscriber.onError(Throwable(response.message()))
+            }
+        }
+    }
+
+    // patchEvaluationObservable : 하나의 평가 데이터 수정 요청을 관찰하는 함수
+    fun patchEvaluationObservable(context: Context, evaluationPatch: EvaluationPatch): Observable<JsonObject> {
+        val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
+        val retrofitInterface = retrofitInterface(client)
+
+        // 데이터 생성을 위한 Create
+        return Observable.create { subscriber ->
+            val callResponse = retrofitInterface.patchEvaluation(evaluationPatch)
+            val response = callResponse.execute()
+
+            if (response.isSuccessful) {
+                val result = response.body()!!
+                subscriber.onNext(result)
+                subscriber.onComplete() // 모든 데이터 발행이 완료되었음을 알림
+            } else {
+                subscriber.onError(Throwable(response.message()))
+            }
+        }
+    }
+
+    // deleteEvaluationObservable : 하나의 평가 데이터 삭제 요청을 관찰하는 함수
+    fun deleteEvaluationObservable(context: Context, bsin: String): Observable<JsonObject> {
+        val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
+        val retrofitInterface = retrofitInterface(client)
+
+        // 데이터 생성을 위한 Create
+        return Observable.create { subscriber ->
+            val callResponse = retrofitInterface.deleteEvaluation(bsin)
             val response = callResponse.execute()
 
             if (response.isSuccessful) {
