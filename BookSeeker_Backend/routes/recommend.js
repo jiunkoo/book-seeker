@@ -79,7 +79,6 @@ router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) 
         /*
         1) 추천 받을 사용자가 '관심 없어요', '읽었어요' 평가한 데이터 제외
         2) 평가 도서 목록 제외
-        3) 일반 사용자가 삭제한 데이터 제외
         */
         let unEvaluationQuery =
             'SELECT bsin ' +
