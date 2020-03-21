@@ -90,7 +90,7 @@ router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) 
             'FROM evaluations ' +
             'WHERE genre=:genre ' +
             'AND rating > 0 ' +
-            'AND deletedAt IS NULL) ';
+            'AND deletedAt IS NULL) ' +
             'UNION ' +
             '(SELECT bsin ' +
             'FROM evaluations ' +
