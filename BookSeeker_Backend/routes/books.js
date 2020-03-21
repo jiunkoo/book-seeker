@@ -46,8 +46,8 @@ router.post('/search/:filter/:page/:limit', clientIp, isLoggedIn, async (req, re
         let offset = 0;
         let order = 'publication_date ASC';
 
-        if(page > 1) {
-            offset = 10 * (page -1);
+        if (page > 1) {
+            offset = 10 * (page - 1);
         }
 
         // 필터에 따라 정렬 기준 변경
@@ -174,7 +174,7 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
                 let query =
                     'SELECT * ' +
                     'FROM books ' +
-                    'WHERE genre=:genre AND ' + 
+                    'WHERE genre=:genre AND ' +
                     'bsin NOT IN(SELECT bsin FROM ratings WHERE user_uid=:user_uid AND deletedAt IS NULL) ' +
                     'ORDER BY :order ' +
                     'LIMIT :limit ' +
@@ -239,25 +239,25 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
 
             // 페이징 적용 데이터 불러오기(내가 평가하지 않은 도서)
             let query =
-            'SELECT * ' +
-            'FROM books ' +
-            'WHERE genre=:genre AND ' + 
-            'bsin NOT IN(SELECT bsin FROM ratings WHERE user_uid=:user_uid AND deletedAt IS NULL) ' +
-            'ORDER BY :order ' +
-            'LIMIT :limit ' +
-            'OFFSET :offset;';
+                'SELECT * ' +
+                'FROM books ' +
+                'WHERE genre=:genre AND ' +
+                'bsin NOT IN(SELECT bsin FROM ratings WHERE user_uid=:user_uid AND deletedAt IS NULL) ' +
+                'ORDER BY :order ' +
+                'LIMIT :limit ' +
+                'OFFSET :offset;';
 
-        const bookList = await sequelize.query(query, {
-            replacements: {
-                user_uid: user_uid,
-                genre: genre,
-                order: order,
-                limit: limit,
-                offset: offset
-            },
-            type: Sequelize.QueryTypes.SELECT,
-            raw: true
-        });
+            const bookList = await sequelize.query(query, {
+                replacements: {
+                    user_uid: user_uid,
+                    genre: genre,
+                    order: order,
+                    limit: limit,
+                    offset: offset
+                },
+                type: Sequelize.QueryTypes.SELECT,
+                raw: true
+            });
 
             // 전체 도서 목록 조회 성공 메세지 반환
             const result = new Object();
@@ -292,24 +292,25 @@ router.get('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
         winston.log('info', `[BOOK][${req.clientIp}|${user_email}]  bsin: ${bsin}`);
 
         let query =
-            'SELECT b.*, e.* ' +
-            'FROM ' +
-            '(SELECT IFNULL(e2.rating, -1) AS rating, IFNULL(e2.state, -1) AS state, e1.count, e1.average ' +
-            'FROM ( ' +
-            'SELECT bsin, COUNT(bsin) AS count, IFNULL(AVG(rating), 0) AS average ' +
+            'SELECT e.*, b.* ' +
+            'FROM (' +
+            'SELECT e1.bsin, e1.rating, e1.state, IFNULL(AVG(e2.rating), 0) as average, COUNT(e2.bsin) AS count ' +
+            'FROM (' +
+            'SELECT * ' +
             'FROM evaluations ' +
-            'WHERE bsin=:bsin ' +
-            'AND rating > 0 ' +
+            'WHERE user_uid=:user_uid ' +
+            'AND bsin=:bsin' +
             ') AS e1 ' +
             'LEFT OUTER JOIN (' +
             'SELECT * ' +
             'FROM evaluations ' +
-            'WHERE user_uid=:user_uid ' +
-            'AND deletedAt IS NULL' +
+            'WHERE rating > 0' +
             ') AS e2 ' +
-            'ON e1.bsin=e2.bsin) AS e ' +
-            'LEFT OUTER JOIN books AS b ' +
-            'ON b.bsin=:bsin;';
+            'ON e1.bsin = e2.bsin' +
+            ') as e ' +
+            'LEFT OUTER JOIN ' +
+            'books AS b ' +
+            'ON e.bsin=b.bsin;';
 
         const book = await sequelize.query(query, {
             replacements: {
