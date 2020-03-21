@@ -7,6 +7,7 @@ import android.util.Log
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import com.bumptech.glide.Glide
 import com.example.bookseeker.R
 import com.example.bookseeker.model.data.RecommendData
@@ -42,8 +43,11 @@ class RecommendCardvAdapter(
     @View(R.id.cardv_recommend_item_txtv_expect_rating)
     lateinit var expectRating: TextView
 
-    @View(R.id.cardv_recommend_item_imgv_interesting)
-    lateinit var interesting: ImageView
+    @View(R.id.cardv_recommend_item_cardview_star)
+    lateinit var cardviewStar: CardView
+
+    @View(R.id.cardv_recommend_item_imgv_star)
+    lateinit var star: ImageView
 
     @View(R.id.cardv_recommend_item_ratingbar)
     lateinit var ratingBar: RatingBar
@@ -70,20 +74,29 @@ class RecommendCardvAdapter(
         ratingBar.rating = recommendData.rating
 
         when (recommendData.state) {
+            // '관심 없어요'인 경우
+            0 -> {
+                cardviewStar.visibility = android.view.View.VISIBLE
+                star.visibility = android.view.View.VISIBLE
+                star.setColorFilter(Color.parseColor("#e02947"))
+            }
             // '관심 있어요'인 경우
             1 -> {
-                interesting.visibility = android.view.View.VISIBLE
-                interesting.setColorFilter(Color.parseColor("#f7b73c"))
+                cardviewStar.visibility = android.view.View.VISIBLE
+                star.visibility = android.view.View.VISIBLE
+                star.setColorFilter(Color.parseColor("#f7b73c"))
             }
             // '읽고 있어요'인 경우
             2 -> {
-                interesting.visibility = android.view.View.VISIBLE
-                interesting.setColorFilter(Color.parseColor("#80c783"))
+                cardviewStar.visibility = android.view.View.VISIBLE
+                star.visibility = android.view.View.VISIBLE
+                star.setColorFilter(Color.parseColor("#80c783"))
             }
             // '읽었어요'인 경우
             3 -> {
-                interesting.visibility = android.view.View.VISIBLE
-                interesting.setColorFilter(Color.parseColor("#03738c"))
+                cardviewStar.visibility = android.view.View.VISIBLE
+                star.visibility = android.view.View.VISIBLE
+                star.setColorFilter(Color.parseColor("#03738c"))
             }
         }
 

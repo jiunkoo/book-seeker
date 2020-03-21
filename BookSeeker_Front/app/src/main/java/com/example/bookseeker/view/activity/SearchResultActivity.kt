@@ -159,9 +159,11 @@ class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDe
     }
 
     // startBookInfoActivity : bookInfoActivity로 넘어가는 함수
-    fun startBookInfoActivity(jsonObject: JsonObject) {
+    fun startBookInfoActivity(bookData: BookData) {
         val nextIntent = Intent(this, BookInfoActivity::class.java)
-        nextIntent.putExtra("bookData", jsonObject.toString())
+        nextIntent.putExtra("bsin", bookData.bsin)
+        nextIntent.putExtra("genre", bookData.genre)
+        nextIntent.putExtra("link", bookData.link)
         startActivity(nextIntent)
     }
 
@@ -211,7 +213,7 @@ class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDe
     // onItemSelected : recyclerview 아이템 선택 함수
     override fun onItemSelected(bookData: BookData) {
         // 해당 도서 데이터 가져오기
-        getBookSubscribe(bookData)
+        startBookInfoActivity(bookData)
     }
 
     // booksSearchSubscribe : 관찰자에게서 발행된 데이터를 가져오는 함수
@@ -231,13 +233,15 @@ class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDe
 
                             for (i in 0 until jsonArray.size()) {
                                 var jsonObject = jsonArray[i].asJsonObject
+
                                 // 데이터 가공 처리(큰따옴표 제거)
                                 var bookData = BookData(
                                     jsonObject.get("bsin").toString().replace("\"", ""),
                                     jsonObject.get("title").toString().replace("\"", ""),
                                     jsonObject.get("author").toString().replace("\"", ""),
                                     jsonObject.get("publisher").toString().replace("\"", ""),
-                                    jsonObject.get("introduction").toString(),
+                                    jsonObject.get("introduction").toString()
+                                        .replace("\"", "").replace("\\n", "\n"),
                                     jsonObject.get("cover").toString().replace("\"", ""),
                                     jsonObject.get("link").toString().replace("\"", ""),
                                     jsonObject.get("keyword").toString().replace("\"", ""),
@@ -264,33 +268,6 @@ class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDe
                     },
                     { e ->
                         Snackbar.make(recyclerView, e.message ?: "", Snackbar.LENGTH_LONG).show()
-                    }
-                )
-        disposables.add(subscription)
-    }
-
-    // getBookSubscribe : 하나의 평가 데이터 조회 관찰자를 구독하는 함수
-    private fun getBookSubscribe(bookData: BookData) {
-        val subscription =
-            searchResultPresenter
-                .getBookObservable(this, bookData.bsin)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { result ->
-                        if ((result.get("success").toString()).equals("true")) {
-                            // 서버에서 응답받은 데이터를 가져옴
-                            var jsonObject = (result.get("data")).asJsonObject
-
-                            showMessage(result.get("message").toString())
-                            startBookInfoActivity(jsonObject)
-                        } else {
-                            showMessage(result.get("message").toString())
-                        }
-                    },
-                    { e ->
-                        showMessage("Get evaluation error!")
-                        println(e)
                     }
                 )
         disposables.add(subscription)
