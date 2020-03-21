@@ -43,7 +43,7 @@ class RatingDelegateAdapter(val viewActions: onViewSelectedListener) : ViewTypeD
             }
 
             super.itemView.setOnClickListener { viewActions.onItemSelected(bookData) }
-            recv_rating_item_ratingbar_bookrating.onRatingBarChangeListener =
+            super.itemView.recv_rating_item_ratingbar_bookrating.onRatingBarChangeListener =
                 RatingBar.OnRatingBarChangeListener { ratingBar: RatingBar, float: Float, boolean: Boolean ->
                     viewActions.onRatingBarChangeListener(bookData, position, ratingBar, float, boolean)
                 }

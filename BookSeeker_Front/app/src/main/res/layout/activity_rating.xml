@@ -21,7 +21,7 @@
             app:layout_constraintBottom_toTopOf="@id/rating_txtv_syscomment"/>
     <TextView
             android:id="@+id/rating_txtv_syscomment"
-            android:text="취향을 알 수 있도록 15개 이상의 작품을 평가해주세요."
+            android:text="자유롭게 작품을 평가해주세요."
             android:textColor="@color/mediumAshblue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
