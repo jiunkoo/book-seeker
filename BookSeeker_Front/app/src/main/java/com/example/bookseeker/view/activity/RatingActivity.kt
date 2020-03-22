@@ -133,6 +133,7 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
                     tabPosition = position
                     tabFlag = true
                     ratingFlag = false
+                    getCountGenreSubscribe()
                 } else {
                     tabFlag = false
                     ratingFlag = true
@@ -153,6 +154,7 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
                     filter = position
                     spinnerFlag = true
                     ratingFlag = false
+                    getCountGenreSubscribe()
                 } else {
                     spinnerFlag = false
                     ratingFlag = true
@@ -201,7 +203,7 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
         if(recyclerView.scrollState == SCROLL_STATE_IDLE) {
             if (ratingFlag && bookData.rating != postRating) {
                 // 변경 전 평점 == -1 && 0 < 변경 후 평점 <= 5
-                // 평가 데이터 생성
+                // 평가 데이터 생성 및 도서 개수 가져오기
                 if (bookData.rating == -1f && (postRating > 0.0f && postRating <= 5.0f)) {
                     println("최초 : " + bookData.title)
                     var evaluationCreate = EvaluationCreate(bookData.bsin, bookData.genre, postRating, bookData.state)
@@ -224,7 +226,39 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
         }
     }
 
-    // requestBookData : 관찰자에게서 발행된 데이터를 가져오는 함수
+    // getCountGenreSubscribe : 관찰자에게서 발행된 데이터를 가져오는 함수
+    private fun getCountGenreSubscribe() {
+        val subscription =
+            ratingPresenter
+                .getCountGenreObservable(this)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { result ->
+                        if ((result.get("success").toString()).equals("true")) {
+                            var jsonObject = (result.get("data")).asJsonObject
+                            var comicCount = jsonObject.get("comic").toString().replace("\"", "")
+                            var romanceCount = jsonObject.get("romance").toString().replace("\"", "")
+                            var fantasyCount = jsonObject.get("fantasy").toString().replace("\"", "")
+
+                            if (tabPosition == 0) {
+                                rating_txtv_averagecount.text = comicCount
+                            } else if (tabPosition == 1) {
+                                rating_txtv_averagecount.text = romanceCount
+                            } else {
+                                rating_txtv_averagecount.text = fantasyCount
+                            }
+                        }
+                        executionLog("[Rating]", result.get("message").toString())
+                    },
+                    { e ->
+                        Snackbar.make(recyclerView, e.message ?: "", Snackbar.LENGTH_LONG).show()
+                    }
+                )
+        disposables.add(subscription)
+    }
+
+    // getBooksSubscribe : 관찰자에게서 발행된 데이터를 가져오는 함수
     private fun getBooksSubscribe() {
         // Tab Position에 따라 Genre 설정
         var genre: String
@@ -299,6 +333,9 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
                     }
                 )
         disposables.add(subscription)
+
+        // 도서 개수 가져오기
+        getCountGenreSubscribe()
     }
 
     // createEvaluationSubscribe : 하나의 평가 데이터 생성 관찰자를 구독하는 함수
@@ -317,6 +354,10 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
 
                             bookData.rating = rating
                             bookData.state = state
+
+                            var averageCount = rating_txtv_averagecount.text.toString().toInt()
+                            averageCount++
+                            rating_txtv_averagecount.text = (averageCount).toString()
 
                             // recyclerview에 바뀐 도서 평점 적용
                             (recyclerView.adapter as RatingAdapter).modifyBookList(bookData, position)
@@ -378,6 +419,10 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
 
                             bookData.rating = rating
                             bookData.state = state
+
+                            var averageCount = rating_txtv_averagecount.text.toString().toInt()
+                            averageCount--
+                            rating_txtv_averagecount.text = (averageCount).toString()
 
                             // recyclerview에 바뀐 도서 평점 적용
                             (recyclerView.adapter as RatingAdapter).modifyBookList(bookData, position)
