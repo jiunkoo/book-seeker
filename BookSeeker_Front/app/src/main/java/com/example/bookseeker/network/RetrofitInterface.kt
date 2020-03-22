@@ -34,9 +34,9 @@ interface RetrofitInterface {
     @GET("evaluation/{genre}/{filter}/{page}/{limit}")
     fun getEvaluations(@Path("genre") genre: String, @Path("filter") filter: Int, @Path("page") page: Int, @Path("limit") limit: Int): Call<JsonObject>
 
-    // 하나의 평가 데이터 조회
-    @GET("/evaluation/{bsin}")
-    fun getEvaluation(@Path("bsin") bsin: String): Call<JsonObject>
+    // 장르별 도서 평가 개수 조회
+    @GET("/evaluation/count/genre")
+    fun getCountGenre(): Call<JsonObject>
 
     // 하나의 평가 데이터 수정
     @PATCH("/evaluation")

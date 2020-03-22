@@ -68,12 +68,10 @@
 
     <androidx.cardview.widget.CardView
             android:id="@+id/mypage_cardview_category"
-            android:layout_margin="@dimen/activity_margin"
+            android:layout_marginTop="@dimen/activity_margin"
             android:layout_width="match_parent"
             android:layout_height="150dp"
 
-            app:cardCornerRadius="8dp"
-            app:cardElevation="1dp"
             app:cardBackgroundColor="@color/basicWhite"
             app:layout_constraintTop_toTopOf="@id/mypage_img_background2"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -81,15 +79,14 @@
         <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:padding="10dp">
+                android:layout_gravity="center">
 
             <LinearLayout
                     android:orientation="vertical"
+                    android:padding="@dimen/activity_half_margin"
                     android:layout_weight="1"
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_margin="0dp">
+                    android:layout_height="match_parent">
                 <ImageView
                         android:src="@drawable/icon_comic"
                         android:layout_gravity="center"
@@ -105,7 +102,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="0dp"/>
                 <TextView
-                        android:text="150"
+                        android:text="0"
                         android:textSize="24sp"
                         android:textColor="@color/mediumAshblue"
                         android:textStyle="bold"
@@ -122,10 +119,10 @@
 
             <LinearLayout
                     android:orientation="vertical"
+                    android:padding="@dimen/activity_half_margin"
                     android:layout_weight="1"
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_margin="0dp">
+                    android:layout_height="match_parent">
                 <ImageView
                         android:src="@drawable/icon_heart"
                         android:layout_gravity="center"
@@ -141,7 +138,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="0dp"/>
                 <TextView
-                        android:text="300"
+                        android:text="0"
                         android:textSize="24sp"
                         android:textColor="@color/mediumAshblue"
                         android:textStyle="bold"
@@ -159,10 +156,10 @@
 
             <LinearLayout
                     android:orientation="vertical"
+                    android:padding="@dimen/activity_half_margin"
                     android:layout_weight="1"
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_margin="0dp">
+                    android:layout_height="match_parent">
                 <ImageView
                         android:src="@drawable/icon_fantasy"
                         android:layout_gravity="center"
@@ -178,7 +175,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="0dp"/>
                 <TextView
-                        android:text="250"
+                        android:text="0"
                         android:textSize="24sp"
                         android:textColor="@color/mediumAshblue"
                         android:textStyle="bold"
@@ -190,13 +187,11 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
     <androidx.cardview.widget.CardView
-            android:id="@+id/mypage_cardview_bookmark"
-            android:layout_margin="@dimen/activity_margin"
+            android:id="@+id/mypage_cardview_state"
+            android:layout_marginBottom="@dimen/activity_margin"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="100dp"
 
-            app:cardCornerRadius="8dp"
-            app:cardElevation="1dp"
             app:cardBackgroundColor="@color/basicWhite"
             app:layout_constraintTop_toBottomOf="@id/mypage_cardview_category"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -204,116 +199,44 @@
         <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:padding="10dp">
-
-            <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent">
-                <TextView
-                        android:text="관심 없어요"
-                        android:textSize="16sp"
-                        android:textColor="@color/mediumAshblue"
-                        android:gravity="bottom|center_horizontal"
-                        android:layout_weight="2"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"/>
-                <TextView
-                        android:text="10"
-                        android:textSize="24sp"
-                        android:textColor="@color/mediumAshblue"
-                        android:textStyle="bold"
-                        android:gravity="top|center_horizontal"
-                        android:layout_weight="2"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"/>
-            </LinearLayout>
+                android:layout_gravity="center">
+            <TextView
+                    android:text="관심 없어요 0\n읽고 싶어요 0\n읽고 있어요 0\n완독 했어요 0"
+                    android:textSize="16sp"
+                    android:textColor="@color/lightAshblue"
+                    android:gravity="bottom|center_horizontal"
+                    android:padding="@dimen/activity_half_margin"
+                    android:layout_weight="2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"/>
             <View
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
                     android:alpha="1"
                     android:background="@color/mediumAshblue"/>
-            <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent">
-                <TextView
-                        android:text="읽고 싶어요"
-                        android:textSize="16sp"
-                        android:textColor="@color/mediumAshblue"
-                        android:gravity="bottom|center_horizontal"
-                        android:layout_weight="2"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"/>
-                <TextView
-                        android:text="10"
-                        android:textSize="24sp"
-                        android:textColor="@color/mediumAshblue"
-                        android:textStyle="bold"
-                        android:gravity="top|center_horizontal"
-                        android:layout_weight="2"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"/>
-            </LinearLayout>
+            <TextView
+                    android:text="관심 없어요 0\n읽고 싶어요 0\n읽고 있어요 0\n완독 했어요 0"
+                    android:textSize="16sp"
+                    android:textColor="@color/lightAshblue"
+                    android:gravity="bottom|center_horizontal"
+                    android:padding="@dimen/activity_half_margin"
+                    android:layout_weight="2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"/>
             <View
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
                     android:alpha="1"
                     android:background="@color/mediumAshblue"/>
-            <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent">
-                <TextView
-                        android:text="읽는 중"
-                        android:textSize="16sp"
-                        android:textColor="@color/mediumAshblue"
-                        android:gravity="bottom|center_horizontal"
-                        android:layout_weight="2"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"/>
-                <TextView
-                        android:text="10"
-                        android:textSize="24sp"
-                        android:textColor="@color/mediumAshblue"
-                        android:textStyle="bold"
-                        android:gravity="top|center_horizontal"
-                        android:layout_weight="2"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"/>
-            </LinearLayout>
-            <View
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:alpha="1"
-                    android:background="@color/mediumAshblue"/>
-            <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent">
-                <TextView
-                        android:text="읽었어요"
-                        android:textSize="16sp"
-                        android:textColor="@color/mediumAshblue"
-                        android:gravity="bottom|center_horizontal"
-                        android:layout_weight="2"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"/>
-                <TextView
-                        android:text="10"
-                        android:textSize="24sp"
-                        android:textColor="@color/mediumAshblue"
-                        android:textStyle="bold"
-                        android:gravity="top|center_horizontal"
-                        android:layout_weight="2"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"/>
-            </LinearLayout>
+            <TextView
+                    android:text="관심 없어요 0\n읽고 싶어요 0\n읽고 있어요 0\n완독 했어요 0"
+                    android:textSize="16sp"
+                    android:textColor="@color/lightAshblue"
+                    android:gravity="bottom|center_horizontal"
+                    android:padding="@dimen/activity_half_margin"
+                    android:layout_weight="2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"/>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
     <androidx.cardview.widget.CardView
@@ -326,7 +249,7 @@
             app:cardElevation="1dp"
             app:cardBackgroundColor="@color/mediumYellow"
             app:layout_constraintVertical_weight="1"
-            app:layout_constraintTop_toBottomOf="@id/mypage_cardview_bookmark"
+            app:layout_constraintTop_toBottomOf="@id/mypage_cardview_state"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintBottom_toTopOf="@id/mypage_btmnavview_menu">
