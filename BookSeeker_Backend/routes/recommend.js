@@ -46,6 +46,21 @@ router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) 
         winston.log('info', `[RECOMMEND][${req.clientIp}|${user_email}]  추천 ${genre} 목록 조회 Request`);
         winston.log('info', `[RECOMMEND][${req.clientIp}|${user_email}] genre: ${genre}, page : ${page}, limit : ${limit}`);
 
+        // 사용자가 평가한 도서 목록 불러오기
+        let userQuery =
+            'SELECT * ' +
+            'FROM evaluations ' +
+            'WHERE user_uid=:user_uid ' +
+            'AND deletedAt IS NULL;';
+
+        const userList = await sequelize.query(userQuery, {
+            replacements: {
+                user_uid: user_uid
+            },
+            type: Sequelize.QueryTypes.SELECT,
+            raw: true
+        });
+        
         // 평가 도서 목록 불러오기
         /*
         1) 추천 받을 사용자가 '관심 없어요' 체크한 데이터 제외
@@ -107,7 +122,7 @@ router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) 
             raw: true
         });
 
-        const trainedDataSet = await RF.trainingDataSet(user_uid, evaluationList, unEvaluationList);
+        const trainedDataSet = await RF.trainingDataSet(userList, evaluationList, unEvaluationList);
         const bookRecommend = await RF.bookRecommend(user_uid, trainedDataSet, page, limit);
 
         // Database에서 검사할 BsinList

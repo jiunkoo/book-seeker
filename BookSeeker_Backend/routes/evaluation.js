@@ -261,43 +261,26 @@ router.get('/count/genre', clientIp, isLoggedIn, async (req, res, next) => {
         winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] 장르별 도서 평가 개수 조회 Request`);
 
         let countQuery =
-            'SELECT COUNT(*) AS count ' +
+            'SELECT ' +
+            'COUNT(IF (genre="COMIC", genre, NULL)) AS count_comic, ' +
+            'COUNT(IF (genre="ROMANCE", genre, NULL)) AS count_romance, ' +
+            'COUNT(IF (genre="FANTASY", genre, NULL)) AS count_fantasy ' +
             'FROM evaluations ' +
             'WHERE user_uid=:user_uid ' +
-            'AND genre=:genre ' +
-            'AND deletedAt IS NULL';
-
-        const countComic = await sequelize.query(countQuery, {
+            'AND deletedAt IS NULL;';
+        
+        const countGenre = await sequelize.query(countQuery, {
             replacements: {
-                user_uid: user_uid,
-                genre: "COMIC"
-            },
-            type: Sequelize.QueryTypes.SELECT,
-            raw: true
-        });
-
-        const countRomance = await sequelize.query(countQuery, {
-            replacements: {
-                user_uid: user_uid,
-                genre: "ROMANCE"
-            },
-            type: Sequelize.QueryTypes.SELECT,
-            raw: true
-        });
-
-        const countFantasy = await sequelize.query(countQuery, {
-            replacements: {
-                user_uid: user_uid,
-                genre: "FANTASY"
+                user_uid: user_uid
             },
             type: Sequelize.QueryTypes.SELECT,
             raw: true
         });
 
         returnData = new Object();
-        returnData.comic = countComic[0].count;
-        returnData.romance = countRomance[0].count;
-        returnData.fantasy = countFantasy[0].count;
+        returnData.count_comic = countGenre[0].count_comic;
+        returnData.count_romance = countGenre[0].count_romance;
+        returnData.count_fantasy = countGenre[0].count_fantasy;
 
         // 도서 검색 성공 메세지 반환
         const result = new Object();
@@ -328,53 +311,60 @@ router.get('/count/state', clientIp, isLoggedIn, async (req, res, next) => {
         winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] 상태별 도서 평가 개수 조회 Request`);
 
         let countQuery =
-            'SELECT COUNT(*) AS count ' +
+            'SELECT IFNULL(genre, "COMIC") AS genre, ' +
+            'COUNT(IF(state=0, state, NULL)) AS count_boring, ' +
+            'COUNT(IF(state=1, state, NULL)) AS count_interesting, ' +
+            'COUNT(IF(state=2, state, NULL)) AS count_reading, ' +
+            'COUNT(IF(state=3, state, NULL)) AS count_read ' +
             'FROM evaluations ' +
             'WHERE user_uid=:user_uid ' +
-            'AND state=:state ' +
-            'AND deletedAt IS NULL';
+            'AND genre="COMIC" ' +
+            'AND deletedAt IS NULL ' +
+            'UNION ' +
+            'SELECT IFNULL(genre, "ROMANCE") AS genre, ' +
+            'COUNT(IF(state=0, state, NULL)) AS count_boring, ' +
+            'COUNT(IF(state=1, state, NULL)) AS count_interesting, ' +
+            'COUNT(IF(state=2, state, NULL)) AS count_reading, ' +
+            'COUNT(IF(state=3, state, NULL)) AS count_read ' +
+            'FROM evaluations ' +
+            'WHERE user_uid=:user_uid ' +
+            'AND genre="ROMANCE" ' +
+            'AND deletedAt IS NULL ' +
+            'UNION ' +
+            'SELECT IFNULL(genre, "FANTASY") AS genre, ' +
+            'COUNT(IF(state=0, state, NULL)) AS count_boring, ' +
+            'COUNT(IF(state=1, state, NULL)) AS count_interesting, ' +
+            'COUNT(IF(state=2, state, NULL)) AS count_reading, ' +
+            'COUNT(IF(state=3, state, NULL)) AS count_read ' +
+            'FROM evaluations ' +
+            'WHERE user_uid=:user_uid ' +
+            'AND genre="FANTASY" ' +
+            'AND deletedAt IS NULL;';
+        
 
-        const countBoring = await sequelize.query(countQuery, {
+        const countState = await sequelize.query(countQuery, {
             replacements: {
-                user_uid: user_uid,
-                state: 0
-            },
-            type: Sequelize.QueryTypes.SELECT,
-            raw: true
-        });
-
-        const countInteresting = await sequelize.query(countQuery, {
-            replacements: {
-                user_uid: user_uid,
-                state: 1
-            },
-            type: Sequelize.QueryTypes.SELECT,
-            raw: true
-        });
-
-        const countReading = await sequelize.query(countQuery, {
-            replacements: {
-                user_uid: user_uid,
-                state: 2
-            },
-            type: Sequelize.QueryTypes.SELECT,
-            raw: true
-        });
-
-        const countRead = await sequelize.query(countQuery, {
-            replacements: {
-                user_uid: user_uid,
-                state: 3
+                user_uid: user_uid
             },
             type: Sequelize.QueryTypes.SELECT,
             raw: true
         });
 
         returnData = new Object();
-        returnData.boring = countBoring[0].count;
-        returnData.interesting = countInteresting[0].count;
-        returnData.reading = countReading[0].count;
-        returnData.read = countRead[0].count;
+        returnData.comic_boring = countState[0].count_boring;
+        returnData.comic_interesting = countState[0].count_interesting;
+        returnData.comic_reading = countState[0].count_reading;
+        returnData.comic_read = countState[0].count_read;
+
+        returnData.romance_boring = countState[1].count_boring;
+        returnData.romance_interesting = countState[1].count_interesting;
+        returnData.romance_reading = countState[1].count_reading;
+        returnData.romance_read = countState[1].count_read;
+
+        returnData.fantasy_boring = countState[2].count_boring;
+        returnData.fantasy_interesting = countState[2].count_interesting;
+        returnData.fantasy_reading = countState[2].count_reading;
+        returnData.fantasy_read = countState[2].count_read;
 
         // 도서 검색 성공 메세지 반환
         const result = new Object();
