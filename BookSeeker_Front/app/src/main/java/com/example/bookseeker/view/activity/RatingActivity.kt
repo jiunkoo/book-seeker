@@ -2,7 +2,6 @@ package com.example.bookseeker.view.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.AbsListView.OnScrollListener.SCROLL_STATE_IDLE
@@ -101,7 +100,7 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
                     finish()
                 }
                 R.id.btmnavmenu_itm_mypage -> {
-                    val nextIntent = Intent(baseContext, MypageActivity::class.java)
+                    val nextIntent = Intent(baseContext, MyPageActivity::class.java)
                     nextIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     startActivity(nextIntent)
                     overridePendingTransition(0, 0)

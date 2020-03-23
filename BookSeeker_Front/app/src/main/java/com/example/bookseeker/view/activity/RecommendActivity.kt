@@ -13,19 +13,15 @@ import com.example.bookseeker.R
 import com.example.bookseeker.adapter.RecommendCardvAdapter
 import com.example.bookseeker.adapter.Utils
 import com.example.bookseeker.contract.RecommendContract
-import com.example.bookseeker.model.data.BookData
-import com.example.bookseeker.model.data.BookList
 import com.example.bookseeker.model.data.EvaluationCreate
 import com.example.bookseeker.model.data.RecommendData
 import com.example.bookseeker.presenter.RecommendPresenter
-import com.google.gson.JsonObject
 import com.mindorks.placeholderview.SwipeDecor
 import com.mindorks.placeholderview.SwipeDirection
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_recommend.*
-import kotlinx.android.synthetic.main.item_cardv_recommend.view.*
 
 
 class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardvAdapter.Callback {
@@ -73,8 +69,8 @@ class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardv
         // BottomNavigationView 이벤트 처리
         switchBottomNavigationView()
 
-        // Category 이벤트 처리
-        setCategoryEventListener()
+        // Cardview 이벤트 처리
+        setCardviewEventListener()
 
         // SwipeView 이벤트 처리
         setSwipeView(savedInstanceState, bottomMargin, windowSize)
@@ -94,24 +90,28 @@ class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardv
                     nextIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     startActivity(nextIntent)
                     overridePendingTransition(0, 0)
+                    finish()
                 }
                 R.id.btmnavmenu_itm_recommend -> {
                     val nextIntent = Intent(baseContext, RecommendActivity::class.java)
                     nextIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     startActivity(nextIntent)
                     overridePendingTransition(0, 0)
+                    finish()
                 }
                 R.id.btmnavmenu_itm_rating -> {
                     val nextIntent = Intent(baseContext, RatingActivity::class.java)
                     nextIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     startActivity(nextIntent)
                     overridePendingTransition(0, 0)
+                    finish()
                 }
                 R.id.btmnavmenu_itm_mypage -> {
-                    val nextIntent = Intent(baseContext, MypageActivity::class.java)
+                    val nextIntent = Intent(baseContext, MyPageActivity::class.java)
                     nextIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     startActivity(nextIntent)
                     overridePendingTransition(0, 0)
+                    finish()
                 }
             }
             false
@@ -297,8 +297,8 @@ class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardv
         startBookInfoActivity(recommendData)
     }
 
-    // setCategoryEventListener : EditText Event를 처리하는 함수
-    fun setCategoryEventListener() {
+    // setCardviewEventListener : Cardview Event를 처리하는 함수
+    fun setCardviewEventListener() {
         // Comic Category Event를 처리하는 함수
         recommend_layout_linear_comic.setOnClickListener {
             if (genre == "COMIC") {

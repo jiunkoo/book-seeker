@@ -2,7 +2,6 @@ package com.example.bookseeker.view.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -22,7 +21,6 @@ import com.example.bookseeker.model.data.BookList
 import com.example.bookseeker.model.data.BooksSearch
 import com.example.bookseeker.presenter.SearchResultPresenter
 import com.google.android.material.snackbar.Snackbar
-import com.google.gson.JsonObject
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -106,7 +104,7 @@ class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDe
                     finish()
                 }
                 R.id.btmnavmenu_itm_mypage -> {
-                    val nextIntent = Intent(baseContext, MypageActivity::class.java)
+                    val nextIntent = Intent(baseContext, MyPageActivity::class.java)
                     nextIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     startActivity(nextIntent)
                     overridePendingTransition(0, 0)
