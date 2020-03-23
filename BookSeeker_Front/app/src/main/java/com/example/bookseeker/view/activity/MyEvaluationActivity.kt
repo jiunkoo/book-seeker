@@ -5,23 +5,21 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import com.example.bookseeker.R
-import com.example.bookseeker.contract.SearchContract
-import com.example.bookseeker.presenter.SearchPresenter
-import kotlinx.android.synthetic.main.activity_search.*
+import com.example.bookseeker.contract.MyEvaluationContract
+import com.example.bookseeker.presenter.MyEvaluationPresenter
+import kotlinx.android.synthetic.main.activity_myevaluation.*
+import kotlinx.android.synthetic.main.activity_mypreference.*
 
-class SearchActivity : BaseActivity(), SearchContract.View {
-    // SearchActivity와 함께 생성될 SearchPresenter를 지연 초기화
-    private lateinit var searchPresenter: SearchPresenter
+class MyEvaluationActivity : BaseActivity(), MyEvaluationContract.View {
+    // MyEvaluationActivity와 함께 생성될 MyEvaluationPresenter를 지연 초기화
+    private lateinit var myEvaluationPresenter: MyEvaluationPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_search)
+        setContentView(R.layout.activity_myevaluation)
 
         // View가 Create(Bind) 되었다는 걸 Presenter에 전달
-        searchPresenter.takeView(this)
-
-        // TextView Event 처리
-        setTextViewEventListener()
+        myEvaluationPresenter.takeView(this)
 
         // BottomNavigationView 이벤트 처리
         switchBottomNavigationView()
@@ -29,27 +27,12 @@ class SearchActivity : BaseActivity(), SearchContract.View {
 
     // initPresenter : View와 상호작용할 Presenter를 주입하기 위한 함수
     override fun initPresenter() {
-        searchPresenter = SearchPresenter()
+        myEvaluationPresenter = MyEvaluationPresenter()
     }
 
-    // setTextViewEventListener : SearchActivity에서 TextView Event를 처리하는 함수
-    override fun setTextViewEventListener() {
-        // SignUp TextView Event를 처리하는 함수
-        search_etxt_search.setOnClickListener {
-            startSearchDetailActivity()
-        }
-    }
-
-    // startSearchDetailActivity : SearchActivity에서 SearchDetailActivity로 넘어가는 함수
-    override fun startSearchDetailActivity() {
-        val nextIntent = Intent(this, SearchDetailActivity::class.java)
-        nextIntent.putExtra("keyword", "")
-        startActivity(nextIntent)
-    }
-
-    // switchBottomNavigationView : SearchActivity에서 BottomNavigationView 전환 이벤트를 처리하는 함수
+    // switchBottomNavigationView : RatingActivity에서 BottomNavigationView 전환 이벤트를 처리하는 함수
     override fun switchBottomNavigationView() {
-        search_btmnavview_menu.setOnNavigationItemSelectedListener { item ->
+        myevaluation_btmnavview_menu.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.btmnavmenu_itm_search -> {
                     val nextIntent = Intent(baseContext, SearchActivity::class.java)
@@ -82,16 +65,18 @@ class SearchActivity : BaseActivity(), SearchContract.View {
             }
             false
         }
-        search_btmnavview_menu.menu.findItem(R.id.btmnavmenu_itm_search)?.setChecked(true)
+        myevaluation_btmnavview_menu.menu.findItem(R.id.btmnavmenu_itm_mypage)?.setChecked(true)
     }
+
+
 
     override fun onDestroy() {
         super.onDestroy()
         // View가 Delete(Unbind) 되었다는 걸 Presenter에 전달
-        searchPresenter.dropView()
+        myEvaluationPresenter.dropView()
     }
 
-    // setProgressON : 공통으로 사용하는 Progress Bar의 시작을 정의하는 함수
+    // setProgressON :  공통으로 사용하는 Progress Bar의 시작을 정의하는 함수
     override fun setProgressON(msg: String){
         progressON(msg)
     }
@@ -103,7 +88,7 @@ class SearchActivity : BaseActivity(), SearchContract.View {
 
     // showMessage : 공통으로 사용하는 messsage 출력 부분을 생성하는 함수
     override fun showMessage(msg: String) {
-        Toast.makeText(this@SearchActivity, msg, Toast.LENGTH_SHORT).show()
+        Toast.makeText(this@MyEvaluationActivity, msg, Toast.LENGTH_SHORT).show()
     }
 
     // executionLog : 공통으로 사용하는 Log 출력 부분을 생성하는 함수

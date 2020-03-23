@@ -1,19 +1,20 @@
 package com.example.bookseeker.presenter
 
 import android.util.Log
+import com.example.bookseeker.contract.MyPreferenceContract
 import com.example.bookseeker.contract.MypageContract
 
-class MypagePresenter : MypageContract.Presenter {
-    private var mypageView: MypageContract.View? = null
+class MyPreferencePresenter : MyPreferenceContract.Presenter {
+    private var myPreferenceView: MyPreferenceContract.View? = null
 
     // takeView : View가 Create, Bind 될 때 Presenter에 전달하는 함수
-    override fun takeView(view: MypageContract.View) {
-        mypageView = view
+    override fun takeView(view: MyPreferenceContract.View) {
+        myPreferenceView = view
     }
 
     // dropView : View가 delete, unBind 될 때 Presenter에 전달하는 함수
     override fun dropView() {
-        mypageView = null
+        myPreferenceView = null
     }
 
     // executionLog : 공통으로 사용하는 Log 출력 부분을 생성하는 함수

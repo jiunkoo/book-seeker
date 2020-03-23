@@ -70,7 +70,7 @@
             android:id="@+id/mypage_cardview_category"
             android:layout_marginTop="@dimen/activity_margin"
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="300dp"
 
             app:cardBackgroundColor="@color/basicWhite"
             app:layout_constraintTop_toTopOf="@id/mypage_img_background2"
@@ -82,6 +82,7 @@
                 android:layout_gravity="center">
 
             <LinearLayout
+                    android:id="@+id/mypage_layout_linear_comic"
                     android:orientation="vertical"
                     android:padding="@dimen/activity_half_margin"
                     android:layout_weight="1"
@@ -102,6 +103,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="0dp"/>
                 <TextView
+                        android:id="@+id/mypage_txtv_comic_genre"
                         android:text="0"
                         android:textSize="24sp"
                         android:textColor="@color/mediumAshblue"
@@ -110,14 +112,24 @@
                         android:layout_weight="2"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"/>
+                <TextView
+                        android:id="@+id/mypage_txtv_comic_state"
+                        android:text="관심 없어요 0\n읽고 싶어요 0\n읽고 있어요 0\n완독 했어요 0"
+                        android:textSize="16sp"
+                        android:textColor="@color/lightAshblue"
+                        android:gravity="bottom|center_horizontal"
+                        android:padding="@dimen/activity_half_margin"
+                        android:layout_weight="4"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"/>
             </LinearLayout>
             <View
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
                     android:alpha="1"
                     android:background="@color/mediumAshblue"/>
-
             <LinearLayout
+                    android:id="@+id/mypage_layout_linear_romance"
                     android:orientation="vertical"
                     android:padding="@dimen/activity_half_margin"
                     android:layout_weight="1"
@@ -138,6 +150,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="0dp"/>
                 <TextView
+                        android:id="@+id/mypage_txtv_romance_genre"
                         android:text="0"
                         android:textSize="24sp"
                         android:textColor="@color/mediumAshblue"
@@ -146,15 +159,24 @@
                         android:layout_weight="2"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"/>
+                <TextView
+                        android:id="@+id/mypage_txtv_romance_state"
+                        android:text="관심 없어요 0\n읽고 싶어요 0\n읽고 있어요 0\n완독 했어요 0"
+                        android:textSize="16sp"
+                        android:textColor="@color/lightAshblue"
+                        android:gravity="bottom|center_horizontal"
+                        android:padding="@dimen/activity_half_margin"
+                        android:layout_weight="4"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"/>
             </LinearLayout>
-
             <View
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
                     android:alpha="1"
                     android:background="@color/mediumAshblue"/>
-
             <LinearLayout
+                    android:id="@+id/mypage_layout_linear_fantasy"
                     android:orientation="vertical"
                     android:padding="@dimen/activity_half_margin"
                     android:layout_weight="1"
@@ -175,6 +197,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="0dp"/>
                 <TextView
+                        android:id="@+id/mypage_txtv_fantasy_genre"
                         android:text="0"
                         android:textSize="24sp"
                         android:textColor="@color/mediumAshblue"
@@ -183,64 +206,21 @@
                         android:layout_weight="2"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"/>
+                <TextView
+                        android:id="@+id/mypage_txtv_fantasy_state"
+                        android:text="관심 없어요 0\n읽고 싶어요 0\n읽고 있어요 0\n완독 했어요 0"
+                        android:textSize="16sp"
+                        android:textColor="@color/lightAshblue"
+                        android:gravity="bottom|center_horizontal"
+                        android:padding="@dimen/activity_half_margin"
+                        android:layout_weight="4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"/>
             </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
     <androidx.cardview.widget.CardView
-            android:id="@+id/mypage_cardview_state"
-            android:layout_marginBottom="@dimen/activity_margin"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-
-            app:cardBackgroundColor="@color/basicWhite"
-            app:layout_constraintTop_toBottomOf="@id/mypage_cardview_category"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent">
-        <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center">
-            <TextView
-                    android:text="관심 없어요 0\n읽고 싶어요 0\n읽고 있어요 0\n완독 했어요 0"
-                    android:textSize="16sp"
-                    android:textColor="@color/lightAshblue"
-                    android:gravity="bottom|center_horizontal"
-                    android:padding="@dimen/activity_half_margin"
-                    android:layout_weight="2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"/>
-            <View
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:alpha="1"
-                    android:background="@color/mediumAshblue"/>
-            <TextView
-                    android:text="관심 없어요 0\n읽고 싶어요 0\n읽고 있어요 0\n완독 했어요 0"
-                    android:textSize="16sp"
-                    android:textColor="@color/lightAshblue"
-                    android:gravity="bottom|center_horizontal"
-                    android:padding="@dimen/activity_half_margin"
-                    android:layout_weight="2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"/>
-            <View
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:alpha="1"
-                    android:background="@color/mediumAshblue"/>
-            <TextView
-                    android:text="관심 없어요 0\n읽고 싶어요 0\n읽고 있어요 0\n완독 했어요 0"
-                    android:textSize="16sp"
-                    android:textColor="@color/lightAshblue"
-                    android:gravity="bottom|center_horizontal"
-                    android:padding="@dimen/activity_half_margin"
-                    android:layout_weight="2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"/>
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
-    <androidx.cardview.widget.CardView
-            android:id="@+id/mypage_cardview_analyse"
+            android:id="@+id/mypage_cardview_preference"
             android:layout_margin="@dimen/activity_margin"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -249,7 +229,7 @@
             app:cardElevation="1dp"
             app:cardBackgroundColor="@color/mediumYellow"
             app:layout_constraintVertical_weight="1"
-            app:layout_constraintTop_toBottomOf="@id/mypage_cardview_state"
+            app:layout_constraintTop_toBottomOf="@id/mypage_cardview_category"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintBottom_toTopOf="@id/mypage_btmnavview_menu">

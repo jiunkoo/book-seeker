@@ -118,7 +118,7 @@ class SearchDetailActivity : BaseActivity(), SearchDetailContract.View {
                     finish()
                 }
                 R.id.btmnavmenu_itm_mypage -> {
-                    val nextIntent = Intent(baseContext, MypageActivity::class.java)
+                    val nextIntent = Intent(baseContext, MyPageActivity::class.java)
                     nextIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     startActivity(nextIntent)
                     overridePendingTransition(0, 0)
