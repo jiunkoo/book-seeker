@@ -1,6 +1,6 @@
 module.exports = {
     // 데이터 셋 트레이닝
-    trainingDataSet: (user_uid, evaluationList, unEvaluationList) => {
+    trainingDataSet: (userList, evaluationList, unEvaluationList) => {
         // trainedDataSet : 학습을 마친 데이터 객체
         // userState : 특정 사용자의 도서 상태 객체
         // userBasedData : 사용자별 도서 평가 데이터 객체
@@ -61,8 +61,7 @@ module.exports = {
         }
 
         // 특정 사용자의 도서 평가 목록을 불러옴
-        let userList = userBasedData[user_uid];
-        if(userList){
+        if (userList) {
             // 예상 도서 평점 필터링을 위한 도서 상태 객체 분류
             for (let i = 0; i < userList.length; i++) {
                 if (!userState[userList[i].bsin]) {
@@ -83,13 +82,10 @@ module.exports = {
 
         // 반복문을 돌려 bookRatingRank에 있는 평점을 bookRankingList으로 옮기고 내림차순으로 정렬
         for (let bsin in bookRatingRank) {
-            if(userState[bsin]){
-                if(userState[bsin] >= 0 && userState[bsin] <= 3){
-                    continue;
-                } else {
-                    bookRankingList.push({ bsin: bsin, rating: bookRatingRank[bsin] });
-                }
-            }else {
+            // 특정 사용자 평가가 있는 경우
+            if (userState[bsin]) {
+                continue; // push 생략
+            } else {
                 bookRankingList.push({ bsin: bsin, rating: bookRatingRank[bsin] });
             }
         }
@@ -172,18 +168,7 @@ module.exports = {
             for (let bsin in estimatedEvaluation) {
                 // 특정 사용자 평가가 있는 경우
                 if (trainedDataset.userState[bsin]) {
-                    if (trainedDataset.userState[bsin] >= 0 && trainedDataset.userState[bsin] <= 3) {
-                        continue; // push 생략
-                    } else {
-                        returnData.push({ bsin: bsin, rating: Math.round(Math.log(estimatedEvaluation[bsin] + 1) * 100) / 100 });
-
-                        // 정렬 과정에서 중복되는 값 랭킹 배열에서 제거
-                        const itemToFind = trainedDataSet.bookRankingList.find(function (item) { return item.bsin === bsin })
-                        const idx = trainedDataSet.bookRankingList.indexOf(itemToFind);
-                        if (idx > -1) {
-                            trainedDataSet.bookRankingList.splice(idx, 1);
-                        }
-                    }
+                    continue; // push 생략
                 } else {
                     returnData.push({ bsin: bsin, rating: Math.round(Math.log(estimatedEvaluation[bsin] + 1) * 100) / 100 });
 
@@ -225,7 +210,7 @@ module.exports = {
                         }
                         if (!estimatedEvaluation[trainedDataSet.bookRankingList[i].bsin]) {
                             returnData.push(trainedDataSet.bookRankingList[i]);
-                        } 
+                        }
                     }
                 }
                 // 예상 평점의 몫과 페이지가 다른 경우
