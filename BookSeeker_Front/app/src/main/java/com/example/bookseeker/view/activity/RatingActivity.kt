@@ -235,17 +235,17 @@ class RatingActivity : BaseActivity(), RatingContract.View, RatingDelegateAdapte
                 .subscribe(
                     { result ->
                         if ((result.get("success").toString()).equals("true")) {
-                            var jsonObject = (result.get("data")).asJsonObject
-                            var comicCount = jsonObject.get("comic").toString().replace("\"", "")
-                            var romanceCount = jsonObject.get("romance").toString().replace("\"", "")
-                            var fantasyCount = jsonObject.get("fantasy").toString().replace("\"", "")
+                            val jsonObject = (result.get("data")).asJsonObject
+                            val countComic = jsonObject.get("count_comic").toString().replace("\"", "")
+                            val countRomance = jsonObject.get("count_romance").toString().replace("\"", "")
+                            val countFantasy = jsonObject.get("count_fantasy").toString().replace("\"", "")
 
                             if (tabPosition == 0) {
-                                rating_txtv_averagecount.text = comicCount
+                                rating_txtv_averagecount.text = countComic
                             } else if (tabPosition == 1) {
-                                rating_txtv_averagecount.text = romanceCount
+                                rating_txtv_averagecount.text = countRomance
                             } else {
-                                rating_txtv_averagecount.text = fantasyCount
+                                rating_txtv_averagecount.text = countFantasy
                             }
                         }
                         executionLog("[Rating]", result.get("message").toString())

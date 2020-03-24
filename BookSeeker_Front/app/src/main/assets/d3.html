@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+</head>
+<script src="d3.js"></script>
+<script src="d3.layout.cloud.js"></script>
+<script>
+function wordCloud(data) {
+    var color = d3.scale.linear()
+         .domain([0,1,2,3,4,5,6,10,15,20,100])
+         .range(["#ddd", "#ccc", "#bbb", "#aaa", "#999", "#888", "#777", "#666", "#555", "#444", "#333", "#222"]);
+    var fill = d3.scale.category20(); // 컬러 팔레트
+    var layout = d3.layout.cloud()
+        .size([400, 250])
+        // .words(data.map(function(d) { return {text: d, size: 10 + Math.random() * 40}; }))
+        .words(data)
+        .padding(5)
+        .rotate(function() { return ~~(Math.random() * 2) * 90; })
+        .font("Impact")
+        .fontSize(function(d) { return d.size; })
+        .on("end", draw);
+    layout.start();
+    function draw(words) {
+      d3.select("body").append("svg")
+        .attr("width", layout.size()[0])
+        .attr("height", layout.size()[1])
+        .append("g")
+        // without the transform, words words would get cutoff to the left and top, they would
+        // appear outside of the SVG area
+        .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
+        .selectAll("text")
+        .data(words)
+        .enter().append("text")
+        .style("font-size", function(d) { return d.size + "px"; })
+        .style("font-family", "Impact")
+        .style("fill", function(d, i) { return color(i); })
+        .attr("text-anchor", "middle")
+        .attr("transform", function(d) {
+          return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+        })
+        .text(function(d) { return d.text; });
+    }
+}
+
+</script>
+<body/>

@@ -117,11 +117,10 @@
                         android:text="관심 없어요 0\n읽고 싶어요 0\n읽고 있어요 0\n완독 했어요 0"
                         android:textSize="16sp"
                         android:textColor="@color/lightAshblue"
-                        android:gravity="bottom|center_horizontal"
+                        android:gravity="center"
                         android:padding="@dimen/activity_half_margin"
-                        android:layout_weight="4"
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"/>
+                        android:layout_height="wrap_content"/>
             </LinearLayout>
             <View
                     android:layout_width="1dp"
@@ -164,11 +163,10 @@
                         android:text="관심 없어요 0\n읽고 싶어요 0\n읽고 있어요 0\n완독 했어요 0"
                         android:textSize="16sp"
                         android:textColor="@color/lightAshblue"
-                        android:gravity="bottom|center_horizontal"
+                        android:gravity="center"
                         android:padding="@dimen/activity_half_margin"
-                        android:layout_weight="4"
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"/>
+                        android:layout_height="wrap_content"/>
             </LinearLayout>
             <View
                     android:layout_width="1dp"
@@ -211,11 +209,10 @@
                         android:text="관심 없어요 0\n읽고 싶어요 0\n읽고 있어요 0\n완독 했어요 0"
                         android:textSize="16sp"
                         android:textColor="@color/lightAshblue"
-                        android:gravity="bottom|center_horizontal"
+                        android:gravity="center"
                         android:padding="@dimen/activity_half_margin"
-                        android:layout_weight="4"
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"/>
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
             </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>

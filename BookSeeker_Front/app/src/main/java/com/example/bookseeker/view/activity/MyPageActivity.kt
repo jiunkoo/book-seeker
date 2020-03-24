@@ -25,6 +25,9 @@ class MyPageActivity : BaseActivity(), MypageContract.View {
         // View가 Create(Bind) 되었다는 걸 Presenter에 전달
         myPagePresenter.takeView(this)
 
+        // Disposable 객체 지정
+        disposables = CompositeDisposable()
+
         // BottomNavigationView 이벤트 처리
         switchBottomNavigationView()
 
@@ -151,15 +154,15 @@ class MyPageActivity : BaseActivity(), MypageContract.View {
                     { result ->
                         if ((result.get("success").toString()).equals("true")) {
                             val jsonObject = (result.get("data")).asJsonObject
-                            val comic = jsonObject.get("comic").toString().replace("\"", "")
-                            val romance = jsonObject.get("romance").toString().replace("\"", "")
-                            val fantasy = jsonObject.get("fantasy").toString().replace("\"", "")
+                            val countComic = jsonObject.get("count_comic").toString().replace("\"", "")
+                            val countRomance = jsonObject.get("count_romance").toString().replace("\"", "")
+                            val countFantasy = jsonObject.get("count_fantasy").toString().replace("\"", "")
 
-                            mypage_txtv_comic_genre.text = (comic).toString()
-                            mypage_txtv_romance_genre.text = (romance).toString()
-                            mypage_txtv_fantasy_genre.text = (fantasy).toString()
+                            mypage_txtv_comic_genre.text = countComic
+                            mypage_txtv_romance_genre.text = countRomance
+                            mypage_txtv_fantasy_genre.text = countFantasy
                         }
-                        // 설정 끝낸 후 프로그래스 바 종료
+                        // 설정 끝낸 후 메세지 보여주기
                         showMessage(result.get("message").toString())
                     },
                     { e ->
@@ -184,35 +187,35 @@ class MyPageActivity : BaseActivity(), MypageContract.View {
                             val comicInteresting = jsonObject.get("comic_interesting").toString().replace("\"", "")
                             val comicReading = jsonObject.get("comic_reading").toString().replace("\"", "")
                             val comicRead = jsonObject.get("comic_read").toString().replace("\"", "")
-                            val romanceBoring = jsonObject.get("comic_boring").toString().replace("\"", "")
-                            val romanceInteresting = jsonObject.get("comic_interesting").toString().replace("\"", "")
-                            val romanceReading = jsonObject.get("comic_reading").toString().replace("\"", "")
-                            val romanceRead = jsonObject.get("comic_read").toString().replace("\"", "")
-                            val fantasyBoring = jsonObject.get("comic_boring").toString().replace("\"", "")
-                            val fantasyInteresting = jsonObject.get("comic_interesting").toString().replace("\"", "")
-                            val fantasyReading = jsonObject.get("comic_reading").toString().replace("\"", "")
-                            val fantasyRead = jsonObject.get("comic_read").toString().replace("\"", "")
+                            val romanceBoring = jsonObject.get("romance_boring").toString().replace("\"", "")
+                            val romanceInteresting = jsonObject.get("romance_interesting").toString().replace("\"", "")
+                            val romanceReading = jsonObject.get("romance_reading").toString().replace("\"", "")
+                            val romanceRead = jsonObject.get("romance_read").toString().replace("\"", "")
+                            val fantasyBoring = jsonObject.get("fantasy_boring").toString().replace("\"", "")
+                            val fantasyInteresting = jsonObject.get("fantasy_interesting").toString().replace("\"", "")
+                            val fantasyReading = jsonObject.get("fantasy_reading").toString().replace("\"", "")
+                            val fantasyRead = jsonObject.get("fantasy_read").toString().replace("\"", "")
 
-                            val comicState = "관심없어요" + comicBoring +
-                                    "읽고 싶어요" + comicInteresting +
-                                    "읽고 있어요" + comicReading +
+                            val comicState = "관심없어요" + comicBoring + "\n" +
+                                    "읽고 싶어요" + comicInteresting + "\n" +
+                                    "읽고 있어요" + comicReading + "\n" +
                                     "완독 했어요" + comicRead
 
-                            val romanceState = "관심없어요" + romanceBoring +
-                                    "읽고 싶어요" + romanceInteresting +
-                                    "읽고 있어요" + romanceReading +
+                            val romanceState = "관심없어요" + romanceBoring + "\n" +
+                                    "읽고 싶어요" + romanceInteresting + "\n" +
+                                    "읽고 있어요" + romanceReading + "\n" +
                                     "완독 했어요" + romanceRead
 
-                            val fantasyState = "관심없어요" + fantasyBoring +
-                                    "읽고 싶어요" + fantasyInteresting +
-                                    "읽고 있어요" + fantasyReading +
+                            val fantasyState = "관심없어요" + fantasyBoring + "\n" +
+                                    "읽고 싶어요" + fantasyInteresting + "\n" +
+                                    "읽고 있어요" + fantasyReading + "\n" +
                                     "완독 했어요" + fantasyRead
 
                             mypage_txtv_comic_state.text = comicState
                             mypage_txtv_romance_state.text = romanceState
                             mypage_txtv_fantasy_state.text = fantasyState
                         }
-                        // 설정 끝낸 후 메세지 띄우기
+                        // 설정 끝낸 후 메세지 보여주기
                         showMessage(result.get("message").toString())
                     },
                     { e ->

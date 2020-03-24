@@ -15,7 +15,7 @@ interface RetrofitInterface {
     fun login(@Body login: Login): Call<JsonObject>
 
     // 마이페이지 조회
-    @GET("/mine")
+    @GET("/users/mine")
     fun getMine() : Call <JsonObject>
 
     // 도서 검색
