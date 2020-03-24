@@ -358,4 +358,79 @@ router.get('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
     }
 });
 
+// 도서 평가 키워드 조회
+router.get('/keyword/:limit', clientIp, isLoggedIn, async (req, res, next) => {
+    try {
+        const user_email = req.user.email;
+        const user_uid = req.user.user_uid;
+
+        const limit = req.params.limit;
+
+        winston.log('info', `[BOOK][${req.clientIp}|${user_email}] 도서 평가 키워드 조회 Request`);
+        winston.log('info', `[BOOK][${req.clientIp}|${user_email}] limit : ${limit}`);
+ 
+        let query =
+            'SELECT b.keyword ' +
+            'FROM books AS b, evaluations AS e ' +
+            'WHERE user_uid=:user_uid ' +
+            'AND b.bsin = e.bsin ' +
+            'AND e.deletedAt IS NULL ' +
+            'ORDER BY e.createdAt DESC ' +
+            'LIMIT 100 ';
+
+
+        const userEvaluationKeyword = await sequelize.query(query, {
+            replacements: {
+                user_uid: user_uid
+            },
+            type: Sequelize.QueryTypes.SELECT,
+            raw: true
+        });
+
+        // keywordList : 키워드와 개수가 저장될 배열
+        // returnData : 프론트에 반환할 결과값이 들어갈 배열
+        let keywordList = [], returnData = [];
+
+        for (let i = 0; i < userEvaluationKeyword.length; i++) {
+            let keyword = userEvaluationKeyword[i].keyword.split("#");
+
+            for (let j = 0; j < keyword.length; j++) {
+                console.log(keyword[j]);
+                // 해당 키워드가 배열에 없는 경우
+                if (!keywordList[keyword[j]]) {
+                    keywordList[keyword[j]] = 0;
+                    keywordList[keyword[j]]++
+                }
+                // 키워드 개수에 따라 증가
+                keywordList[keyword[j]]++;
+            }
+        }
+
+        // 키워드 목록을 결과 배열에 넣고 내림차순으로 정렬 후 40개로 컷
+        for (let keyword in keywordList) {
+            returnData.push({ keyword: keyword, size: keywordList[keyword]});
+        }
+        returnData.sort((a, b) => b.size - a.size);
+        returnData.splice(limit);
+
+        // 도서 검색 성공 메세지 반환
+        const result = new Object();
+        result.success = true;
+        result.data = returnData;
+        result.message = '도서 평가 키워드 조회를 성공했습니다.';
+        winston.log('info', `[BOOK][${req.clientIp}|${user_email}] ${result.message}`);
+        return res.status(200).send(result);
+    } catch (e) {
+        winston.log('error', `[BOOK][${req.clientIp}|${req.user.email}] 도서 평가 키워드 조회 Exception`);
+
+        const result = new Object();
+        result.success = false;
+        result.data = 'NONE';
+        result.message = 'INTERNAL SERVER ERROR';
+        winston.log('error', `[BOOK][${req.clientIp}|${req.user.email}] ${result.message}`);
+        res.status(500).send(result);
+        return next(e);
+    }
+});
+
 module.exports = router;
