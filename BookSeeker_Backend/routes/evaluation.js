@@ -386,6 +386,71 @@ router.get('/count/state', clientIp, isLoggedIn, async (req, res, next) => {
     }
 });
 
+// 평점별 도서 평가 개수 조회
+router.get('/count/rating', clientIp, isLoggedIn, async (req, res, next) => {
+    try {
+        const user_email = req.user.email;
+        const user_uid = req.user.user_uid;
+
+        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] 평점별 도서 평가 개수 조회 Request`);
+
+        let countQuery =
+        'SELECT ' +
+        'COUNT(IF(rating=0.5, rating, NULL)) AS "rating_05", ' +
+        'COUNT(IF(rating=1.0, rating, NULL)) AS "rating_10", ' +
+        'COUNT(IF(rating=1.5, rating, NULL)) AS "rating_15", ' +
+        'COUNT(IF(rating=2.0, rating, NULL)) AS "rating_20", ' +
+        'COUNT(IF(rating=2.5, rating, NULL)) AS "rating_25", ' +
+        'COUNT(IF(rating=3.0, rating, NULL)) AS "rating_30", ' +
+        'COUNT(IF(rating=3.5, rating, NULL)) AS "rating_35", ' +
+        'COUNT(IF(rating=4.0, rating, NULL)) AS "rating_40", ' +
+        'COUNT(IF(rating=4.5, rating, NULL)) AS "rating_45", ' +
+        'COUNT(IF(rating=5.0, rating, NULL)) AS "rating_50" ' +
+        'FROM evaluations ' +
+        'WHERE user_uid=:user_uid ' +
+        'AND rating > 0 ' +
+        'AND deletedAt IS NULL;';
+        
+
+        const countRating = await sequelize.query(countQuery, {
+            replacements: {
+                user_uid: user_uid
+            },
+            type: Sequelize.QueryTypes.SELECT,
+            raw: true
+        });
+
+        returnData = new Object();
+        returnData.rating_05 = countRating[0].rating_05;
+        returnData.rating_10 = countRating[0].rating_10;
+        returnData.rating_15 = countRating[0].rating_15;
+        returnData.rating_20 = countRating[0].rating_20;
+        returnData.rating_25 = countRating[0].rating_25;
+        returnData.rating_30 = countRating[0].rating_30;
+        returnData.rating_35 = countRating[0].rating_35;
+        returnData.rating_40 = countRating[0].rating_40;
+        returnData.rating_45 = countRating[0].rating_45;
+        returnData.rating_50 = countRating[0].rating_50;
+
+        // 도서 검색 성공 메세지 반환
+        const result = new Object();
+        result.success = true;
+        result.data = returnData;
+        result.message = '상태별 도서 평가 개수 조회를 성공했습니다.';
+        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] ${result.message}`);
+        return res.status(200).send(result);
+    } catch (e) {
+        winston.log('error', `[EVALUATION][${req.clientIp}|${req.user.email}] 상태별 도서 평가 개수 조회 Exception`);
+
+        const result = new Object();
+        result.success = false;
+        result.data = 'NONE';
+        result.message = 'INTERNAL SERVER ERROR';
+        winston.log('error', `[EVALUATION][${req.clientIp}|${req.user.email}] ${result.message}`);
+        res.status(500).send(result);
+        return next(e);
+    }
+});
 
 // 도서 평가 수정
 router.patch('/', clientIp, isLoggedIn, async (req, res, next) => {
