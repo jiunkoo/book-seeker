@@ -16,3 +16,8 @@ data class Login(
     @SerializedName("email") val email: String,
     @SerializedName("password") val password: String
 )
+
+data class WordCloud(
+    @SerializedName("keyword") val keyword: String,
+    @SerializedName("size") val size: String
+)
