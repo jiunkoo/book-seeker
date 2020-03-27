@@ -5,6 +5,100 @@
 
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+    <TextView
+            android:id="@+id/myevaluation_txtv_averagecount"
+            android:text="0"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:textColor="@color/darkAshblue"
+            android:layout_margin="@dimen/activity_margin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/myevaluation_txtv_syscomment"/>
+    <TextView
+            android:id="@+id/myevaluation_txtv_syscomment"
+            android:text="내가 평가한 작품 목록을 확인하세요."
+            android:textColor="@color/mediumAshblue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            app:layout_constraintTop_toBottomOf="@id/myevaluation_txtv_averagecount"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/myevaluation_tablayout"/>
+    <com.google.android.material.tabs.TabLayout
+            android:id="@+id/myevaluation_tablayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            app:layout_constraintTop_toBottomOf="@id/myevaluation_txtv_syscomment"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent">
+        <com.google.android.material.tabs.TabItem
+                android:id="@+id/myevaluation_tabitem_comic"
+                android:text="만화"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        <com.google.android.material.tabs.TabItem
+                android:id="@+id/myevaluation_tabitem_romance"
+                android:text="로맨스"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        <com.google.android.material.tabs.TabItem
+                android:id="@+id/myevaluation_tabitem_fantasy"
+                android:text="판타지"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+    </com.google.android.material.tabs.TabLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/myevaluation_constraintlayout"
+            android:background="@color/lightnessAshblue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            app:layout_constraintTop_toBottomOf="@id/myevaluation_tablayout"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/myevaluation_recyclerview">
+        <Spinner
+                android:id="@+id/myevaluation_spinner"
+                android:text="도서 분류"
+                android:textColor="@color/mediumAshblue"
+                android:layout_margin="@dimen/activity_margin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:entries="@array/myevaluation_spinner_item"
+
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/myevaluation_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+
+            app:layout_constraintVertical_weight="1"
+            app:layout_constraintTop_toBottomOf="@id/myevaluation_constraintlayout"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/myevaluation_btmnavview_menu"/>
+    <androidx.viewpager.widget.ViewPager
+            android:id="@+id/myevaluation_viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+
+            app:layout_constraintVertical_weight="1"
+            app:layout_constraintTop_toBottomOf="@id/myevaluation_tablayout"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/myevaluation_btmnavview_menu"/>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/myevaluation_btmnavview_menu"

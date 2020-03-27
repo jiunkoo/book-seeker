@@ -12,7 +12,6 @@ import kotlinx.android.synthetic.main.activity_mypreference.*
 import android.os.Build
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.core.content.ContextCompat
 import com.github.mikephil.charting.components.XAxis
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -20,11 +19,16 @@ import java.util.*
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 
 
 class MyPreferenceActivity : BaseActivity(), MyPreferenceContract.View {
     // MyPreferenceActivity와 함께 생성될 MyEvaluationPresenter를 지연 초기화
     private lateinit var myPreferencePresenter: MyPreferencePresenter
+    // Disposable 객체 지연 초기화
+    private lateinit var disposables: CompositeDisposable
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,14 +37,24 @@ class MyPreferenceActivity : BaseActivity(), MyPreferenceContract.View {
         // View가 Create(Bind) 되었다는 걸 Presenter에 전달
         myPreferencePresenter.takeView(this)
 
+        // Disposable 객체 지정
+        disposables = CompositeDisposable()
+
+        // MypageActivity에서 데이터 받아오기
+        val intent = intent
+        val nickname = intent.getStringExtra("nickname")
+
+        // 화면에 nickname 설정
+        mypreference_txtv_title.text = nickname + "님의 취향 분석"
+
         // BottomNavigationView 이벤트 처리
         switchBottomNavigationView()
 
         // barchart 이벤트 처리
-        setBarChart()
+        getCountRatingSubscribe()
 
         // wordcloud 이벤트 처리
-        setWordCloud()
+        getKeywordSubscribe()
     }
 
     // initPresenter : View와 상호작용할 Presenter를 주입하기 위한 함수
@@ -86,7 +100,18 @@ class MyPreferenceActivity : BaseActivity(), MyPreferenceContract.View {
         mypreference_btmnavview_menu.menu.findItem(R.id.btmnavmenu_itm_mypage)?.setChecked(true)
     }
 
-    fun setBarChart(){
+    fun setBarChart(jsonObject: JsonObject){
+        val rating_05 = jsonObject.get("rating_05").toString().replace("\"", "").toFloat()
+        val rating_10 = jsonObject.get("rating_10").toString().replace("\"", "").toFloat()
+        val rating_15 = jsonObject.get("rating_15").toString().replace("\"", "").toFloat()
+        val rating_20 = jsonObject.get("rating_20").toString().replace("\"", "").toFloat()
+        val rating_25 = jsonObject.get("rating_25").toString().replace("\"", "").toFloat()
+        val rating_30 = jsonObject.get("rating_30").toString().replace("\"", "").toFloat()
+        val rating_35 = jsonObject.get("rating_35").toString().replace("\"", "").toFloat()
+        val rating_40 = jsonObject.get("rating_40").toString().replace("\"", "").toFloat()
+        val rating_45 = jsonObject.get("rating_45").toString().replace("\"", "").toFloat()
+        val rating_50 = jsonObject.get("rating_50").toString().replace("\"", "").toFloat()
+
         val xAxis = mypreference_chart_bar.xAxis
         xAxis.textSize = 12f
         xAxis.setLabelsToSkip(0)
@@ -106,16 +131,16 @@ class MyPreferenceActivity : BaseActivity(), MyPreferenceContract.View {
 
         val averageRating = ArrayList<BarEntry>()
 
-        averageRating.add(BarEntry(10f, 0))
-        averageRating.add(BarEntry(30f, 1))
-        averageRating.add(BarEntry(25f, 2))
-        averageRating.add(BarEntry(0f, 3))
-        averageRating.add(BarEntry(40f, 4))
-        averageRating.add(BarEntry(5f, 5))
-        averageRating.add(BarEntry(15f, 6))
-        averageRating.add(BarEntry(5f, 7))
-        averageRating.add(BarEntry(20f, 8))
-        averageRating.add(BarEntry(45f, 9))
+        averageRating.add(BarEntry(rating_05, 0))
+        averageRating.add(BarEntry(rating_10, 1))
+        averageRating.add(BarEntry(rating_15, 2))
+        averageRating.add(BarEntry(rating_20, 3))
+        averageRating.add(BarEntry(rating_25, 4))
+        averageRating.add(BarEntry(rating_30, 5))
+        averageRating.add(BarEntry(rating_35, 6))
+        averageRating.add(BarEntry(rating_40, 7))
+        averageRating.add(BarEntry(rating_45, 8))
+        averageRating.add(BarEntry(rating_50, 9))
 
         val year = ArrayList<String>()
 
@@ -138,24 +163,20 @@ class MyPreferenceActivity : BaseActivity(), MyPreferenceContract.View {
         mypreference_chart_bar.data = data
     }
 
-    fun setWordCloud() {
-        val wordCloud = arrayOf("Donut", "Eclair", "Froyo", "Gingerbread", "Honeycomb",
-            "Ice Cream Sandwich", "Jelly Bean", "KitKat", "Lollipop", "Marshmallow")
-//        var frequency_list = [{"text":"study","size":40},{"text":"motion","size":15},
-//            {"text":"forces","size":10},{"text":"electricity","size":15}, {"text":"movement","size":10},
-//            {"text":"relation","size":5}, {"text":"things","size":10},{"text":"force","size":5},
-//            {"text":"ad","size":5},{"text":"energy","size":85}, {"text":"living","size":5}]
+    fun setWordCloud(jsonArray: JsonArray) {
+        var replaceJsonArray = JsonArray()
+        for (i in 0 until jsonArray.size()) {
+            var jsonObject = jsonArray[i].asJsonObject
+            var replaceJsonObject = JsonObject()
 
-        var jsonArray = JsonArray()
-        var random = Random()
-        for(i in 0..30){
-            var text = "text"+i
-            var size = 10 + random.nextInt(35)
-            var jsonObject = JsonObject()
-            jsonObject.addProperty("text", text)
-            jsonObject.addProperty("size", size)
+            // 데이터 가공 처리(큰따옴표 제거)
+            var text = jsonObject.get("keyword").toString().replace("\"", "")
+            var size = jsonObject.get("size").toString().replace("\"", "").toInt()
+            size = size + 10
+            replaceJsonObject.addProperty("text", text)
+            replaceJsonObject.addProperty("size", size.toString())
 
-            jsonArray.add(jsonObject)
+            replaceJsonArray.add(replaceJsonObject)
         }
 
         val webSettings = mypreference_webv_wordcloud.settings
@@ -166,18 +187,9 @@ class MyPreferenceActivity : BaseActivity(), MyPreferenceContract.View {
                 super.onPageFinished(webView, url)
                 val stringBuffer = StringBuffer()
                 stringBuffer.append("wordCloud(")
-                stringBuffer.append(jsonArray.toString())
+                stringBuffer.append(replaceJsonArray.toString())
                 stringBuffer.append(")")
-                /*
-                stringBuffer.append("wordCloud([")
-                for (i in 0 until wordCloud.size) {
-                    stringBuffer.append("'").append(wordCloud[i]).append("'")
-                    if (i < wordCloud.size - 1) {
-                        stringBuffer.append(",")
-                    }
-                }
-                stringBuffer.append("])")
-                */
+                println(stringBuffer)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     mypreference_webv_wordcloud.evaluateJavascript(stringBuffer.toString(), null)
                 } else {
@@ -185,6 +197,56 @@ class MyPreferenceActivity : BaseActivity(), MyPreferenceContract.View {
                 }
             }
         }
+    }
+
+    // getCountRatingSubscribe : 도서 키워드 조회 관찰자를 구독하는 함수
+    private fun getCountRatingSubscribe() {
+        val subscription =
+            myPreferencePresenter
+                .getCountRatingObservable(this)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { result ->
+                        if ((result.get("success").toString()).equals("true")) {
+                            var jsonObject = (result.get("data")).asJsonObject
+
+                            // 변경된 평점 반영
+                            setBarChart(jsonObject)
+                        }
+                        // 설정 끝낸 후 프로그래스 바 종료
+                        showMessage(result.get("message").toString())
+                    },
+                    { e ->
+                        showMessage("Create evaluation error!")
+                    }
+                )
+        disposables.add(subscription)
+    }
+
+    // getKeywordSubscribe : 도서 키워드 조회 관찰자를 구독하는 함수
+    private fun getKeywordSubscribe() {
+        val subscription =
+            myPreferencePresenter
+                .getKeywordObservable(this, 40)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { result ->
+                        if ((result.get("success").toString()).equals("true")) {
+                            var jsonArray = (result.get("data")).asJsonArray
+
+                            // 변경된 평점 반영
+                            setWordCloud(jsonArray)
+                        }
+                        // 설정 끝낸 후 프로그래스 바 종료
+                        showMessage(result.get("message").toString())
+                    },
+                    { e ->
+                        showMessage("Create evaluation error!")
+                    }
+                )
+        disposables.add(subscription)
     }
 
     override fun onDestroy() {
