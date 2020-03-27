@@ -32,22 +32,30 @@ interface RetrofitInterface {
     @GET("/books/{bsin}")
     fun getBook(@Path("bsin") bsin: String): Call<JsonObject>
 
+    // 도서 키워드 조회
+    @GET("/books/keyword/{limit}")
+    fun getKeyword(@Path("limit") limit: Int): Call<JsonObject>
+
     // 하나의 평가 데이터 생성
     @POST("/evaluation")
     fun createEvaluation(@Body evaluationCreate: EvaluationCreate): Call<JsonObject>
 
     // 모든 평가 데이터 조회
     @GET("evaluation/{genre}/{filter}/{page}/{limit}")
-    fun getEvaluations(@Path("genre") genre: String, @Path("filter") filter: Int,
+    fun getEvaluations(@Path("genre") genre: String, @Path("state") state: Int,
                        @Path("page") page: Int, @Path("limit") limit: Int): Call<JsonObject>
 
     // 장르별 도서 평가 개수 조회
     @GET("/evaluation/count/genre")
     fun getCountGenre(): Call<JsonObject>
 
-    // 장르별 도서 상태 개수 조회
+    // 상태별 도서 평가 개수 조회
     @GET("/evaluation/count/state")
     fun getCountState(): Call<JsonObject>
+
+    // 평점별 도서 평가 개수 조회
+    @GET("/evaluation/count/rating")
+    fun getCountRating(): Call<JsonObject>
 
     // 하나의 평가 데이터 수정
     @PATCH("/evaluation")

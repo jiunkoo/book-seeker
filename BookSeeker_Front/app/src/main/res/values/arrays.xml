@@ -12,4 +12,10 @@
         <item>오래된순</item>
         <item>가나다순</item>
     </string-array>
+    <string-array name="myevaluation_spinner_item">
+        <item>관심 없어요</item>
+        <item>관심 있어요</item>
+        <item>읽고 있어요</item>
+        <item>완독 했어요</item>
+    </string-array>
 </resources>

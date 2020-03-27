@@ -113,6 +113,8 @@ class MyPageActivity : BaseActivity(), MypageContract.View {
     // startMyPreferenceActivity : MyPreferenceActivity로 넘어가는 함수
     fun startMyPreferenceActivity() {
         val nextIntent = Intent(this, MyPreferenceActivity::class.java)
+        val nickname = mypage_txtv_nickname.text.toString()
+        nextIntent.putExtra("nickname", nickname)
         startActivity(nextIntent)
     }
 

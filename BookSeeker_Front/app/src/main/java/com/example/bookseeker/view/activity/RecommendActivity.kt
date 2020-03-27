@@ -244,7 +244,7 @@ class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardv
     override fun onSwipeTop() {
         recommend_layout_linear_category.visibility = INVISIBLE
         recommend_txtv_message.visibility = VISIBLE
-        recommend_txtv_message.text = "읽었어요"
+        recommend_txtv_message.text = "완독 했어요"
         recommend_cardview_category.setCardBackgroundColor(Color.parseColor("#03738c")) // mediumMint
         state = 3
         isToUndo = false
@@ -262,7 +262,7 @@ class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardv
     override fun onSwipeLeft() {
         recommend_layout_linear_category.visibility = INVISIBLE
         recommend_txtv_message.visibility = VISIBLE
-        recommend_txtv_message.text = "관심 있어요"
+        recommend_txtv_message.text = "읽고 싶어요"
         recommend_cardview_category.setCardBackgroundColor(Color.parseColor("#f7b73c")) // mediumYellow
         state = 1
         isToUndo = false
