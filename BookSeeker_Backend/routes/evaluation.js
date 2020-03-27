@@ -176,55 +176,43 @@ router.post('/', clientIp, isLoggedIn, async (req, res, next) => {
 });
 
 // 전체 평가 도서 목록 조회
-router.get('/:genre/:filter/:state/:page/:limit', clientIp, isLoggedIn, async (req, res, next) => {
+router.get('/:genre/:state/:page/:limit', clientIp, isLoggedIn, async (req, res, next) => {
     try {
         const user_email = req.user.email;
         const user_uid = req.user.user_uid;
 
-        const genre = req.parsms.genre;
-        const filter = parseInt(req.params.filter);
+        const genre = req.params.genre;
         const state = parseInt(req.params.state);
         const page = parseInt(req.params.page);
         const limit = parseInt(req.params.limit);
 
         winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] 전체 평가 도서 목록 Request`);
-        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}]  genre: ${genre}, filter : ${filter},  state : ${state}, page : ${page}, limit : ${limit}`);
+        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}]  genre: ${genre},  state : ${state}, page : ${page}, limit : ${limit}`);
 
         let offset = 0;
-        let order = 'publication_date ASC';
 
         if (page > 1) {
             offset = 10 * (page - 1);
         }
 
-        // 필터에 따라 정렬 기준 변경
-        if (filter == 1) {
-            order = 'publication_date ASC';
-        } else if (filter == 2) {
-            order = 'publication_date DESC';
-        } else if (filter == 3) {
-            order = 'title ASC';
-        } else {
-            order = 'title DESC';
-        }
-
         // 삭제 데이터를 제외한 전체 도서 평가 목록 불러오기
         let query =
-            'SELECT * ' +
-            'FROM books ' +
-            'WHERE genre=:genre ' +
-            'AND bsin=(SELECT bsin FROM evaluations WHERE user_uid = :user_uid AND deletedAt IS NULL) ' +
-            'AND state=:state ' +
-            'ORDER BY :order ' +
+            'SELECT b.*, e.rating ' +
+            'FROM books AS b, evaluations AS e ' +
+            'WHERE b.bsin = e.bsin ' +
+            'AND e.user_uid=:user_uid ' +
+            'AND e.genre = :genre ' +
+            'AND e.state = :state ' +
+            'AND e.deletedAt IS NULL ' +
+            'ORDER BY rating DESC ' +
             'LIMIT :limit ' +
             'OFFSET :offset;';
 
         const bookList = await sequelize.query(query, {
             replacements: {
                 user_uid: user_uid,
-                state: state,
                 genre: genre,
-                order: order,
+                state: state,
                 limit: limit,
                 offset: offset
             },
