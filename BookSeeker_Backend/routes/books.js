@@ -141,7 +141,7 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
                     replacements: {
                         user_uid: user_uid,
                         genre: genre,
-                        order: order,
+                        order: Sequelize.literal(order),
                         limit: limit,
                         offset: offset
                     },
@@ -195,7 +195,7 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
                     replacements: {
                         user_uid: user_uid,
                         genre: genre,
-                        order: order,
+                        order: Sequelize.literal(order),
                         limit: limit,
                         offset: offset
                     },
@@ -266,7 +266,7 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
                 replacements: {
                     user_uid: user_uid,
                     genre: genre,
-                    order: order,
+                    order: Sequelize.literal(order),
                     limit: limit,
                     offset: offset
                 },
