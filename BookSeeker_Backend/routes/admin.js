@@ -142,12 +142,15 @@ router.post('/parsing/user', clientIp, isLoggedIn, async (req, res, next) => {
 
             // 파일 길이만큼 반복문 돌기
             for (let i = 0; i < parsingUserData.length; i++) {
-                // 코믹스 평가 데이터 생성
+                const user_uid = await bcrypt.hash(parsingUserData[i].email, 12);
+                const encrypt_pw = await bcrypt.hash(parsingUserData[i].password, 12);
+
+                // 사용자 평가 데이터 생성
                 await User.create({
-                    user_uid: bcrypt.hash(parsingUserData[i].email, 12),
+                    user_uid: user_uid,
                     email: parsingUserData[i].email,
                     nickname: parsingUserData[i].name,
-                    password: bcrypt.hash(parsingUserData[i].password, 12)
+                    password: encrypt_pw
                 });
             }
 
@@ -200,9 +203,11 @@ router.post('/parsing/rating', clientIp, isLoggedIn, async (req, res, next) => {
 
             // 파일 길이만큼 반복문 돌기
             for (let i = 0; i < parsingComicRatingData.length; i++) {
+                const user_uid = await bcrypt.hash(parsingComicRatingData[i].email, 12);
+
                 // 코믹스 평가 데이터 생성
                 await Rating.create({
-                    user_uid: bcrypt.hash(parsingComicRatingData[i].email, 12),
+                    user_uid: user_uid,
                     bsin: parsingComicRatingData[i].bsin,
                     genre: 'COMIC',
                     rating: parsingComicRatingData[i].rating
@@ -211,9 +216,11 @@ router.post('/parsing/rating', clientIp, isLoggedIn, async (req, res, next) => {
 
             // 파일 길이만큼 반복문 돌기
             for (let i = 0; i < parsingRomanceRatingData.length; i++) {
+                const user_uid = await bcrypt.hash(parsingRomanceRatingData[i].email, 12);
+
                 // 로맨스 평가 데이터 생성
                 await Rating.create({
-                    user_uid: bcrypt.hash(parsingRomanceRatingData[i].email, 12),
+                    user_uid: user_uid,
                     bsin: parsingRomanceRatingData[i].bsin,
                     genre: 'ROMANCE',
                     rating: parsingRomanceRatingData[i].rating
@@ -222,9 +229,11 @@ router.post('/parsing/rating', clientIp, isLoggedIn, async (req, res, next) => {
 
             // 파일 길이만큼 반복문 돌기
             for (let i = 0; i < parsingFantasyRatingData.length; i++) {
+                const user_uid = await bcrypt.hash(parsingFantasyRatingData[i].email, 12);
+
                 // 판타지 평가 데이터 생성
                 await Rating.create({
-                    user_uid: bcrypt.hash(parsingFantasyRatingData[i].email, 12),
+                    user_uid: user_uid,
                     bsin: parsingFantasyRatingData[i].bsin,
                     genre: 'FANTASY',
                     rating: parsingFantasyRatingData[i].rating
