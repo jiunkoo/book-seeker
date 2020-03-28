@@ -205,6 +205,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View {
             .subscribe(
                 { result ->
                     if((result.get("success").toString()).equals("true")) {
+                        showMessage(result.get("message").toString())
                         startLoginActivity()
                     }
                     executionLog("[INFO][REGISTER]", result.get("message").toString())

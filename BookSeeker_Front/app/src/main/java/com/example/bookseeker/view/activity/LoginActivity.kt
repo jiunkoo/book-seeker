@@ -153,6 +153,7 @@ class LoginActivity : BaseActivity(), LoginContract.View {
             .subscribe(
                 { result ->
                     if((result.get("success").toString()).equals("true")){
+                        showMessage(result.get("message").toString())
                         startSearchActivity()
                     }
                     executionLog("[INFO][LOGIN]", result.get("message").toString())
