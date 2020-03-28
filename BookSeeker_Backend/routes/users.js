@@ -56,8 +56,7 @@ router.post('/register', clientIp, async (req, res, next) => {
         user_uid: user_uid,
         email: email,
         nickname: nickname,
-        password: encrypt_pw,
-        tutorial: false,
+        password: encrypt_pw
       });
 
       // 생성한 사용자 정보 저장 객체 생성
@@ -158,7 +157,6 @@ router.post('/login', clientIp, async (req, res, next) => {
     return next(e);
   }
 });
-
 
 // 내 정보
 router.get('/mine', clientIp, isLoggedIn, async (req, res, next) => {

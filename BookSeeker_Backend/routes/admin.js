@@ -1,8 +1,11 @@
 // 웹 프레임워크
 const express = require('express');
 
+// 인증
+const bcrypt = require('bcrypt');
+
 // 모델 및 미들웨어 선언
-const { Book, Rating } = require('../models');
+const { User, Book, Rating } = require('../models');
 const { clientIp, isLoggedIn } = require('./middlewares');
 
 // 파일 시스템 접근
@@ -115,6 +118,60 @@ router.post('/parsing/book', clientIp, isLoggedIn, async (req, res, next) => {
     }
 });
 
+// 사용자 데이터 파싱
+router.post('/parsing/user', clientIp, isLoggedIn, async (req, res, next) => {
+    try {
+        const user_email = req.user.email;
+
+        winston.log('info', `[ADMIN][${req.clientIp}|${user_email}] 사용자 데이터 파싱`);
+
+        // 관리자가 아닌 경우
+        if (user_email != process.env.ADMIN) {
+            // 접근 불가 메세지 반환
+            const result = new Object();
+            result.success = false;
+            result.data = 'NONE';
+            result.message = '관리자만 접근할 수 있습니다.';
+            winston.log('info', `[ADMIN][${req.clientIp}|${user_email}] ${result.message}`);
+            return res.status(200).send(result);
+        } else {
+            // json 데이터 불러오기
+            const userData = fs.readFileSync(path.join(__dirname, '../data/user_data.json'), 'utf8');
+
+            const parsingUserData = JSON.parse(userData);
+
+            // 파일 길이만큼 반복문 돌기
+            for (let i = 0; i < parsingUserData.length; i++) {
+                // 코믹스 평가 데이터 생성
+                await User.create({
+                    user_uid: bcrypt.hash(parsingUserData[i].email, 12),
+                    email: parsingUserData[i].email,
+                    nickname: parsingUserData[i].name,
+                    password: bcrypt.hash(parsingUserData[i].password, 12)
+                });
+            }
+
+            // 사용자 데이터 파싱 성공 메세지 반환
+            const result = new Object();
+            result.success = true;
+            result.data = 'NONE';
+            result.message = '사용자 데이터 파싱에 성공했습니다.';
+            winston.log('info', `[ADMIN][${req.clientIp}|${user_email}] ${result.message}`);
+            return res.status(201).send(result);
+        }
+    } catch (e) {
+        winston.log('error', `[ADMIN][${req.clientIp}|${req.body.email}] 사용자 데이터 파싱 Exception`);
+
+        const result = new Object();
+        result.success = false;
+        result.data = 'NONE';
+        result.message = 'INTERNAL SERVER ERROR';
+        winston.log('error', `[ADMIN][${req.clientIp}|${req.body.email}] ${result.message}`);
+        res.status(500).send(result);
+        return next(e);
+    }
+});
+
 // 평가 데이터 파싱
 router.post('/parsing/rating', clientIp, isLoggedIn, async (req, res, next) => {
     try {
@@ -134,43 +191,45 @@ router.post('/parsing/rating', clientIp, isLoggedIn, async (req, res, next) => {
         } else {
             // json 데이터 불러오기
             const comicRatingData = fs.readFileSync(path.join(__dirname, '../data/comic_rating_data.json'), 'utf8');
-            // const romanceRatingData = fs.readFileSync(path.join(__dirname, '../data/romance_rating_data.json'), 'utf8');
-            // const fantasyRatingData = fs.readFileSync(path.join(__dirname, '../data/fantasy_rating_data.json'), 'utf8');
+            const romanceRatingData = fs.readFileSync(path.join(__dirname, '../data/romance_rating_data.json'), 'utf8');
+            const fantasyRatingData = fs.readFileSync(path.join(__dirname, '../data/fantasy_rating_data.json'), 'utf8');
 
             const parsingComicRatingData = JSON.parse(comicRatingData);
-            // const parsingRomanceRatingData = JSON.parse(romanceRatingData);
-            // const parsingFantasyRatingData = JSON.parse(fantasyRatingData);
+            const parsingRomanceRatingData = JSON.parse(romanceRatingData);
+            const parsingFantasyRatingData = JSON.parse(fantasyRatingData);
 
             // 파일 길이만큼 반복문 돌기
             for (let i = 0; i < parsingComicRatingData.length; i++) {
                 // 코믹스 평가 데이터 생성
                 await Rating.create({
-                    user_uid: parsingComicRatingData[i].email,
+                    user_uid: bcrypt.hash(parsingComicRatingData[i].email, 12),
                     bsin: parsingComicRatingData[i].bsin,
                     genre: 'COMIC',
                     rating: parsingComicRatingData[i].rating
                 });
             }
 
-            // // 파일 길이만큼 반복문 돌기
-            // for (let i = 0; i < parsingRomanceRatingData.length; i++) {
-            //     // 로맨스 평가 데이터 생성
-            //     await Rating.create({
-            //         user_uid: parsingRomanceRatingData[i].email,
-            //         bsin: parsingRomanceRatingData[i].bsin,
-            //         rating: parsingRomanceRatingData[i].rating
-            //     });
-            // }
+            // 파일 길이만큼 반복문 돌기
+            for (let i = 0; i < parsingRomanceRatingData.length; i++) {
+                // 로맨스 평가 데이터 생성
+                await Rating.create({
+                    user_uid: bcrypt.hash(parsingRomanceRatingData[i].email, 12),
+                    bsin: parsingRomanceRatingData[i].bsin,
+                    genre: 'ROMANCE',
+                    rating: parsingRomanceRatingData[i].rating
+                });
+            }
 
-            // // 파일 길이만큼 반복문 돌기
-            // for (let i = 0; i < parsingFantasyRatingData.length; i++) {
-            //     // 판타지 평가 데이터 생성
-            //     await Rating.create({
-            //         user_uid: parsingFantasyRatingData[i].email,
-            //         bsin: parsingFantasyRatingData[i].bsin,
-            //         rating: parsingFantasyRatingData[i].rating
-            //     });
-            // }
+            // 파일 길이만큼 반복문 돌기
+            for (let i = 0; i < parsingFantasyRatingData.length; i++) {
+                // 판타지 평가 데이터 생성
+                await Rating.create({
+                    user_uid: bcrypt.hash(parsingFantasyRatingData[i].email, 12),
+                    bsin: parsingFantasyRatingData[i].bsin,
+                    genre: 'FANTASY',
+                    rating: parsingFantasyRatingData[i].rating
+                });
+            }
 
             // 도서 데이터 파싱 성공 메세지 반환
             const result = new Object();

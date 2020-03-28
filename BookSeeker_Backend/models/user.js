@@ -19,10 +19,6 @@ module.exports = (sequelize, DataTypes) => (
         password: {
             type: DataTypes.STRING,
             allowNull: true, 
-        }, 
-        tutorial: {
-            type: DataTypes.BOOLEAN,
-            allowNull: true,
         }
     }, {
         timestamps: true, // 생성&수정일 기록
