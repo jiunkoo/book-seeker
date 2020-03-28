@@ -8,7 +8,6 @@ import android.text.TextWatcher
 import android.widget.Toast
 import com.example.bookseeker.contract.RegisterContract
 import com.example.bookseeker.presenter.RegisterPresenter
-import android.os.Looper
 import android.util.Log
 import com.example.bookseeker.R
 import com.example.bookseeker.model.data.*
@@ -20,9 +19,11 @@ import kotlinx.android.synthetic.main.activity_register.*
 class RegisterActivity : BaseActivity(), RegisterContract.View {
     // RegisterActivity와 함께 생성될 RegisterPresenter를 지연 초기화
     private lateinit var registerPresenter: RegisterPresenter
+
     // Disposable 객체 지연 초기화
     private lateinit var disposables: CompositeDisposable
 
+    // onCreate() : Activity가 생성될 때 동작하는 함수
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
@@ -45,27 +46,27 @@ class RegisterActivity : BaseActivity(), RegisterContract.View {
         registerPresenter = RegisterPresenter()
     }
 
-    // setSignUpButtonEventListener : SignUpActivity에서 Button Event를 처리하는 함수
+    // setSignUpButtonEventListener : SignUpActivity에서 Button 이벤트를 처리하는 함수
     override fun setButtonEventListener() {
-        // SignUp Button Event를 처리하는 함수
+        // SignUp Button 이벤트를 처리하는 함수
         register_btn_register.setOnClickListener() {
             var userData = Register(
                 register_etxt_email.text.toString(),
                 register_etxt_nickname.text.toString(),
                 register_etxt_password.text.toString()
             )
-            requestSignUpResult(userData)
+            registerSubscribe(userData)
         }
 
-        // SignIn Button Event를 처리하는 함수
+        // SignIn Button 이벤트를 처리하는 함수
         signup_txtv_signin.setOnClickListener {
             startLoginActivity()
         }
     }
 
-    // setEditTextEventListener : RegisterActivity에서 EditText Event를 처리하는 함수
+    // setEditTextEventListener : RegisterActivity에서 EditText 이벤트를 처리하는 함수
     override fun setEditTextEventListener() {
-        // Email EditText Event를 처리하는 함수
+        // Email EditText 이벤트를 처리하는 함수
         register_etxt_email.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
@@ -97,7 +98,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View {
             }
         })
 
-        // Nickname EditText Event를 처리하는 함수
+        // Nickname EditText 이벤트를 처리하는 함수
         register_etxt_nickname.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
@@ -129,7 +130,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View {
             }
         })
 
-        // Password EditText Event를 처리하는 함수
+        // Password EditText 이벤트를 처리하는 함수
         register_etxt_password.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
@@ -163,7 +164,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View {
             }
         })
 
-        // Password Confirm EditText Event를 처리하는 함수
+        // Password Confirm EditText 이벤트를 처리하는 함수
         register_etxt_passwordconfirm.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
@@ -195,58 +196,43 @@ class RegisterActivity : BaseActivity(), RegisterContract.View {
         finish()
     }
 
-    // requestRegisterResult : 관찰자에게서 발행된 데이터를 가져오는 함수
-    fun requestSignUpResult(register: Register) {
-//        setProgressON("회원가입을 진행중입니다...")
-
+    // registerSubscribe : 관찰자에게서 사용자의 회원가입 여부를 가져오는 함수
+    override fun registerSubscribe(register: Register) {
         val subscription = registerPresenter
             .registerObservable(this, register)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { result ->
-//                    setProgressOFF()
                     if((result.get("success").toString()).equals("true")) {
-                        setProgressOFF()
-                        showMessage("성공적으로 회원가입을 완료했습니다.")
                         startLoginActivity()
-                    } else {
-                        showMessage(result.get("message").toString())
                     }
+                    executionLog("[INFO][REGISTER]", result.get("message").toString())
                 },
                 { e ->
-                    Looper.prepare()
-                    showMessage("request Register Result Error!")
-                    Looper.loop()
+                    executionLog("[ERROR][REGISTER]", e.message ?: "")
                 }
             )
         disposables.add(subscription)
     }
 
+    // onDestroy() : Activity가 종료될 때 동작하는 함수
     override fun onDestroy() {
         super.onDestroy()
 
         // View가 Delete(Unbind) 되었다는 걸 Presenter에 전달
         registerPresenter.dropView()
 
-        println("회원가입 disposable 객체 해제 전 : [ONDESTROY]" + disposables.isDisposed)
+        executionLog("[INFO][REGISTER]", "disposable 객체 해제 전 상태 : " + disposables.isDisposed)
+        executionLog("[INFO][REGISTER]", "disposable 객체 해제 전 크기 : " + disposables.size())
 
         // Disposable 객체 전부 해제
         if(!disposables.isDisposed){
             disposables.dispose()
         }
 
-        println("회원가입 disposable 객체 해제 후 : [ONDESTROY]" + disposables.isDisposed)
-    }
-
-    // setProgressON :  공통으로 사용하는 Progress Bar의 시작을 정의하는 함수
-    override fun setProgressON(msg: String) {
-        progressON(msg)
-    }
-
-    // setProgressOFF() : 공통으로 사용하는 Progress Bar의 종료를 정의하는 함수
-    override fun setProgressOFF() {
-        progressOFF()
+        executionLog("[INFO][REGISTER]", "disposable 객체 해제 후 상태 : " + disposables.isDisposed)
+        executionLog("[INFO][REGISTER]", "disposable 객체 해제 후 크기 : " + disposables.size())
     }
 
     // showMessage : 공통으로 사용하는 messsage 출력 부분을 생성하는 함수

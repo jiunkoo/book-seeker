@@ -5,6 +5,7 @@ import androidx.collection.SparseArrayCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bookseeker.model.data.BookData
 
+
 class RatingAdapter(listener: RatingDelegateAdapter.onViewSelectedListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var items: ArrayList<ViewType>
@@ -35,8 +36,6 @@ class RatingAdapter(listener: RatingDelegateAdapter.onViewSelectedListener) : Re
     override fun getItemViewType(position: Int) = items[position].getViewType()
 
     fun addBookList(bookData: List<BookData>) {
-        println("도서 목록을 추가하였습니다.")
-        println("bookdata : $bookData")
         // first remove loading and notify
         val initPosition = items.size - 1
         items.removeAt(initPosition)
@@ -50,17 +49,21 @@ class RatingAdapter(listener: RatingDelegateAdapter.onViewSelectedListener) : Re
 
     fun modifyBookList(bookData: BookData, position: Int) {
         items[position] = bookData
-        println("수정된 아이템 : " + items[position])
+    }
+
+    fun clearBookList() {
+        items.clear()
+        notifyItemRangeRemoved(0, getLastPosition())
+
+        items.add(loadingItem)
     }
 
     fun clearAndAddBookList(bookData: List<BookData>) {
-        println("도서 목록을 삭제하고 추가하였습니다.")
         items.clear()
         notifyItemRangeRemoved(0, getLastPosition())
 
         items.addAll(bookData)
         items.add(loadingItem)
-//        notifyItemRangeInserted(0, items.size)
         notifyItemRangeChanged(0, items.size + 1 /* plus loading item */)
     }
 

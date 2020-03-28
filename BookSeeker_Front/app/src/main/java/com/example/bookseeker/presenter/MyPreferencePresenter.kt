@@ -3,12 +3,12 @@ package com.example.bookseeker.presenter
 import android.content.Context
 import android.util.Log
 import com.example.bookseeker.contract.MyPreferenceContract
-import com.example.bookseeker.contract.MypageContract
 import com.example.bookseeker.network.RetrofitClient
 import com.example.bookseeker.network.RetrofitClient.retrofitInterface
 import com.google.gson.JsonObject
 import io.reactivex.Observable
 import okhttp3.OkHttpClient
+
 
 class MyPreferencePresenter : MyPreferenceContract.Presenter {
     private var myPreferenceView: MyPreferenceContract.View? = null
@@ -18,8 +18,8 @@ class MyPreferencePresenter : MyPreferenceContract.Presenter {
         myPreferenceView = view
     }
 
-    // getCountRatingObservable : MyPreferencePresenter에서 장르별 평가 개수를 요청하는 함수
-    fun getCountRatingObservable(context: Context): Observable<JsonObject> {
+    // getCountRatingObservable : 평점별 도서 평가 개수 요청을 서버로 보내고 관찰하는 함수
+    override fun getCountRatingObservable(context: Context): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
         val retrofitInterface = retrofitInterface(client)
 
@@ -38,8 +38,8 @@ class MyPreferencePresenter : MyPreferenceContract.Presenter {
         }
     }
 
-    // getKeywordObservable : MyPreferencePresenter에서 장르별 평가 개수를 요청하는 함수
-    fun getKeywordObservable(context: Context, limit: Int): Observable<JsonObject> {
+    // getKeywordObservable : 내가 평가한 도서 키워드 요청을 서버로 보내고 관찰하는 함수
+    override fun getKeywordObservable(context: Context, limit: Int): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
         val retrofitInterface = retrofitInterface(client)
 

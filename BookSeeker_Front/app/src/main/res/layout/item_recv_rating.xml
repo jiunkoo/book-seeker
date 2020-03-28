@@ -10,7 +10,7 @@
             android:id="@+id/recv_rating_item_imgv_book"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:src="@drawable/img_novel1"
+            android:src="@drawable/img_basic"
 
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -24,10 +24,12 @@
             android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="@color/darkAshblue"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:gravity="center_vertical|left"
             android:layout_marginLeft="8dp"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
 
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toRightOf="@id/recv_rating_item_imgv_book"
@@ -35,8 +37,7 @@
             app:layout_constraintBottom_toTopOf="@id/recv_rating_item_txtv_author"
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintVertical_chainStyle="packed"
-            app:layout_constraintHorizontal_weight="8"
-            app:layout_constraintVertical_weight="1"/>
+            app:layout_constraintHorizontal_weight="8"/>
     <TextView
             android:id="@+id/recv_rating_item_txtv_author"
             android:text="AUTHOR"
@@ -47,10 +48,7 @@
 
             app:layout_constraintTop_toBottomOf="@id/recv_rating_item_txtv_booktitle"
             app:layout_constraintLeft_toRightOf="@id/recv_rating_item_imgv_book"
-            app:layout_constraintBottom_toTopOf="@id/recv_rating_item_txtv_publisher"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintVertical_chainStyle="packed"
-            app:layout_constraintHorizontal_weight="4"/>
+            app:layout_constraintBottom_toTopOf="@id/recv_rating_item_txtv_publisher"/>
     <TextView
             android:id="@+id/recv_rating_item_txtv_publisher"
             android:text="PUBLISHER"
@@ -61,10 +59,7 @@
 
             app:layout_constraintTop_toBottomOf="@id/recv_rating_item_txtv_author"
             app:layout_constraintLeft_toRightOf="@id/recv_rating_item_imgv_book"
-            app:layout_constraintBottom_toTopOf="@id/recv_rating_item_ratingbar_bookrating"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintVertical_chainStyle="packed"
-            app:layout_constraintHorizontal_weight="4"/>
+            app:layout_constraintBottom_toTopOf="@id/recv_rating_item_ratingbar_bookrating"/>
     <RatingBar
             android:id="@+id/recv_rating_item_ratingbar_bookrating"
             android:numStars="5"
@@ -79,8 +74,5 @@
 
             app:layout_constraintTop_toBottomOf="@id/recv_rating_item_txtv_publisher"
             app:layout_constraintLeft_toRightOf="@id/recv_rating_item_imgv_book"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintVertical_chainStyle="packed"
-            app:layout_constraintHorizontal_weight="8"/>
+            app:layout_constraintBottom_toBottomOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

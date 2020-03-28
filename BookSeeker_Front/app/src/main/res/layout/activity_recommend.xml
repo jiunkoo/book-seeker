@@ -51,7 +51,7 @@
                         android:tint="@color/basicWhite"
                         android:layout_gravity="center"
                         android:layout_weight="4"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="0dp"/>
                 <TextView
                         android:id="@+id/recommend_txtv_comic"
@@ -80,10 +80,11 @@
                     android:layout_height="match_parent">
                 <ImageView
                         android:id="@+id/recommend_imgv_romance"
-                        android:src="@drawable/icon_heart"
+                        android:src="@drawable/icon_romance"
+                        android:tint="@color/mediumAshblue"
                         android:layout_gravity="center"
                         android:layout_weight="4"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="0dp"/>
                 <TextView
                         android:id="@+id/recommend_txtv_romance"
@@ -113,9 +114,10 @@
                 <ImageView
                         android:id="@+id/recommend_imgv_fantasy"
                         android:src="@drawable/icon_fantasy"
+                        android:tint="@color/mediumAshblue"
                         android:layout_gravity="center"
                         android:layout_weight="4"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="0dp"/>
                 <TextView
                         android:id="@+id/recommend_txtv_fantasy"

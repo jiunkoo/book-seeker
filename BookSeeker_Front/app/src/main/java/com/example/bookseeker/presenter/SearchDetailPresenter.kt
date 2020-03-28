@@ -3,6 +3,7 @@ package com.example.bookseeker.presenter
 import android.util.Log
 import com.example.bookseeker.contract.SearchDetailContract
 
+
 class SearchDetailPresenter : SearchDetailContract.Presenter {
     private var searchView: SearchDetailContract.View? = null
 

@@ -9,10 +9,12 @@ import com.example.bookseeker.contract.SearchContract
 import com.example.bookseeker.presenter.SearchPresenter
 import kotlinx.android.synthetic.main.activity_search.*
 
+
 class SearchActivity : BaseActivity(), SearchContract.View {
     // SearchActivity와 함께 생성될 SearchPresenter를 지연 초기화
     private lateinit var searchPresenter: SearchPresenter
 
+    // onCreate : Activity가 생성될 때 동작하는 함수
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
@@ -32,22 +34,22 @@ class SearchActivity : BaseActivity(), SearchContract.View {
         searchPresenter = SearchPresenter()
     }
 
-    // setTextViewEventListener : SearchActivity에서 TextView Event를 처리하는 함수
+    // setTextViewEventListener : TextView 이벤트를 처리하는 함수
     override fun setTextViewEventListener() {
-        // SignUp TextView Event를 처리하는 함수
+        // SignUp TextView 이벤트를 처리하는 함수
         search_etxt_search.setOnClickListener {
             startSearchDetailActivity()
         }
     }
 
-    // startSearchDetailActivity : SearchActivity에서 SearchDetailActivity로 넘어가는 함수
+    // startSearchDetailActivity : SearchDetailActivity로 넘어가는 함수
     override fun startSearchDetailActivity() {
         val nextIntent = Intent(this, SearchDetailActivity::class.java)
         nextIntent.putExtra("keyword", "")
         startActivity(nextIntent)
     }
 
-    // switchBottomNavigationView : SearchActivity에서 BottomNavigationView 전환 이벤트를 처리하는 함수
+    // switchBottomNavigationView : BottomNavigationView 전환 이벤트를 처리하는 함수
     override fun switchBottomNavigationView() {
         search_btmnavview_menu.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
@@ -85,20 +87,12 @@ class SearchActivity : BaseActivity(), SearchContract.View {
         search_btmnavview_menu.menu.findItem(R.id.btmnavmenu_itm_search)?.setChecked(true)
     }
 
+    // onDestroy : Activity가 종료될 때 동작하는 함수
     override fun onDestroy() {
         super.onDestroy()
+
         // View가 Delete(Unbind) 되었다는 걸 Presenter에 전달
         searchPresenter.dropView()
-    }
-
-    // setProgressON : 공통으로 사용하는 Progress Bar의 시작을 정의하는 함수
-    override fun setProgressON(msg: String){
-        progressON(msg)
-    }
-
-    // setProgressOFF() : 공통으로 사용하는 Progress Bar의 종료를 정의하는 함수
-    override fun setProgressOFF() {
-        progressOFF()
     }
 
     // showMessage : 공통으로 사용하는 messsage 출력 부분을 생성하는 함수

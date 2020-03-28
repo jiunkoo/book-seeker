@@ -31,7 +31,7 @@
             android:id="@+id/mypreference_txtv_title"
             android:text="NICKNAME님의 취향 분석"
             android:textSize="24sp"
-            android:textColor="@color/basicWhite"
+            android:textColor="@color/mediumLime"
             android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

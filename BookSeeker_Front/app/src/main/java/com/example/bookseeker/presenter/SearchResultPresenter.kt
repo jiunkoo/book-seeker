@@ -9,6 +9,7 @@ import com.google.gson.JsonObject
 import io.reactivex.Observable
 import okhttp3.OkHttpClient
 
+
 class SearchResultPresenter : SearchResultContract.Presenter {
     private var searchResultView: SearchResultContract.View? = null
 
@@ -17,8 +18,9 @@ class SearchResultPresenter : SearchResultContract.Presenter {
         searchResultView = view
     }
 
-    // booksSearchObservable : SearchDetailPresenter에서 모든 검색 결과를 요청하는 함수
-    fun booksSearchObservable(context: Context, booksSearch: BooksSearch, filter: Int, page: Int, limit: Int): Observable<JsonObject> {
+    // booksSearchObservable : 검색어 및 도서 목록 제약조건을 서버로 보내고 관찰하는 함수
+    override fun booksSearchObservable(context: Context, booksSearch: BooksSearch, filter: Int, page: Int, limit: Int):
+            Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
         val retrofitInterface = RetrofitClient.retrofitInterface(client)
 

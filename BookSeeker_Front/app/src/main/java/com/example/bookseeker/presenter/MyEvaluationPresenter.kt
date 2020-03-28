@@ -3,12 +3,12 @@ package com.example.bookseeker.presenter
 import android.content.Context
 import android.util.Log
 import com.example.bookseeker.contract.MyEvaluationContract
-import com.example.bookseeker.contract.MypageContract
 import com.example.bookseeker.network.RetrofitClient
 import com.example.bookseeker.network.RetrofitClient.retrofitInterface
 import com.google.gson.JsonObject
 import io.reactivex.Observable
 import okhttp3.OkHttpClient
+
 
 class MyEvaluationPresenter : MyEvaluationContract.Presenter {
     private var myEvaluationView: MyEvaluationContract.View? = null
@@ -18,8 +18,8 @@ class MyEvaluationPresenter : MyEvaluationContract.Presenter {
         myEvaluationView = view
     }
 
-    // getCountGenreObservable : RatingPresenter에서 장르별 평가 개수를 요청하는 함수
-    fun getCountGenreObservable(context: Context): Observable<JsonObject> {
+    // getCountGenreObservable : 장르별 도서 평가 개수 요청을 서버로 보내고 관찰하는 함수
+    override fun getCountGenreObservable(context: Context): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
         val retrofitInterface = retrofitInterface(client)
 
@@ -38,8 +38,8 @@ class MyEvaluationPresenter : MyEvaluationContract.Presenter {
         }
     }
 
-    // getEvaluationsObservable : RatingPresenter에서 모든 검색 결과를 요청하는 함수
-    fun getEvaluationsObservable(context: Context, genre: String, state: Int, page: Int, limit: Int): Observable<JsonObject> {
+    // getEvaluationsObservable : 내가 평가한 도서 목록 제약조건을 서버로 보내고 관찰하는 함수
+    override fun getEvaluationsObservable(context: Context, genre: String, state: Int, page: Int, limit: Int): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
         val retrofitInterface = retrofitInterface(client)
 

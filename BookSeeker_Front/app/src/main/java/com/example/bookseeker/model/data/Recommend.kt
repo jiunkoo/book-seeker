@@ -3,6 +3,8 @@ package com.example.bookseeker.model.data
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
+
+// 추천 데이터 생성 객체
 @Parcelize
 data class RecommendData(
     val bsin: String,

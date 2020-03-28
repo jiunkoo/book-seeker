@@ -24,14 +24,18 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
     // Activity와 함께 생성될 Presenter를 지연 초기화
     private lateinit var bookInfoPresenter: BookInfoPresenter
+
     // Disposable 객체 지연 초기화
     private lateinit var disposables: CompositeDisposable
+
     // 도서 정보
     private lateinit var jsonObject: JsonObject
+
     // 도서 평점 및 상태 설정 플래그
     private var preRating = -1f
     private var preState = -1
     private var ratingFlag = false
+
     // 색상
     val lightRed = "#ffc8d2"
     val lightYellow = "#ffebc8"
@@ -42,6 +46,7 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
     val mediumLime = "#80c783"
     val mediumMint = "#03738c"
 
+    // onCreate : Activity가 생성될 때 동작하는 함수
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_bookinfo)
@@ -76,15 +81,7 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
         bookInfoPresenter = BookInfoPresenter()
     }
 
-    // startSearchResultActivity : SearchResultActivity로 넘어가는 함수
-    fun startSearchResultActivity() {
-        val nextIntent = Intent(this, SearchResultActivity::class.java)
-        startActivity(nextIntent)
-        overridePendingTransition(0, 0)
-        finish() // 이전의 Activity로 돌아가는 것이므로 현재 Activity 종료
-    }
-
-    // switchBottomNavigationView : BookInfoActivity에서 BottomNavigationView 전환 이벤트를 처리하는 함수
+    // switchBottomNavigationView : BottomNavigationView 전환 이벤트를 처리하는 함수
     override fun switchBottomNavigationView() {
         bookinfo_btmnavview_menu.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
@@ -122,9 +119,9 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
         bookinfo_btmnavview_menu.menu.findItem(R.id.btmnavmenu_itm_search)?.setChecked(true)
     }
 
-    // setButtonEventListener : BookInfoActivity에서 Button Event를 처리하는 함수
-    fun setButtonEventListener(bsin: String, genre: String, link: String) {
-        // BookInfo Link Button Event를 처리하는 함수
+    // setButtonEventListener : Button 이벤트를 처리하는 함수
+    override fun setButtonEventListener(bsin: String, genre: String, link: String) {
+        // BookInfo Link Button 이벤트를 처리하는 함수
         bookinfo_btn_link.setOnClickListener {
             // 해당 도서 구매 페이지로 연결
             var combinationUri = "https://ridibooks.com" + link
@@ -132,7 +129,7 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
             startActivity(webIntent)
         }
 
-        // BookInfo State Button Event를 처리하는 함수
+        // BookInfo State Button 이벤트를 처리하는 함수
         // '관심 없어요' 버튼
         bookinfo_btn_boring.setOnClickListener {
             var rating = bookinfo_ratingbar_bookrating.rating
@@ -277,9 +274,9 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
         }
     }
 
-    // setRatingbarEventListener : BookInfoActivity에서 Ratingbar Event를 처리하는 함수
-    fun setRatingbarEventListener(bsin: String, genre: String) {
-        //Ratingbar Event를 처리하는 함수
+    // setRatingbarEventListener : Ratingbar 이벤트를 처리하는 함수
+    override fun setRatingbarEventListener(bsin: String, genre: String) {
+        //Ratingbar 이벤트를 처리하는 함수
         bookinfo_ratingbar_bookrating.onRatingBarChangeListener = RatingBar.OnRatingBarChangeListener()
         { ratingBar: RatingBar, postRating: Float, boolean: Boolean ->
             if(ratingFlag) {
@@ -309,8 +306,16 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
         }
     }
 
-    // getBookSubscribe : 하나의 평가 데이터 조회 관찰자를 구독하는 함수
-    private fun getBookSubscribe(bsin: String) {
+    // setEvaluation : 변경된 도서 평점을 화면에 적용하는 함수
+    override fun setEvaluation(rating: Float, state: Int) {
+        bookinfo_ratingbar_bookrating.rating = rating
+
+        preRating = rating
+        preState = state
+    }
+
+    // getBookSubscribe : 관찰자에게서 하나의 도서 데이터를 가져오는 함수
+    override fun getBookSubscribe(bsin: String) {
         val subscription =
             bookInfoPresenter
                 .getBookObservable(this, bsin)
@@ -359,18 +364,17 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
 
                             ratingFlag = true
                         }
-                        showMessage(result.get("message").toString())
+                        executionLog("[INFO][BOOKINFO]", result.get("message").toString())
                     },
                     { e ->
-                        showMessage("Get evaluation error!")
-                        println(e)
+                        executionLog("[ERROR][BOOKINFO]", e.message ?: "")
                     }
                 )
         disposables.add(subscription)
     }
 
-    // createEvaluationSubscribe : 하나의 평가 데이터 생성 관찰자를 구독하는 함수
-    private fun createEvaluationSubscribe(evaluationCreate: EvaluationCreate) {
+    // createEvaluationSubscribe : 관찰자에게서 도서 평가 결과를 가져오는 함수
+    override fun createEvaluationSubscribe(evaluationCreate: EvaluationCreate) {
         val subscription =
             bookInfoPresenter
                 .createEvaluationObservable(this, evaluationCreate)
@@ -391,18 +395,17 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
                             // 변경된 평점 반영
                             setEvaluation(rating, state)
                         }
-                        // 설정 끝낸 후 프로그래스 바 종료
-                        showMessage(result.get("message").toString())
+                        executionLog("[INFO][BOOKINFO]", result.get("message").toString())
                     },
                     { e ->
-                        showMessage("Create evaluation error!")
+                        executionLog("[ERROR][BOOKINFO]", e.message ?: "")
                     }
                 )
         disposables.add(subscription)
     }
 
-    // patchEvaluationSubscribe : 하나의 평가 데이터 수정 관찰자를 구독하는 함수
-    private fun patchEvaluationSubscribe(evaluationPatch: EvaluationPatch) {
+    // patchEvaluationSubscribe : 관찰자에게서 도서 평가 수정 결과를 가져오는 함수
+    override fun patchEvaluationSubscribe(evaluationPatch: EvaluationPatch) {
         val subscription =
             bookInfoPresenter
                 .patchEvaluationObservable(this, evaluationPatch)
@@ -423,19 +426,18 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
                             // 변경된 평점 반영
                             setEvaluation(rating, state)
                         }
-                        // 설정 끝낸 후 프로그래스 바 종료
-                        showMessage(result.get("message").toString())
+                        executionLog("[INFO][BOOKINFO]", result.get("message").toString())
                     },
                     { e ->
-                        showMessage("Patch evaluation error!")
-                        println(e)
+                        executionLog("[ERROR][BOOKINFO]", e.message ?: "")
+
                     }
                 )
         disposables.add(subscription)
     }
 
-    // deleteEvaluationSubscribe : 하나의 평가 데이터 삭제 관찰자를 구독하는 함수
-    private fun deleteEvaluationSubscribe() {
+    // deleteEvaluationSubscribe : 관찰자에게서 도서 평가 삭제 결과를 가져오는 함수
+    override fun deleteEvaluationSubscribe() {
         var bsin = jsonObject.get("bsin").toString().replace("\"", "")
         val subscription =
             bookInfoPresenter
@@ -457,48 +459,32 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
                             // 변경된 평점 반영
                             setEvaluation(rating, state)
                         }
-                        // 설정 끝낸 후 프로그래스 바 종료
-                        showMessage(result.get("message").toString())
+                        executionLog("[INFO][BOOKINFO]", result.get("message").toString())
                     },
                     { e ->
-                        showMessage("Delete evaluation error!")
+                        executionLog("[ERROR][BOOKINFO]", e.message ?: "")
                     }
                 )
         disposables.add(subscription)
     }
 
-    // 화면에 도서 평점을 나타내는 함수
-    private fun setEvaluation(rating: Float, state: Int) {
-        bookinfo_ratingbar_bookrating.rating = rating
-
-        preRating = rating
-        preState = state
-    }
-
+    // onDestroy : Activity가 종료될 때 동작하는 함수
     override fun onDestroy() {
         super.onDestroy()
 
         // View가 Delete(Unbind) 되었다는 걸 Presenter에 전달
         bookInfoPresenter.dropView()
 
-        println("한 개 도서 disposable 객체 해제 전 : [ONDESTROY]" + disposables.isDisposed)
+        executionLog("[INFO][BOOKINFO]", "disposable 객체 해제 전 상태 : " + disposables.isDisposed)
+        executionLog("[INFO][BOOKINFO]", "disposable 객체 해제 전 크기 : " + disposables.size())
 
         // Disposable 객체 전부 해제
         if(!disposables.isDisposed){
             disposables.dispose()
         }
 
-        println("한 개 도서 disposable 객체 해제 후 : [ONDESTROY]" + disposables.isDisposed)
-    }
-
-    // setProgressON :  공통으로 사용하는 Progress Bar의 시작을 정의하는 함수
-    override fun setProgressON(msg: String) {
-        progressON(msg)
-    }
-
-    // setProgressOFF() : 공통으로 사용하는 Progress Bar의 종료를 정의하는 함수
-    override fun setProgressOFF() {
-        progressOFF()
+        executionLog("[INFO][BOOKINFO]", "disposable 객체 해제 후 상태 : " + disposables.isDisposed)
+        executionLog("[INFO][BOOKINFO]", "disposable 객체 해제 후 크기 : " + disposables.size())
     }
 
     // showMessage : 공통으로 사용하는 messsage 출력 부분을 생성하는 함수

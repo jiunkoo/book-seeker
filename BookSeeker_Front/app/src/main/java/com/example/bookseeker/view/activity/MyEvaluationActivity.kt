@@ -11,36 +11,38 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.bookseeker.R
 import com.example.bookseeker.adapter.MyEvaluationAdapter
 import com.example.bookseeker.adapter.MyEvaluationDelegateAdapter
-import com.example.bookseeker.adapter.listener.InfiniteScrollListener
+import com.example.bookseeker.adapter.listener.GridInfiniteScrollListener
 import com.example.bookseeker.contract.MyEvaluationContract
 import com.example.bookseeker.model.data.BookData
 import com.example.bookseeker.model.data.BookList
 import com.example.bookseeker.presenter.MyEvaluationPresenter
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_myevaluation.*
 
+
 class MyEvaluationActivity : BaseActivity(), MyEvaluationContract.View, MyEvaluationDelegateAdapter.onViewSelectedListener {
     // MyEvaluationActivity와 함께 생성될 MyEvaluationPresenter를 지연 초기화
     private lateinit var myEvaluationPresenter: MyEvaluationPresenter
+
     // Disposable 객체 지연 초기화
     private lateinit var disposables: CompositeDisposable
+
     // RecyclerView 설정
     private lateinit var recyclerView: RecyclerView
+
     // RecyclerView Adapter 설정
     private val myEvaluationAdapter by lazy { MyEvaluationAdapter(this) }
+
     // Spinner Item Change Flag 설정
     private var state = 0
-    private var spinnerFlag = false
+
     // Tab Item Change Flag 설정
     private var tabPosition = 0
-    private var tabFlag = false
-    // Rating Flag 설정
-    private var ratingFlag = false
 
+    // onCreate : Activity가 생성될 때 동작하는 함수
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_myevaluation)
@@ -69,7 +71,7 @@ class MyEvaluationActivity : BaseActivity(), MyEvaluationContract.View, MyEvalua
         myEvaluationPresenter = MyEvaluationPresenter()
     }
 
-    // switchBottomNavigationView : RatingActivity에서 BottomNavigationView 전환 이벤트를 처리하는 함수
+    // switchBottomNavigationView : BottomNavigationView 전환 이벤트를 처리하는 함수
     override fun switchBottomNavigationView() {
         myevaluation_btmnavview_menu.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
@@ -108,7 +110,7 @@ class MyEvaluationActivity : BaseActivity(), MyEvaluationContract.View, MyEvalua
     }
 
     // startBookInfoActivity : bookInfoActivity로 넘어가는 함수
-    fun startBookInfoActivity(bookData: BookData) {
+    override fun startBookInfoActivity(bookData: BookData) {
         val nextIntent = Intent(this, BookInfoActivity::class.java)
         nextIntent.putExtra("bsin", bookData.bsin)
         nextIntent.putExtra("genre", bookData.genre)
@@ -116,8 +118,8 @@ class MyEvaluationActivity : BaseActivity(), MyEvaluationContract.View, MyEvalua
         startActivity(nextIntent)
     }
 
-    // setTabLayout : RatingActivity에서 Tab Layout Event를 처리하는 함수
-    fun setTabLayout(savedInstanceState: Bundle?) {
+    // setTabLayout : 내가 평가한 도서 목록에 대한 Tab Layout을 초기화 및 정의하는 함수
+    override fun setTabLayout(savedInstanceState: Bundle?) {
         myevaluation_tablayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 var position = tab.position
@@ -125,12 +127,8 @@ class MyEvaluationActivity : BaseActivity(), MyEvaluationContract.View, MyEvalua
                 // 이전 탭과 현재 탭이 다른 경우 변경
                 if (tabPosition != position) {
                     tabPosition = position
-                    tabFlag = true
-                    ratingFlag = false
+                    (recyclerView.adapter as MyEvaluationAdapter).clearBookList()
                     getCountGenreSubscribe()
-                } else {
-                    tabFlag = false
-                    ratingFlag = true
                 }
                 setRecyclerView(savedInstanceState)
             }
@@ -139,19 +137,15 @@ class MyEvaluationActivity : BaseActivity(), MyEvaluationContract.View, MyEvalua
         })
     }
 
-    // setSpinner : 평가할 도서 목록에 대한 Spinner를 초기화 및 정의하는 함수
-    fun setSpinner(savedInstanceState: Bundle?) {
+    // setSpinner : 내가 평가한 도서 목록에 대한 Spinner를 초기화 및 정의하는 함수
+    override fun setSpinner(savedInstanceState: Bundle?) {
         myevaluation_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 // 이전 카테고리와 현재 포지션과 다른 경우 변경
                 if (state != position) {
                     state = position
-                    spinnerFlag = true
-                    ratingFlag = false
+                    (recyclerView.adapter as MyEvaluationAdapter).clearBookList()
                     getCountGenreSubscribe()
-                } else {
-                    spinnerFlag = false
-                    ratingFlag = true
                 }
                 setRecyclerView(savedInstanceState)
             }
@@ -159,18 +153,18 @@ class MyEvaluationActivity : BaseActivity(), MyEvaluationContract.View, MyEvalua
         }
     }
 
-    // setRecyclerView : 검색한 도서 목록에 대한 RecyclerView를 초기화 및 정의하는 함수
-    fun setRecyclerView(savedInstanceState: Bundle?) {
+    // setRecyclerView : 내가 평가한 도서 목록에 대한 RecyclerView를 초기화 및 정의하는 함수
+    override fun setRecyclerView(savedInstanceState: Bundle?) {
         // Layout Manager 설정
         recyclerView.setHasFixedSize(true)
-        val linearLayout = GridLayoutManager(this, 3)
-        recyclerView.layoutManager = linearLayout
+        val gridLayout = GridLayoutManager(this, 2)
+        recyclerView.layoutManager = gridLayout
 
         recyclerView.clearOnScrollListeners() // 아이템 끝까지 도달되었을 때 클리어
         recyclerView.addOnScrollListener(
-            InfiniteScrollListener(
+            GridInfiniteScrollListener(
                 { getEvaluationsSubscribe() },
-                linearLayout
+                gridLayout
             )
         ) // 다시 갱신
 
@@ -184,14 +178,8 @@ class MyEvaluationActivity : BaseActivity(), MyEvaluationContract.View, MyEvalua
         }
     }
 
-    // onItemSelected : RecyclerView의 아이템이 선택된 경우
-    override fun onItemSelected(bookData: BookData) {
-        // bookInfoActivity로 이동
-        startBookInfoActivity(bookData)
-    }
-
-    // getCountGenreSubscribe : 관찰자에게서 발행된 데이터를 가져오는 함수
-    private fun getCountGenreSubscribe() {
+    // getCountGenreSubscribe : 관찰자에게서 장르별 도서 평가 개수를 가져오는 함수
+    override fun getCountGenreSubscribe() {
         val subscription =
             myEvaluationPresenter
                 .getCountGenreObservable(this)
@@ -213,17 +201,17 @@ class MyEvaluationActivity : BaseActivity(), MyEvaluationContract.View, MyEvalua
                                 myevaluation_txtv_averagecount.text = countFantasy
                             }
                         }
-                        executionLog("[MyEvaluation]", result.get("message").toString())
+                        executionLog("[INFO][MYEVALUATION]", result.get("message").toString())
                     },
                     { e ->
-                        Snackbar.make(recyclerView, e.message ?: "", Snackbar.LENGTH_LONG).show()
+                        executionLog("[ERROR][MYEVALUATION]", e.message ?: "")
                     }
                 )
         disposables.add(subscription)
     }
 
-    // getEvaluationsSubscribe : 관찰자에게서 발행된 데이터를 가져오는 함수
-    private fun getEvaluationsSubscribe() {
+    // getEvaluationsSubscribe : 관찰자에게서 내가 평가한 도서 목록을 가져오는 함수
+    override fun getEvaluationsSubscribe() {
         // Tab Position에 따라 Genre 설정
         var genre: String
         if (tabPosition == 0) {
@@ -272,28 +260,12 @@ class MyEvaluationActivity : BaseActivity(), MyEvaluationContract.View, MyEvalua
                             // 도서 목록 만들기
                             val bookList = BookList(myEvaluationAdapter.itemCount / 10 + 1, bookDataArray)
 
-                            // TabLayout이 변경된 경우
-                            if (tabFlag == true) {
-                                (recyclerView.adapter as MyEvaluationAdapter).clearAndAddBookList(bookList.results)
-                                tabFlag = false
-                                ratingFlag = true
-                            } else {
-                                (recyclerView.adapter as MyEvaluationAdapter).addBookList(bookList.results)
-                            }
-
-                            // Spinner가 변경된 경우
-                            if (spinnerFlag == true) {
-                                (recyclerView.adapter as MyEvaluationAdapter).clearAndAddBookList(bookList.results)
-                                spinnerFlag = false
-                                ratingFlag = true
-                            } else {
-                                (recyclerView.adapter as MyEvaluationAdapter).addBookList(bookList.results)
-                            }
+                            (recyclerView.adapter as MyEvaluationAdapter).addBookList(bookList.results)
                         }
-                        executionLog("[MyEvaluation]", result.get("message").toString())
+                        executionLog("[INFO][MYEVALUATION]", result.get("message").toString())
                     },
                     { e ->
-                        Snackbar.make(recyclerView, e.message ?: "", Snackbar.LENGTH_LONG).show()
+                        executionLog("[ERROR][MYEVALUATION]", e.message ?: "")
                     }
                 )
         disposables.add(subscription)
@@ -302,29 +274,29 @@ class MyEvaluationActivity : BaseActivity(), MyEvaluationContract.View, MyEvalua
         getCountGenreSubscribe()
     }
 
+    // onItemSelected : recyclerview의 아이템 선택 이벤트를 처리하는 함수
+    override fun onItemSelected(bookData: BookData) {
+        // bookInfoActivity로 이동
+        startBookInfoActivity(bookData)
+    }
+
+    // onDestroy : Activity가 종료될 때 동작하는 함수
     override fun onDestroy() {
         super.onDestroy()
+
         // View가 Delete(Unbind) 되었다는 걸 Presenter에 전달
         myEvaluationPresenter.dropView()
 
-        println("내 평가 disposable 객체 해제 전 : [ONDESTROY]" + disposables.isDisposed)
+        executionLog("[INFO][MYEVALUATION]", "disposable 객체 해제 전 상태 : " + disposables.isDisposed)
+        executionLog("[INFO][MYEVALUATION]", "disposable 객체 해제 전 크기 : " + disposables.size())
 
         // Disposable 객체 전부 해제
         if(!disposables.isDisposed){
             disposables.dispose()
         }
 
-        println("내 평가 disposable 객체 해제 후 : [ONDESTROY]" + disposables.isDisposed)
-    }
-
-    // setProgressON :  공통으로 사용하는 Progress Bar의 시작을 정의하는 함수
-    override fun setProgressON(msg: String){
-        progressON(msg)
-    }
-
-    // setProgressOFF() : 공통으로 사용하는 Progress Bar의 종료를 정의하는 함수
-    override fun setProgressOFF() {
-        progressOFF()
+        executionLog("[INFO][MYEVALUATION]", "disposable 객체 해제 후 상태 : " + disposables.isDisposed)
+        executionLog("[INFO][MYEVALUATION]", "disposable 객체 해제 후 크기 : " + disposables.size())
     }
 
     // showMessage : 공통으로 사용하는 messsage 출력 부분을 생성하는 함수

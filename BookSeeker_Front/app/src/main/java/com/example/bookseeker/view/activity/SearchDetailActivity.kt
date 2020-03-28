@@ -15,6 +15,7 @@ class SearchDetailActivity : BaseActivity(), SearchDetailContract.View {
     // Activity와 함께 생성될 Presenter를 지연 초기화
     private lateinit var searchDetailPresenter: SearchDetailPresenter
 
+    // onCreate : Activity가 생성될 때 동작하는 함수
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search_detail)
@@ -47,52 +48,7 @@ class SearchDetailActivity : BaseActivity(), SearchDetailContract.View {
         searchDetailPresenter = SearchDetailPresenter()
     }
 
-    // setButtonEventListener() : SearchDetailActivity에서 Button Event를 처리하는 함수
-    fun setButtonEventListener() {
-        search_detail_ibtn_back.setOnClickListener {
-            // 뒤로가기 버튼을 누르면 SearchActivity로 이동함
-            startSearchActivity()
-        }
-
-        search_detail_ibtn_clear.setOnClickListener {
-            // 클리어 버튼을 누르면 검색어 전부 삭제
-            search_detail_etxt_keyword.text = null
-        }
-    }
-
-    // setEditTextEventListener : EditText Event를 처리하는 함수
-    override fun setEditTextEventListener() {
-        // Input EditText Event를 처리하는 함수
-        search_detail_etxt_keyword.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                // 문자열이 0인 경우
-                if (search_detail_etxt_keyword.text.toString().length == 0) {
-                    showMessage("검색어를 입력해주세요.")
-                } else {
-                    // 검색한 문자가 있는 경우 SearchResultActivity로 이동
-                    startSearchResultActivity()
-                }
-            }
-            true
-        }
-    }
-
-    // startSearchActivity : SearchActivity로 넘어가는 함수
-    fun startSearchActivity() {
-        val nextIntent = Intent(this, SearchActivity::class.java)
-        startActivity(nextIntent)
-        finish() // 이전의 Activity로 돌아가는 것이므로 현재 Activity 종료
-    }
-
-    // startSearchResultActivity : SearchActivity로 넘어가는 함수
-    fun startSearchResultActivity() {
-        val nextIntent = Intent(this, SearchResultActivity::class.java)
-        nextIntent.putExtra("keyword", search_detail_etxt_keyword.text.toString())
-        startActivity(nextIntent)
-        overridePendingTransition(0, 0)
-    }
-
-    // switchBottomNavigationView : SearchDetailActivity에서 BottomNavigationView 전환 이벤트를 처리하는 함수
+    // switchBottomNavigationView : BottomNavigationView 전환 이벤트를 처리하는 함수
     override fun switchBottomNavigationView() {
         search_detail_btmnavview_menu.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
@@ -130,20 +86,57 @@ class SearchDetailActivity : BaseActivity(), SearchDetailContract.View {
         search_detail_btmnavview_menu.menu.findItem(R.id.btmnavmenu_itm_search)?.setChecked(true)
     }
 
+    // setButtonEventListener() : Button 이벤트를 처리하는 함수
+    override fun setButtonEventListener() {
+        search_detail_ibtn_back.setOnClickListener {
+            // 뒤로가기 버튼을 누르면 SearchActivity로 이동함
+            startSearchActivity()
+        }
+
+        search_detail_ibtn_clear.setOnClickListener {
+            // 클리어 버튼을 누르면 검색어 전부 삭제
+            search_detail_etxt_keyword.text = null
+        }
+    }
+
+    // setEditTextEventListener : EditText 이벤트를 처리하는 함수
+    override fun setEditTextEventListener() {
+        // Input EditText 이벤트를 처리하는 함수
+        search_detail_etxt_keyword.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                // 문자열이 0인 경우
+                if (search_detail_etxt_keyword.text.toString().length == 0) {
+                    showMessage("검색어를 입력해주세요.")
+                } else {
+                    // 검색한 문자가 있는 경우 SearchResultActivity로 이동
+                    startSearchResultActivity()
+                }
+            }
+            true
+        }
+    }
+
+    // startSearchActivity : SearchActivity로 넘어가는 함수
+    override fun startSearchActivity() {
+        val nextIntent = Intent(this, SearchActivity::class.java)
+        startActivity(nextIntent)
+        finish() // 이전의 Activity로 돌아가는 것이므로 현재 Activity 종료
+    }
+
+    // startSearchResultActivity : SearchActivity로 넘어가는 함수
+    override fun startSearchResultActivity() {
+        val nextIntent = Intent(this, SearchResultActivity::class.java)
+        nextIntent.putExtra("keyword", search_detail_etxt_keyword.text.toString())
+        startActivity(nextIntent)
+        overridePendingTransition(0, 0)
+    }
+
+    // onDestroy : Activity가 종료될 때 동작하는 함수
     override fun onDestroy() {
         super.onDestroy()
+
         // View가 Delete(Unbind) 되었다는 걸 Presenter에 전달
         searchDetailPresenter.dropView()
-    }
-
-    // setProgressON :  공통으로 사용하는 Progress Bar의 시작을 정의하는 함수
-    override fun setProgressON(msg: String) {
-        progressON(msg)
-    }
-
-    // setProgressOFF() : 공통으로 사용하는 Progress Bar의 종료를 정의하는 함수
-    override fun setProgressOFF() {
-        progressOFF()
     }
 
     // showMessage : 공통으로 사용하는 messsage 출력 부분을 생성하는 함수

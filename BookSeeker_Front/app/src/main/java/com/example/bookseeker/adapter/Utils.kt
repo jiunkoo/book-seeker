@@ -1,17 +1,11 @@
 package com.example.bookseeker.adapter
 
-import android.content.Context
 import android.content.res.Resources
 import android.graphics.Point
 import android.os.Build
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.WindowManager
-import com.example.bookseeker.model.data.BookData
-import com.google.gson.GsonBuilder
-import org.json.JSONArray
-import java.io.IOException
-import java.nio.charset.Charset
+
 
 object Utils {
     fun getDisplaySize(windowManager: WindowManager): Point {

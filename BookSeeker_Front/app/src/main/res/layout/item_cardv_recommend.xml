@@ -13,7 +13,7 @@
             android:layout_height="match_parent">
         <ImageView
                 android:id="@+id/cardv_recommend_item_imgv_image"
-                android:src="@drawable/img_novel1"
+                android:src="@drawable/img_basic"
                 android:scaleType="fitXY"
                 android:layout_width="0dp"
                 android:layout_height="0dp"

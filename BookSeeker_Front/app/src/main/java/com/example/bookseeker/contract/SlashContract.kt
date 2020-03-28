@@ -8,6 +8,5 @@ interface SlashContract {
         // startLoginActivity : SlashActivity에서 LoginActivity로 넘어가는 함수
         fun startLoginActivity()
     }
-    interface Presenter : BasePresenter<View> {
-    }
+    interface Presenter : BasePresenter<View> {}
 }

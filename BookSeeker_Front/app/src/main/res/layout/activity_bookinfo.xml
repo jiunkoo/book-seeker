@@ -25,7 +25,7 @@
                     android:paddingBottom="@dimen/activity_half_margin"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
-                    android:src="@drawable/img_novel1"
+                    android:src="@drawable/img_basic"
                     android:background="@color/mediumAshblue"
 
                     app:layout_constraintTop_toTopOf="parent"

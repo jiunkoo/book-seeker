@@ -20,7 +20,6 @@ import com.example.bookseeker.model.data.BookData
 import com.example.bookseeker.model.data.BookList
 import com.example.bookseeker.model.data.BooksSearch
 import com.example.bookseeker.presenter.SearchResultPresenter
-import com.google.android.material.snackbar.Snackbar
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -30,14 +29,17 @@ import kotlinx.android.synthetic.main.activity_search_result.*
 class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDelegateAdapter.onViewSelectedListener {
     // Activity와 함께 생성될 Presenter를 지연 초기화
     private lateinit var searchResultPresenter: SearchResultPresenter
+
     // Disposable 객체 지연 초기화
     private lateinit var disposables: CompositeDisposable
+
     // RecyclerView Adapter 설정
     private val searchAdapter by lazy { SearchAdapter(this) }
+
     // Spinner Item Change Flag 설정
     private var filter = 0
-    private var spinnerFlag = false
 
+    // onCreate : Activity가 생성될 때 동작하는 함수
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search_result)
@@ -78,7 +80,7 @@ class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDe
         searchResultPresenter = SearchResultPresenter()
     }
 
-    // switchBottomNavigationView : SearchDetailActivity에서 BottomNavigationView 전환 이벤트를 처리하는 함수
+    // switchBottomNavigationView : BottomNavigationView 전환 이벤트를 처리하는 함수
     override fun switchBottomNavigationView() {
         search_result_btmnavview_menu.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
@@ -116,8 +118,8 @@ class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDe
         search_result_btmnavview_menu.menu.findItem(R.id.btmnavmenu_itm_search)?.setChecked(true)
     }
 
-    // setButtonEventListener() : SearchDetailActivity에서 Button Event를 처리하는 함수
-    fun setButtonEventListener() {
+    // setButtonEventListener() : Button 이벤트를 처리하는 함수
+    override fun setButtonEventListener() {
         search_result_ibtn_back.setOnClickListener {
             // 뒤로가기 버튼을 누르면 SearchDetailActivity로 이동함
             startSearchDetailActivity()
@@ -129,8 +131,8 @@ class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDe
         }
     }
 
-    // setEditTextEventListener : EditText Event를 처리하는 함수
-    fun setEditTextEventListener(keyword: String) {
+    // setEditTextEventListener : EditText 이벤트를 처리하는 함수
+    override fun setEditTextEventListener(keyword: String) {
         search_result_etxt_keyword.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
@@ -147,7 +149,7 @@ class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDe
     }
 
     // startSearchDetailActivity : SearchDetailActivity로 넘어가는 함수
-    fun startSearchDetailActivity() {
+    override fun startSearchDetailActivity() {
         val nextIntent = Intent(this, SearchDetailActivity::class.java)
         nextIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         nextIntent.putExtra("keyword", search_result_etxt_keyword.text.toString())
@@ -157,7 +159,7 @@ class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDe
     }
 
     // startBookInfoActivity : bookInfoActivity로 넘어가는 함수
-    fun startBookInfoActivity(bookData: BookData) {
+    override fun startBookInfoActivity(bookData: BookData) {
         val nextIntent = Intent(this, BookInfoActivity::class.java)
         nextIntent.putExtra("bsin", bookData.bsin)
         nextIntent.putExtra("genre", bookData.genre)
@@ -166,15 +168,13 @@ class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDe
     }
 
     // setSpinner : 검색한 도서 목록에 대한 Spinner를 초기화 및 정의하는 함수
-    fun setSpinner(keyword: String, spinner: Spinner, recyclerView: RecyclerView, savedInstanceState: Bundle?) {
+    override fun setSpinner(keyword: String, spinner: Spinner, recyclerView: RecyclerView, savedInstanceState: Bundle?) {
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 // 이전 카테고리와 현재 포지션과 다른 경우 변경
                 if (filter != position) {
                     filter = position
-                    spinnerFlag = true
-                } else {
-                    spinnerFlag = false
+                    (recyclerView.adapter as SearchAdapter).clearBookList()
                 }
                 setRecyclerView(keyword, recyclerView, savedInstanceState)
             }
@@ -184,7 +184,7 @@ class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDe
     }
 
     // setRecyclerView : 검색한 도서 목록에 대한 RecyclerView를 초기화 및 정의하는 함수
-    fun setRecyclerView(keyword: String, recyclerView: RecyclerView, savedInstanceState: Bundle?) {
+    override fun setRecyclerView(keyword: String, recyclerView: RecyclerView, savedInstanceState: Bundle?) {
         // Layout Manager 설정
         recyclerView.setHasFixedSize(true)
         val linearLayout = LinearLayoutManager(this)
@@ -208,14 +208,11 @@ class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDe
         }
     }
 
-    // onItemSelected : recyclerview 아이템 선택 함수
-    override fun onItemSelected(bookData: BookData) {
-        // 해당 도서 데이터 가져오기
-        startBookInfoActivity(bookData)
-    }
+    // booksSearchSubscribe : 관찰자에게서 검색한 도서 목록을 가져오는 함수
+    override fun booksSearchSubscribe(keyword: String, recyclerView: RecyclerView) {
+        executionLog("[INFO][SEARCH]", "도서 목록 가져오기 전 페이지 ${(searchAdapter.itemCount / 10 + 1)}")
+        executionLog("[INFO][SEARCH]", "도서 목록 가져오기 전 아이템 개수 ${(searchAdapter.itemCount)}")
 
-    // booksSearchSubscribe : 관찰자에게서 발행된 데이터를 가져오는 함수
-    private fun booksSearchSubscribe(keyword: String, recyclerView: RecyclerView) {
         var searchRequest = BooksSearch(keyword)
         val subscription =
             searchResultPresenter
@@ -255,45 +252,42 @@ class SearchResultActivity : BaseActivity(), SearchResultContract.View, SearchDe
                             // 도서 목록 만들기
                             val bookList = BookList(searchAdapter.itemCount / 10 + 1, bookDataArray)
 
-                            if (spinnerFlag == true) {
-                                (recyclerView.adapter as SearchAdapter).clearAndAddBookList(bookList.results)
-                                spinnerFlag = false
-                            } else {
-                                (recyclerView.adapter as SearchAdapter).addBookList(bookList.results)
-                            }
+                            (recyclerView.adapter as SearchAdapter).addBookList(bookList.results)
+
+                            executionLog("[INFO][SEARCH]", "도서 목록 가져온 후 페이지 ${(searchAdapter.itemCount / 10 + 1)}")
+                            executionLog("[INFO][SEARCH]", "도서 목록 가져온 후 아이템 개수 ${(searchAdapter.itemCount)}")
                         }
-                        this.showMessage(result.get("message").toString())
+                        executionLog("[INFO][SEARCHRESULT]", result.get("message").toString())
                     },
                     { e ->
-                        Snackbar.make(recyclerView, e.message ?: "", Snackbar.LENGTH_LONG).show()
+                        executionLog("[ERROR][SEARCHRESULT]", e.message ?: "")
                     }
                 )
         disposables.add(subscription)
     }
 
+    // onItemSelected : recyclerview의 아이템 선택 이벤트를 처리하는 함수
+    override fun onItemSelected(bookData: BookData) {
+        // 해당 도서 데이터 가져오기
+        startBookInfoActivity(bookData)
+    }
+
+    // onDestroy : Activity가 종료될 때 동작하는 함수
     override fun onDestroy() {
         super.onDestroy()
         // View가 Delete(Unbind) 되었다는 걸 Presenter에 전달
         searchResultPresenter.dropView()
 
-        println("검색 disposable 객체 해제 전 : [ONDESTROY]" + disposables.isDisposed)
+        executionLog("[INFO][SEARCHRESULT]", "disposable 객체 해제 전 상태 : " + disposables.isDisposed)
+        executionLog("[INFO][SEARCHRESULT]", "disposable 객체 해제 전 크기 : " + disposables.size())
 
         // Disposable 객체 전부 해제
         if(!disposables.isDisposed){
             disposables.dispose()
         }
 
-        println("검색 disposable 객체 해제 후 : [ONDESTROY]" + disposables.isDisposed)
-    }
-
-    // setProgressON :  공통으로 사용하는 Progress Bar의 시작을 정의하는 함수
-    override fun setProgressON(msg: String) {
-        progressON(msg)
-    }
-
-    // setProgressOFF() : 공통으로 사용하는 Progress Bar의 종료를 정의하는 함수
-    override fun setProgressOFF() {
-        progressOFF()
+        executionLog("[INFO][SEARCHRESULT]", "disposable 객체 해제 후 상태 : " + disposables.isDisposed)
+        executionLog("[INFO][SEARCHRESULT]", "disposable 객체 해제 후 크기 : " + disposables.size())
     }
 
     // showMessage : 공통으로 사용하는 messsage 출력 부분을 생성하는 함수

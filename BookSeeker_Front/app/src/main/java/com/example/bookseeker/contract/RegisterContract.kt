@@ -7,23 +7,27 @@ import com.example.bookseeker.view.BaseView
 import com.google.gson.JsonObject
 import io.reactivex.Observable
 
+
 interface RegisterContract {
     interface View : BaseView {
-        // setButtonEventListener : RegisterActivity에서 Button Event를 처리하는 함수
+        // setButtonEventListener : Button 이벤트를 처리하는 함수
         fun setButtonEventListener()
 
-        // setEditTextEventListener : RegisterActivity에서 EditText Event를 처리하는 함수
+        // setEditTextEventListener : EditText 이벤트를 처리하는 함수
         fun setEditTextEventListener()
 
-        // startLoginActivity : RegisterActivity에서 LoginActivity로 넘어가는 함수
+        // startLoginActivity : LoginActivity로 넘어가는 함수
         fun startLoginActivity()
+
+        // registerSubscribe : 관찰자에게서 사용자의 회원가입 여부를 가져오는 함수
+        fun registerSubscribe(register: Register)
     }
 
     interface Presenter : BasePresenter<View> {
-        // checkRegEx : RegisterPresenter에서 EditText의 RegEx를 검사하는 함수
+        // checkRegEx : EditText의 RegEx를 검사하는 함수
         fun checkRegEx(txtv: String, etxt: String): String
 
-        // registerObservable : RegisterPresenter에서 Register Data를 저장하는 함수
+        // registerObservable : 사용자 데이터를 서버로 보내고 관찰하는 함수
         fun registerObservable(context: Context, register: Register): Observable<JsonObject>
     }
 }
