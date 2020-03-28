@@ -12,12 +12,15 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_mypage.*
 
+
 class MyPageActivity : BaseActivity(), MypageContract.View {
     // MypageActivity와 함께 생성될 MypagePresenter를 지연 초기화
     private lateinit var myPagePresenter: MyPagePresenter
+
     // Disposable 객체 지연 초기화
     private lateinit var disposables: CompositeDisposable
 
+    // onCreate : Activity가 생성될 때 동작하는 함수
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mypage)
@@ -45,7 +48,7 @@ class MyPageActivity : BaseActivity(), MypageContract.View {
         myPagePresenter = MyPagePresenter()
     }
 
-    // switchBottomNavigationView : RatingActivity에서 BottomNavigationView 전환 이벤트를 처리하는 함수
+    // switchBottomNavigationView : BottomNavigationView 전환 이벤트를 처리하는 함수
     override fun switchBottomNavigationView() {
         mypage_btmnavview_menu.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
@@ -83,43 +86,43 @@ class MyPageActivity : BaseActivity(), MypageContract.View {
         mypage_btmnavview_menu.menu.findItem(R.id.btmnavmenu_itm_mypage)?.setChecked(true)
     }
 
-    // setCardviewEventListener : Cardview Event를 처리하는 함수
-    fun setCardviewEventListener() {
-        // Comic Category Event를 처리하는 함수
+    // setCardviewEventListener : Cardview 이벤트를 처리하는 함수
+    override fun setCardviewEventListener() {
+        // Comic Category 이벤트를 처리하는 함수
         mypage_layout_linear_comic.setOnClickListener {
             startMyEvaluationActivity()
         }
-        // Romance Category Event를 처리하는 함수
+        // Romance Category 이벤트를 처리하는 함수
         mypage_layout_linear_romance.setOnClickListener {
             startMyEvaluationActivity()
         }
-        // Fantasy Category Event를 처리하는 함수
+        // Fantasy Category 이벤트를 처리하는 함수
         mypage_layout_linear_fantasy.setOnClickListener {
             startMyEvaluationActivity()
         }
 
-        //Preference Event를 처리하는 함수
+        //Preference 이벤트를 처리하는 함수
         mypage_cardview_preference.setOnClickListener {
             startMyPreferenceActivity()
         }
     }
 
     // startMyEvaluationActivity : MyEvaluationActivity로 넘어가는 함수
-    fun startMyEvaluationActivity() {
+    override fun startMyEvaluationActivity() {
         val nextIntent = Intent(this, MyEvaluationActivity::class.java)
         startActivity(nextIntent)
     }
 
     // startMyPreferenceActivity : MyPreferenceActivity로 넘어가는 함수
-    fun startMyPreferenceActivity() {
+    override fun startMyPreferenceActivity() {
         val nextIntent = Intent(this, MyPreferenceActivity::class.java)
         val nickname = mypage_txtv_nickname.text.toString()
         nextIntent.putExtra("nickname", nickname)
         startActivity(nextIntent)
     }
 
-    // getMineSubscribe : 하나의 내 정보 조회 데이터 생성 관찰자를 구독하는 함수
-    private fun getMineSubscribe() {
+    // getMineSubscribe : 관찰자에게서 내 정보를 가져오는 함수
+    override fun getMineSubscribe() {
         val subscription =
             myPagePresenter
                 .getMineObservable(this)
@@ -135,18 +138,17 @@ class MyPageActivity : BaseActivity(), MypageContract.View {
                             mypage_txtv_email.text = (email).toString()
                             mypage_txtv_nickname.text = (nickname).toString()
                         }
-                        // 설정 끝낸 후 프로그래스 바 종료
-                        showMessage(result.get("message").toString())
+                        executionLog("[INFO][MYPAGE]", result.get("message").toString())
                     },
                     { e ->
-                        showMessage("Create evaluation error!")
+                        executionLog("[ERROR][MYPAGE]", e.message ?: "")
                     }
                 )
         disposables.add(subscription)
     }
 
-    // getCountGenreSubscribe : 장르별 도서 평가 개수 조회 데이터 생성 관찰자를 구독하는 함수
-    private fun getCountGenreSubscribe() {
+    // getCountGenreSubscribe : 관찰자에게서 장르별 도서 평가 개수를 가져오는 함수
+    override fun getCountGenreSubscribe() {
         val subscription =
             myPagePresenter
                 .getCountGenreObservable(this)
@@ -164,18 +166,17 @@ class MyPageActivity : BaseActivity(), MypageContract.View {
                             mypage_txtv_romance_genre.text = countRomance
                             mypage_txtv_fantasy_genre.text = countFantasy
                         }
-                        // 설정 끝낸 후 메세지 보여주기
-                        showMessage(result.get("message").toString())
+                        executionLog("[INFO][MYPAGE]", result.get("message").toString())
                     },
                     { e ->
-                        showMessage("Create evaluation error!")
+                        executionLog("[ERROR][MYPAGE]", e.message ?: "")
                     }
                 )
         disposables.add(subscription)
     }
 
-    // getCountStateSubscribe : 장르별 도서 상태 개수 조회 조회 데이터 생성 관찰자를 구독하는 함수
-    private fun getCountStateSubscribe() {
+    // getCountStateSubscribe : 관찰자에게서 상태별 도서 평가 개수를 가져오는 함수
+    override fun getCountStateSubscribe() {
         val subscription =
             myPagePresenter
                 .getCountStateObservable(this)
@@ -217,40 +218,32 @@ class MyPageActivity : BaseActivity(), MypageContract.View {
                             mypage_txtv_romance_state.text = romanceState
                             mypage_txtv_fantasy_state.text = fantasyState
                         }
-                        // 설정 끝낸 후 메세지 보여주기
-                        showMessage(result.get("message").toString())
+                        executionLog("[INFO][MYPAGE]", result.get("message").toString())
                     },
                     { e ->
-                        showMessage("Create evaluation error!")
+                        executionLog("[ERROR][MYPAGE]", e.message ?: "")
                     }
                 )
         disposables.add(subscription)
     }
 
+    // onDestroy : Activity가 종료될 때 동작하는 함수
     override fun onDestroy() {
         super.onDestroy()
 
         // View가 Delete(Unbind) 되었다는 걸 Presenter에 전달
         myPagePresenter.dropView()
 
-        println("마이페이지 disposable 객체 해제 전 : [ONDESTROY]" + disposables.isDisposed)
+        executionLog("[INFO][MYPAGE]", "disposable 객체 해제 전 상태 : " + disposables.isDisposed)
+        executionLog("[INFO][MYPAGE]", "disposable 객체 해제 전 크기 : " + disposables.size())
 
         // Disposable 객체 전부 해제
-        if (!disposables.isDisposed) {
+        if(!disposables.isDisposed){
             disposables.dispose()
         }
 
-        println("마이페이지 disposable 객체 해제 후 : [ONDESTROY]" + disposables.isDisposed)
-    }
-
-    // setProgressON :  공통으로 사용하는 Progress Bar의 시작을 정의하는 함수
-    override fun setProgressON(msg: String) {
-        progressON(msg)
-    }
-
-    // setProgressOFF() : 공통으로 사용하는 Progress Bar의 종료를 정의하는 함수
-    override fun setProgressOFF() {
-        progressOFF()
+        executionLog("[INFO][MYPAGE]", "disposable 객체 해제 후 상태 : " + disposables.isDisposed)
+        executionLog("[INFO][MYPAGE]", "disposable 객체 해제 후 크기 : " + disposables.size())
     }
 
     // showMessage : 공통으로 사용하는 messsage 출력 부분을 생성하는 함수

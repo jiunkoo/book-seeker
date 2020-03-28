@@ -9,6 +9,7 @@ import com.example.bookseeker.R
 import com.example.bookseeker.model.data.BookData
 import kotlinx.android.synthetic.main.item_recv_myevaluation.view.*
 
+
 class MyEvaluationDelegateAdapter(val viewActions: onViewSelectedListener) : ViewTypeDelegateAdapter {
     interface onViewSelectedListener {
         fun onItemSelected(bookData: BookData)
@@ -16,22 +17,26 @@ class MyEvaluationDelegateAdapter(val viewActions: onViewSelectedListener) : Vie
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_recv_myevaluation, parent, false)
-        return MyEvaluationDelegateViewHolder(view)
+        return MyEvaluationDelegateAdapter(view)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType, position: Int) {
-        holder as MyEvaluationDelegateViewHolder
+        holder as MyEvaluationDelegateAdapter
         holder.bind(item as BookData, position)
     }
 
-    inner class MyEvaluationDelegateViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class MyEvaluationDelegateAdapter(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(bookData: BookData, position: Int) = with(itemView) {
             var splitUrl = bookData.cover.split("/")
             var coverUrl: String = "https://img.ridicdn.net/cover/" + splitUrl[4] + "/xlarge"
 
             Glide.with(itemView.context).load(coverUrl).into(recv_myevaluation_item_imgv_book)
             recv_myevaluation_item_txtv_title.text = bookData.title
-            recv_myevaluation_item_txtv_rating.text = "★" + bookData.rating.toString()
+            if(bookData.rating < 0){
+                recv_myevaluation_item_txtv_rating.text = "★ 0.0"
+            } else {
+                recv_myevaluation_item_txtv_rating.text = "★" + bookData.rating.toString()
+            }
 
             super.itemView.setOnClickListener { viewActions.onItemSelected(bookData) }
         }

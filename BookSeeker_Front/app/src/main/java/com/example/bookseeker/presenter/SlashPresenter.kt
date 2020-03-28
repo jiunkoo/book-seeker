@@ -3,6 +3,7 @@ package com.example.bookseeker.presenter
 import android.util.Log
 import com.example.bookseeker.contract.SlashContract
 
+
 class SlashPresenter : SlashContract.Presenter {
     private var slashView: SlashContract.View? = null
 

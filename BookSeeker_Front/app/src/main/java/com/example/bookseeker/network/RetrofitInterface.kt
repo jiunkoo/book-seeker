@@ -41,7 +41,7 @@ interface RetrofitInterface {
     fun createEvaluation(@Body evaluationCreate: EvaluationCreate): Call<JsonObject>
 
     // 모든 평가 데이터 조회
-    @GET("evaluation/{genre}/{filter}/{page}/{limit}")
+    @GET("evaluation/{genre}/{state}/{page}/{limit}")
     fun getEvaluations(@Path("genre") genre: String, @Path("state") state: Int,
                        @Path("page") page: Int, @Path("limit") limit: Int): Call<JsonObject>
 

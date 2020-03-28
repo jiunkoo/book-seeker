@@ -33,7 +33,7 @@
             android:id="@+id/search_txtv_title"
             android:text="BOOK SEEKER"
             android:textSize="42sp"
-            android:textColor="@color/basicWhite"
+            android:textColor="@color/mediumLime"
             android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

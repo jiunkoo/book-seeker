@@ -27,9 +27,11 @@ import io.reactivex.schedulers.Schedulers
 class MyPreferenceActivity : BaseActivity(), MyPreferenceContract.View {
     // MyPreferenceActivity와 함께 생성될 MyEvaluationPresenter를 지연 초기화
     private lateinit var myPreferencePresenter: MyPreferencePresenter
+
     // Disposable 객체 지연 초기화
     private lateinit var disposables: CompositeDisposable
 
+    // onCreate : Activity가 생성될 때 동작하는 함수
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mypreference)
@@ -62,7 +64,7 @@ class MyPreferenceActivity : BaseActivity(), MyPreferenceContract.View {
         myPreferencePresenter = MyPreferencePresenter()
     }
 
-    // switchBottomNavigationView : RatingActivity에서 BottomNavigationView 전환 이벤트를 처리하는 함수
+    // switchBottomNavigationView : BottomNavigationView 전환 이벤트를 처리하는 함수
     override fun switchBottomNavigationView() {
         mypreference_btmnavview_menu.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
@@ -100,7 +102,8 @@ class MyPreferenceActivity : BaseActivity(), MyPreferenceContract.View {
         mypreference_btmnavview_menu.menu.findItem(R.id.btmnavmenu_itm_mypage)?.setChecked(true)
     }
 
-    fun setBarChart(jsonObject: JsonObject){
+    // setBarChart : 서버에서 받아온 평점별 도서 평가 개수를 막대 그래프에 적용하는 함수
+    override fun setBarChart(jsonObject: JsonObject){
         val rating_05 = jsonObject.get("rating_05").toString().replace("\"", "").toFloat()
         val rating_10 = jsonObject.get("rating_10").toString().replace("\"", "").toFloat()
         val rating_15 = jsonObject.get("rating_15").toString().replace("\"", "").toFloat()
@@ -163,7 +166,8 @@ class MyPreferenceActivity : BaseActivity(), MyPreferenceContract.View {
         mypreference_chart_bar.data = data
     }
 
-    fun setWordCloud(jsonArray: JsonArray) {
+    // setWordCloud : 서버에서 받아온 도서 키워드를 word cloud에 적용하는 함수
+    override fun setWordCloud(jsonArray: JsonArray) {
         var replaceJsonArray = JsonArray()
         for (i in 0 until jsonArray.size()) {
             var jsonObject = jsonArray[i].asJsonObject
@@ -199,8 +203,8 @@ class MyPreferenceActivity : BaseActivity(), MyPreferenceContract.View {
         }
     }
 
-    // getCountRatingSubscribe : 도서 키워드 조회 관찰자를 구독하는 함수
-    private fun getCountRatingSubscribe() {
+    // getCountRatingSubscribe : 관찰자에게서 평점별 도서 평가 개수를 가져오는 함수
+    override fun getCountRatingSubscribe() {
         val subscription =
             myPreferencePresenter
                 .getCountRatingObservable(this)
@@ -214,18 +218,17 @@ class MyPreferenceActivity : BaseActivity(), MyPreferenceContract.View {
                             // 변경된 평점 반영
                             setBarChart(jsonObject)
                         }
-                        // 설정 끝낸 후 프로그래스 바 종료
-                        showMessage(result.get("message").toString())
+                        executionLog("[INFO][MYPREFERENCE]", result.get("message").toString())
                     },
                     { e ->
-                        showMessage("Create evaluation error!")
+                        executionLog("[ERROR][MYPREFERENCE]", e.message ?: "")
                     }
                 )
         disposables.add(subscription)
     }
 
-    // getKeywordSubscribe : 도서 키워드 조회 관찰자를 구독하는 함수
-    private fun getKeywordSubscribe() {
+    // getKeywordSubscribe : 관찰자에게서 도서 키워드를 가져오는 함수
+    override fun getKeywordSubscribe() {
         val subscription =
             myPreferencePresenter
                 .getKeywordObservable(this, 40)
@@ -239,30 +242,32 @@ class MyPreferenceActivity : BaseActivity(), MyPreferenceContract.View {
                             // 변경된 평점 반영
                             setWordCloud(jsonArray)
                         }
-                        // 설정 끝낸 후 프로그래스 바 종료
-                        showMessage(result.get("message").toString())
+                        executionLog("[INFO][MYPREFERENCE]", result.get("message").toString())
                     },
                     { e ->
-                        showMessage("Create evaluation error!")
+                        executionLog("[ERROR][MYPREFERENCE]", e.message ?: "")
                     }
                 )
         disposables.add(subscription)
     }
 
+    // onDestroy : Activity가 종료될 때 동작하는 함수
     override fun onDestroy() {
         super.onDestroy()
+
         // View가 Delete(Unbind) 되었다는 걸 Presenter에 전달
         myPreferencePresenter.dropView()
-    }
 
-    // setProgressON :  공통으로 사용하는 Progress Bar의 시작을 정의하는 함수
-    override fun setProgressON(msg: String) {
-        progressON(msg)
-    }
+        executionLog("[INFO][MYPREFERENCE]", "disposable 객체 해제 전 상태 : " + disposables.isDisposed)
+        executionLog("[INFO][MYPREFERENCE]", "disposable 객체 해제 전 크기 : " + disposables.size())
 
-    // setProgressOFF() : 공통으로 사용하는 Progress Bar의 종료를 정의하는 함수
-    override fun setProgressOFF() {
-        progressOFF()
+        // Disposable 객체 전부 해제
+        if(!disposables.isDisposed){
+            disposables.dispose()
+        }
+
+        executionLog("[INFO][MYPREFERENCE]", "disposable 객체 해제 후 상태 : " + disposables.isDisposed)
+        executionLog("[INFO][MYPREFERENCE]", "disposable 객체 해제 후 크기 : " + disposables.size())
     }
 
     // showMessage : 공통으로 사용하는 messsage 출력 부분을 생성하는 함수

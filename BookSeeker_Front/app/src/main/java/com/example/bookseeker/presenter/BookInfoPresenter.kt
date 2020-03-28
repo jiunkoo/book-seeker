@@ -11,6 +11,7 @@ import com.google.gson.JsonObject
 import io.reactivex.Observable
 import okhttp3.OkHttpClient
 
+
 class BookInfoPresenter : BookInfoContract.Presenter {
     private var bookInfoView: BookInfoContract.View? = null
 
@@ -19,8 +20,8 @@ class BookInfoPresenter : BookInfoContract.Presenter {
         bookInfoView = view
     }
 
-    // getBookObservable : 하나의 평가 데이터 조회 요청을 관찰하는 함수
-    fun getBookObservable(context: Context, bsin: String): Observable<JsonObject> {
+    // getBookObservable : 하나의 도서 bsin을 서버로 보내고 관찰하는 함수
+    override fun getBookObservable(context: Context, bsin: String): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
         val retrofitInterface = retrofitInterface(client)
 
@@ -39,8 +40,8 @@ class BookInfoPresenter : BookInfoContract.Presenter {
         }
     }
 
-    // createEvaluationObservable : 하나의 평가 데이터 생성 요청을 관찰하는 함수
-    fun createEvaluationObservable(context: Context, evaluationCreate: EvaluationCreate): Observable<JsonObject> {
+    // createEvaluationObservable : 도서 평가 데이터를 서버로 보내고 관찰하는 함수
+    override fun createEvaluationObservable(context: Context, evaluationCreate: EvaluationCreate): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
         val retrofitInterface = retrofitInterface(client)
 
@@ -59,8 +60,8 @@ class BookInfoPresenter : BookInfoContract.Presenter {
         }
     }
 
-    // patchEvaluationObservable : 하나의 평가 데이터 수정 요청을 관찰하는 함수
-    fun patchEvaluationObservable(context: Context, evaluationPatch: EvaluationPatch): Observable<JsonObject> {
+    // patchEvaluationObservable : 도서 평가 수정 데이터를 서버로 보내고 관찰하는 함수
+    override fun patchEvaluationObservable(context: Context, evaluationPatch: EvaluationPatch): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
         val retrofitInterface = retrofitInterface(client)
 
@@ -79,8 +80,8 @@ class BookInfoPresenter : BookInfoContract.Presenter {
         }
     }
 
-    // deleteEvaluationObservable : 하나의 평가 데이터 삭제 요청을 관찰하는 함수
-    fun deleteEvaluationObservable(context: Context, bsin: String): Observable<JsonObject> {
+    // deleteEvaluationObservable : 도서 평가 삭제 데이터를 서버로 보내고 관찰하는 함수
+    override fun deleteEvaluationObservable(context: Context, bsin: String): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
         val retrofitInterface = retrofitInterface(client)
 

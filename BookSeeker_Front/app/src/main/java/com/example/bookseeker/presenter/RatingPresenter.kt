@@ -11,6 +11,7 @@ import com.google.gson.JsonObject
 import io.reactivex.Observable
 import okhttp3.OkHttpClient
 
+
 class RatingPresenter : RatingContract.Presenter {
     private var ratingView: RatingContract.View? = null
 
@@ -19,8 +20,8 @@ class RatingPresenter : RatingContract.Presenter {
         ratingView = view
     }
 
-    // getCountGenreObservable : RatingPresenter에서 장르별 평가 개수를 요청하는 함수
-    fun getCountGenreObservable(context: Context): Observable<JsonObject> {
+    // getCountGenreObservable : 장르별 도서 평가 개수 요청을 서버로 보내고 관찰하는 함수
+    override fun getCountGenreObservable(context: Context): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
         val retrofitInterface = retrofitInterface(client)
 
@@ -39,8 +40,8 @@ class RatingPresenter : RatingContract.Presenter {
         }
     }
 
-    // getBooksObservable : RatingPresenter에서 모든 검색 결과를 요청하는 함수
-    fun getBooksObservable(context: Context, genre: String, filter: Int, page: Int, limit: Int): Observable<JsonObject> {
+    // getBooksObservable : 평가할 도서 목록 제약조건을 서버로 보내고 관찰하는 함수
+    override fun getBooksObservable(context: Context, genre: String, filter: Int, page: Int, limit: Int): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
         val retrofitInterface = retrofitInterface(client)
 
@@ -59,8 +60,8 @@ class RatingPresenter : RatingContract.Presenter {
         }
     }
 
-    // createEvaluationObservable : 하나의 평가 데이터 생성 요청을 관찰하는 함수
-    fun createEvaluationObservable(context: Context, evaluationCreate: EvaluationCreate): Observable<JsonObject> {
+    // createEvaluationObservable : 도서 평가 데이터를 서버로 보내고 관찰하는 함수
+    override fun createEvaluationObservable(context: Context, evaluationCreate: EvaluationCreate): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
         val retrofitInterface = retrofitInterface(client)
 
@@ -79,8 +80,8 @@ class RatingPresenter : RatingContract.Presenter {
         }
     }
 
-    // patchEvaluationObservable : 하나의 평가 데이터 수정 요청을 관찰하는 함수
-    fun patchEvaluationObservable(context: Context, evaluationPatch: EvaluationPatch): Observable<JsonObject> {
+    // patchEvaluationObservable : 도서 평가 수정 데이터를 서버로 보내고 관찰하는 함수
+    override fun patchEvaluationObservable(context: Context, evaluationPatch: EvaluationPatch): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
         val retrofitInterface = retrofitInterface(client)
 
@@ -99,8 +100,8 @@ class RatingPresenter : RatingContract.Presenter {
         }
     }
 
-    // deleteEvaluationObservable : 하나의 평가 데이터 삭제 요청을 관찰하는 함수
-    fun deleteEvaluationObservable(context: Context, bsin: String): Observable<JsonObject> {
+    // deleteEvaluationObservable : 도서 평가 삭제 데이터를 서버로 보내고 관찰하는 함수
+    override fun deleteEvaluationObservable(context: Context, bsin: String): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
         val retrofitInterface = retrofitInterface(client)
 

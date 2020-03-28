@@ -7,14 +7,14 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 import java.io.Serializable
 
-// @Parcelize Annotation 사용
-//Android Kotlin Extension의 exmerimental 기능을 적용한 것
+
+// 도서 목록 데이터 생성 객체
 @Parcelize
 data class BookList(
-    // MutableList 쓰면 객체 하나하나에 접근 가능
     var page: Int,
     val results: ArrayList<BookData>) : Parcelable
 
+// 도서 데이터 생성 객체
 @Parcelize
 data class BookData(
     val bsin: String,
@@ -34,6 +34,7 @@ data class BookData(
     override fun getViewType() = AdapterConstants.BOOKS
 }
 
+// 도서 검색 데이터 생성 객체
 data class BooksSearch(
     @SerializedName("keyword") val keyword: String
 ) : Serializable

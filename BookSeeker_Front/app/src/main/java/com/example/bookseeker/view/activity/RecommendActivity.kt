@@ -27,20 +27,26 @@ import kotlinx.android.synthetic.main.activity_recommend.*
 class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardvAdapter.Callback {
     // RatingActivity와 함께 생성될 RatingPresenter를 지연 초기화
     private lateinit var recommendPresenter: RecommendPresenter
+
     // Disposable 객체 지연 초기화
     private lateinit var disposables: CompositeDisposable
+
     // 서버에 보낼 객체 지정
     private var genre = "COMIC"
     private var state = -1
     private var rating = -1f
+
     // Category Change Flag 설정
     private var categoryFlag = false
+
     //cardview를 세고 저장할 변수 초기화
     private var page = 0
     private var itemCount = 0
     private var recommendList = ArrayList<RecommendData>()
+
     // Card View Holder Size 지연 초기화
     private lateinit var cardViewHolderSize: Point
+
     // Swipe Tinder 설정
     private val animationDuration = 300
     private var isToUndo = false
@@ -49,6 +55,7 @@ class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardv
     private var xMax = 0f
     private var yMax = 0f
 
+    // onCreate : Activity가 생성될 때 동작하는 함수
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_recommend)
@@ -119,187 +126,9 @@ class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardv
         recommend_btmnavview_menu.menu.findItem(R.id.btmnavmenu_itm_recommend)?.setChecked(true)
     }
 
-    override fun onWindowFocusChanged(hasFocus: Boolean) {
-        super.onWindowFocusChanged(hasFocus)
-        cardX = recommend_swipeview.width
-        cardY = recommend_swipeview.height
-        xMax = recommend_swipeview.x
-        yMax = recommend_swipeview.y
-    }
-
-    // RecommendCardvAdapter에서 Callback override
-    override fun onSwipeDirection(
-        direction: SwipeDirection,
-        xStart: Float,
-        yStart: Float,
-        xCurrent: Float,
-        yCurrent: Float
-    ) {
-//        val defaultDisplaySize = Point()
-//        windowManager.defaultDisplay.getSize(defaultDisplaySize)
-//        val xMax = defaultDisplaySize.x
-//        val yMax = defaultDisplaySize.y
-
-        if ((xStart <= xCurrent && xCurrent <= xStart + Utils.dpToPx(150).toFloat()) &&
-            (yStart - Utils.dpToPx(150) <= yCurrent && yCurrent <= yStart)
-        ) {
-            onSwipeNone()
-        } else {
-            when (direction.name) {
-                "TOP" -> {
-                    onSwipeTop()
-                }
-                "LEFT" -> {
-                    onSwipeLeft()
-                }
-                "RIGHT" -> {
-                    onSwipeRight()
-                }
-                "BOTTOM" -> {
-                    onSwipeBottom()
-                }
-
-                "LEFT_TOP" -> { // "a"
-                    // 직선의 기울기 및 상수
-                    var gradient = (yStart - Utils.dpToPx(150).toFloat()) / xStart
-                    var constant = 0f
-
-                    // 현재 좌표가 직선을 지나는 경우
-                    if (yCurrent == (gradient * xCurrent + constant)) {
-                        onSwipeNone()
-                    }
-                    // 현재 좌표가 직선 위를 지나는 경우
-                    else if (yCurrent > (gradient * xCurrent + constant)) { // LEFT
-                        onSwipeLeft()
-                    }
-                    // 현재 좌표가 직선 아래를 지나는 경우
-                    else { // TOP
-                        onSwipeTop()
-                    }
-                }
-
-                "LEFT_BOTTOM" -> { // "-a"
-                    // 직선의 기울기 및 상수
-                    var gradient = (yMax - yStart) / (0 - xStart)
-                    var constant = yMax
-
-                    // 현재 좌표가 직선을 지나는 경우
-                    if (yCurrent == (gradient * xCurrent + constant)) {
-                        onSwipeNone()
-                    }
-                    // 현재 좌표가 직선 위를 지나는 경우
-                    else if (yCurrent > (gradient * xCurrent + constant)) { // BOTTOM
-                        onSwipeBottom()
-                    }
-                    // 현재 좌표가 직선 아래를 지나는 경우
-                    else { // LEFT
-                        onSwipeLeft()
-                    }
-                }
-
-                "RIGHT_TOP" -> { // "-a"
-                    // 직선의 기울기 및 상수
-                    var gradient =
-                        ((yStart - Utils.dpToPx(150).toFloat()) - 0) / ((xStart + Utils.dpToPx(150).toFloat()) - xMax)
-                    var constant =
-                        (yStart - Utils.dpToPx(150).toFloat()) - (gradient * (xStart + Utils.dpToPx(150).toFloat()))
-
-                    // 현재 좌표가 직선을 지나는 경우
-                    if (yCurrent == (gradient * xCurrent + constant)) {
-                        onSwipeNone()
-                    }
-                    // 현재 좌표가 직선 위를 지나는 경우
-                    else if (yCurrent > (gradient * xCurrent + constant)) { // RIGHT
-                        onSwipeRight()
-                    }
-                    // 현재 좌표가 직선 아래를 지나는 경우
-                    else { // TOP
-                        onSwipeTop()
-                    }
-                }
-
-                "RIGHT_BOTTOM" -> { // "a"
-                    // 직선의 기울기 및 상수
-                    var gradient = (yMax - yStart) / (xMax - (xStart + Utils.dpToPx(150).toFloat()))
-                    var constant =
-                        (yStart - Utils.dpToPx(0).toFloat()) - (gradient * (xStart + Utils.dpToPx(150).toFloat()))
-
-                    // 현재 좌표가 직선을 지나는 경우
-                    if (yCurrent == (gradient * xCurrent + constant)) {
-                        onSwipeNone()
-                    }
-                    // 현재 좌표가 직선 위를 지나는 경우
-                    else if (yCurrent > (gradient * xCurrent + constant)) { // BOTTOM
-                        onSwipeBottom()
-                    }
-                    // 현재 좌표가 직선 아래를 지나는 경우
-                    else { // RIGHT
-                        onSwipeRight()
-                    }
-                }
-            }
-        }
-    }
-
-    override fun onSwipeTop() {
-        recommend_layout_linear_category.visibility = INVISIBLE
-        recommend_txtv_message.visibility = VISIBLE
-        recommend_txtv_message.text = "완독 했어요"
-        recommend_cardview_category.setCardBackgroundColor(Color.parseColor("#03738c")) // mediumMint
-        state = 3
-        isToUndo = false
-    }
-
-    override fun onSwipeRight() {
-        recommend_layout_linear_category.visibility = INVISIBLE
-        recommend_txtv_message.visibility = VISIBLE
-        recommend_txtv_message.text = "읽고 있어요"
-        recommend_cardview_category.setCardBackgroundColor(Color.parseColor("#80c783")) // mediumLime
-        state = 2
-        isToUndo = false
-    }
-
-    override fun onSwipeLeft() {
-        recommend_layout_linear_category.visibility = INVISIBLE
-        recommend_txtv_message.visibility = VISIBLE
-        recommend_txtv_message.text = "읽고 싶어요"
-        recommend_cardview_category.setCardBackgroundColor(Color.parseColor("#f7b73c")) // mediumYellow
-        state = 1
-        isToUndo = false
-    }
-
-    override fun onSwipeBottom() {
-        recommend_layout_linear_category.visibility = INVISIBLE
-        recommend_txtv_message.visibility = VISIBLE
-        recommend_txtv_message.text = "관심 없어요"
-        recommend_cardview_category.setCardBackgroundColor(Color.parseColor("#e02947")) // mediumRed
-        state = 0
-        isToUndo = false
-    }
-
-    override fun onSwipeNone() {
-        recommend_layout_linear_category.visibility = VISIBLE
-        recommend_txtv_message.visibility = INVISIBLE
-        recommend_txtv_message.text = "MESSAGE"
-        recommend_cardview_category.setCardBackgroundColor(Color.parseColor("#ffffff")) // basicWhite
-        state = -1
-        isToUndo = true
-    }
-
-    // setCategoryEventListener : RatingBar Event를 처리하는 함수
-    override fun onRatingBarChangeListener(ratingBar: RatingBar, float: Float, boolean: Boolean) {
-        rating = float
-    }
-
-    // onItemSelected : Item Select Event를 처리하는 함수
-    override fun onItemSelected(recommendData: RecommendData) {
-        // 해당 도서 데이터 가져오기
-        startBookInfoActivity(recommendData)
-    }
-
-    // setCardviewEventListener : Cardview Event를 처리하는 함수
+    // setCardviewEventListener : Cardview 이벤트를 처리하는 함수
     fun setCardviewEventListener() {
-        // Comic Category Event를 처리하는 함수
+        // Comic Category 이벤트를 처리하는 함수
         recommend_layout_linear_comic.setOnClickListener {
             if (genre == "COMIC") {
                 categoryFlag = false
@@ -328,7 +157,7 @@ class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardv
                 getRecommendSubscribe()
             }
         }
-        // Romance Category Event를 처리하는 함수
+        // Romance Category 이벤트를 처리하는 함수
         recommend_layout_linear_romance.setOnClickListener {
             if (genre == "ROMANCE") {
                 categoryFlag = false
@@ -357,7 +186,7 @@ class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardv
                 getRecommendSubscribe()
             }
         }
-        // Fantasy Category Event를 처리하는 함수
+        // Fantasy Category 이벤트를 처리하는 함수
         recommend_layout_linear_fantasy.setOnClickListener {
             if (genre == "FANTASY") {
                 categoryFlag = false
@@ -388,8 +217,8 @@ class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardv
         }
     }
 
-    // setSwipeView : 검색한 도서 목록에 대한 SwipeView를 초기화 및 정의하는 함수
-    fun setSwipeView(savedInstanceState: Bundle?, bottomMargin: Int, windowSize: Point) {
+    // setSwipeView : 추천 도서 목록에 대한 SwipeView를 초기화 및 정의하는 함수
+    override fun setSwipeView(savedInstanceState: Bundle?, bottomMargin: Int, windowSize: Point) {
         val activityMargin = Utils.dpToPx(16)
         val topMargin = Utils.dpToPx(120)
 
@@ -497,7 +326,7 @@ class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardv
     }
 
     // startBookInfoActivity : bookInfoActivity로 넘어가는 함수
-    fun startBookInfoActivity(recommendData: RecommendData) {
+    override fun startBookInfoActivity(recommendData: RecommendData) {
         val nextIntent = Intent(this, BookInfoActivity::class.java)
         nextIntent.putExtra("bsin", recommendData.bsin)
         nextIntent.putExtra("genre", recommendData.genre)
@@ -505,8 +334,8 @@ class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardv
         startActivity(nextIntent)
     }
 
-    // getRecommendSubscribe : 관찰자에게서 발행된 데이터를 가져오는 함수
-    private fun getRecommendSubscribe() {
+    // getRecommendSubscribe : 관찰자에게서 추천 도서 목록을 가져오는 함수
+    override fun getRecommendSubscribe() {
         val subscription =
             recommendPresenter
                 .getRecommendObservable(this, genre, page, 10)
@@ -552,17 +381,17 @@ class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardv
                             recommendList.clear()
                             recommendList.addAll(recommendDataArray)
                         }
-                        this.showMessage(result.get("message").toString())
+                        executionLog("[INFO][RECOMMEND]", result.get("message").toString())
                     },
                     { e ->
-                        showMessage("Get Recommend Error!")
+                        executionLog("[ERROR][RECOMMEND]", e.message ?: "")
                     }
                 )
         disposables.add(subscription)
     }
 
-    // createEvaluationSubscribe : 하나의 평가 데이터 생성 관찰자를 구독하는 함수
-    private fun createEvaluationSubscribe(evaluationCreate: EvaluationCreate) {
+    // createEvaluationSubscribe : 관찰자에게서 도서 평가 결과를 가져오는 함수
+    override fun createEvaluationSubscribe(evaluationCreate: EvaluationCreate) {
         val subscription =
             recommendPresenter
                 .createEvaluationObservable(this, evaluationCreate)
@@ -573,30 +402,206 @@ class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardv
                         // 사용자 평점 초기화
                         rating = -1f
 
-                        // 설정 끝낸 후 메세지 띄우기
-                        showMessage(result.get("message").toString())
+                        executionLog("[INFO][RECOMMEND]", result.get("message").toString())
                     },
                     { e ->
-                        showMessage("Create evaluation error!")
+                        executionLog("[ERROR][RECOMMEND]", e.message ?: "")
                     }
                 )
         disposables.add(subscription)
     }
 
+    // onItemSelected : recyclerview 아이템 선택 이벤트를 처리하는 함수
+    override fun onItemSelected(recommendData: RecommendData) {
+        // 해당 도서 데이터 가져오기
+        startBookInfoActivity(recommendData)
+    }
+
+    // setCategoryEventListener : RatingBar 이벤트를 처리하는 함수
+    override fun onRatingBarChangeListener(ratingBar: RatingBar, float: Float, boolean: Boolean) {
+        rating = float
+    }
+
+    // onWindowFocusChanged : cardview 이동에 따른 좌표를 변경하는 함수
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+
+        cardX = recommend_swipeview.width
+        cardY = recommend_swipeview.height
+        xMax = recommend_swipeview.x
+        yMax = recommend_swipeview.y
+    }
+
+    // onSwipeDirection : cardview 이동 좌표에 따른 이벤트를 처리하는 함수
+    override fun onSwipeDirection(direction: SwipeDirection, xStart: Float, yStart: Float, xCurrent: Float, yCurrent: Float) {
+        if ((xStart <= xCurrent && xCurrent <= xStart + Utils.dpToPx(150).toFloat()) &&
+            (yStart - Utils.dpToPx(150) <= yCurrent && yCurrent <= yStart)
+        ) {
+            onSwipeNone()
+        } else {
+            when (direction.name) {
+                "TOP" -> {
+                    onSwipeTop()
+                }
+                "LEFT" -> {
+                    onSwipeLeft()
+                }
+                "RIGHT" -> {
+                    onSwipeRight()
+                }
+                "BOTTOM" -> {
+                    onSwipeBottom()
+                }
+
+                "LEFT_TOP" -> { // "a"
+                    // 직선의 기울기 및 상수
+                    var gradient = (yStart - Utils.dpToPx(150).toFloat()) / xStart
+                    var constant = 0f
+
+                    // 현재 좌표가 직선을 지나는 경우
+                    if (yCurrent == (gradient * xCurrent + constant)) {
+                        onSwipeNone()
+                    }
+                    // 현재 좌표가 직선 위를 지나는 경우
+                    else if (yCurrent > (gradient * xCurrent + constant)) { // LEFT
+                        onSwipeLeft()
+                    }
+                    // 현재 좌표가 직선 아래를 지나는 경우
+                    else { // TOP
+                        onSwipeTop()
+                    }
+                }
+
+                "LEFT_BOTTOM" -> { // "-a"
+                    // 직선의 기울기 및 상수
+                    var gradient = (yMax - yStart) / (0 - xStart)
+                    var constant = yMax
+
+                    // 현재 좌표가 직선을 지나는 경우
+                    if (yCurrent == (gradient * xCurrent + constant)) {
+                        onSwipeNone()
+                    }
+                    // 현재 좌표가 직선 위를 지나는 경우
+                    else if (yCurrent > (gradient * xCurrent + constant)) { // BOTTOM
+                        onSwipeBottom()
+                    }
+                    // 현재 좌표가 직선 아래를 지나는 경우
+                    else { // LEFT
+                        onSwipeLeft()
+                    }
+                }
+
+                "RIGHT_TOP" -> { // "-a"
+                    // 직선의 기울기 및 상수
+                    var gradient =
+                        ((yStart - Utils.dpToPx(150).toFloat()) - 0) / ((xStart + Utils.dpToPx(150).toFloat()) - xMax)
+                    var constant =
+                        (yStart - Utils.dpToPx(150).toFloat()) - (gradient * (xStart + Utils.dpToPx(150).toFloat()))
+
+                    // 현재 좌표가 직선을 지나는 경우
+                    if (yCurrent == (gradient * xCurrent + constant)) {
+                        onSwipeNone()
+                    }
+                    // 현재 좌표가 직선 위를 지나는 경우
+                    else if (yCurrent > (gradient * xCurrent + constant)) { // RIGHT
+                        onSwipeRight()
+                    }
+                    // 현재 좌표가 직선 아래를 지나는 경우
+                    else { // TOP
+                        onSwipeTop()
+                    }
+                }
+
+                "RIGHT_BOTTOM" -> { // "a"
+                    // 직선의 기울기 및 상수
+                    var gradient = (yMax - yStart) / (xMax - (xStart + Utils.dpToPx(150).toFloat()))
+                    var constant =
+                        (yStart - Utils.dpToPx(0).toFloat()) - (gradient * (xStart + Utils.dpToPx(150).toFloat()))
+
+                    // 현재 좌표가 직선을 지나는 경우
+                    if (yCurrent == (gradient * xCurrent + constant)) {
+                        onSwipeNone()
+                    }
+                    // 현재 좌표가 직선 위를 지나는 경우
+                    else if (yCurrent > (gradient * xCurrent + constant)) { // BOTTOM
+                        onSwipeBottom()
+                    }
+                    // 현재 좌표가 직선 아래를 지나는 경우
+                    else { // RIGHT
+                        onSwipeRight()
+                    }
+                }
+            }
+        }
+    }
+
+    // onSwipeDirection : cardview 상단 이동 이벤트를 처리하는 함수
+    override fun onSwipeTop() {
+        recommend_layout_linear_category.visibility = INVISIBLE
+        recommend_txtv_message.visibility = VISIBLE
+        recommend_txtv_message.text = "완독 했어요"
+        recommend_cardview_category.setCardBackgroundColor(Color.parseColor("#03738c")) // mediumMint
+        state = 3
+        isToUndo = false
+    }
+
+    // onSwipeDirection : cardview 우측 이동 이벤트를 처리하는 함수
+    override fun onSwipeRight() {
+        recommend_layout_linear_category.visibility = INVISIBLE
+        recommend_txtv_message.visibility = VISIBLE
+        recommend_txtv_message.text = "읽고 있어요"
+        recommend_cardview_category.setCardBackgroundColor(Color.parseColor("#80c783")) // mediumLime
+        state = 2
+        isToUndo = false
+    }
+
+    // onSwipeDirection : cardview 좌측 이동 이벤트를 처리하는 함수
+    override fun onSwipeLeft() {
+        recommend_layout_linear_category.visibility = INVISIBLE
+        recommend_txtv_message.visibility = VISIBLE
+        recommend_txtv_message.text = "읽고 싶어요"
+        recommend_cardview_category.setCardBackgroundColor(Color.parseColor("#f7b73c")) // mediumYellow
+        state = 1
+        isToUndo = false
+    }
+
+    // onSwipeDirection : cardview 하단 이동 이벤트를 처리하는 함수
+    override fun onSwipeBottom() {
+        recommend_layout_linear_category.visibility = INVISIBLE
+        recommend_txtv_message.visibility = VISIBLE
+        recommend_txtv_message.text = "관심 없어요"
+        recommend_cardview_category.setCardBackgroundColor(Color.parseColor("#e02947")) // mediumRed
+        state = 0
+        isToUndo = false
+    }
+
+    // onSwipeDirection : cardview가 이동하지 않을 때의 이벤트를 처리하는 함수
+    override fun onSwipeNone() {
+        recommend_layout_linear_category.visibility = VISIBLE
+        recommend_txtv_message.visibility = INVISIBLE
+        recommend_txtv_message.text = "MESSAGE"
+        recommend_cardview_category.setCardBackgroundColor(Color.parseColor("#ffffff")) // basicWhite
+        state = -1
+        isToUndo = true
+    }
+
+    // onDestroy : Activity가 종료될 때 동작하는 함수
     override fun onDestroy() {
         super.onDestroy()
+
         // View가 Delete(Unbind) 되었다는 걸 Presenter에 전달
         recommendPresenter.dropView()
-    }
 
-    // setProressON :  공통으로 사용하는 Progress Bar의 시작을 정의하는 함수
-    override fun setProgressON(msg: String) {
-        progressON(msg)
-    }
+        executionLog("[INFO][RECOMMEND]", "disposable 객체 해제 전 상태 : " + disposables.isDisposed)
+        executionLog("[INFO][RECOMMEND]", "disposable 객체 해제 전 크기 : " + disposables.size())
 
-    // setProgressOFF() : 공통으로 사용하는 Progress Bar의 종료를 정의하는 함수
-    override fun setProgressOFF() {
-        progressOFF()
+        // Disposable 객체 전부 해제
+        if(!disposables.isDisposed){
+            disposables.dispose()
+        }
+
+        executionLog("[INFO][RECOMMEND]", "disposable 객체 해제 후 상태 : " + disposables.isDisposed)
+        executionLog("[INFO][RECOMMEND]", "disposable 객체 해제 후 크기 : " + disposables.size())
     }
 
     // showMessage : 공통으로 사용하는 messsage 출력 부분을 생성하는 함수

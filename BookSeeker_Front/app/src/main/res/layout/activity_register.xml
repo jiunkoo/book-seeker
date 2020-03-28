@@ -8,7 +8,7 @@
         android:layout_height="match_parent">
     <TextView
             android:id="@+id/register_txtv_email"
-            android:text="Email"
+            android:text="이메일"
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="@color/mediumLime"
@@ -36,7 +36,7 @@
             app:layout_constraintBottom_toTopOf="@id/register_txtv_nickname"/>
     <TextView
             android:id="@+id/register_txtv_nickname"
-            android:text="Nickname"
+            android:text="별명"
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="@color/mediumLime"
@@ -62,7 +62,7 @@
             app:layout_constraintBottom_toTopOf="@id/register_txtv_password"/>
     <TextView
             android:id="@+id/register_txtv_password"
-            android:text="Password"
+            android:text="비밀번호"
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="@color/mediumLime"
@@ -89,7 +89,7 @@
             app:layout_constraintBottom_toTopOf="@id/register_txtv_passwordconfirm"/>
     <TextView
             android:id="@+id/register_txtv_passwordconfirm"
-            android:text="Retype Password"
+            android:text="비밀번호 확인"
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="@color/mediumLime"
@@ -116,8 +116,8 @@
             app:layout_constraintBottom_toTopOf="@id/register_btn_register"/>
     <Button
             android:id="@+id/register_btn_register"
-            android:text="Register"
-            android:textSize="16sp"
+            android:text="회원가입"
+            android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="@color/mediumAshblue"
             android:background="@color/lightLime"
@@ -134,8 +134,8 @@
             app:layout_constraintEnd_toEndOf="@id/register_etxt_passwordconfirm"/>
     <TextView
             android:id="@+id/signup_txtv_already"
-            android:text="Already have an account? "
-            android:textSize="20sp"
+            android:text="이미 계정이 있으신가요? "
+            android:textSize="18sp"
             android:textColor="@color/lightAshblue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -148,8 +148,8 @@
             app:layout_constraintHorizontal_chainStyle="packed"/>
     <TextView
             android:id="@+id/signup_txtv_signin"
-            android:text="Login"
-            android:textSize="20sp"
+            android:text="로그인"
+            android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="@color/mediumLime"
             android:layout_width="wrap_content"

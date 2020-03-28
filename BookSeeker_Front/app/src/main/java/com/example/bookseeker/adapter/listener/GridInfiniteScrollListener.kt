@@ -1,12 +1,13 @@
 package com.example.bookseeker.adapter.listener
 
 import android.util.Log
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-class InfiniteScrollHorizonListener(
+
+class GridInfiniteScrollListener(
     val func: () -> Unit,
-    val layoutManager: LinearLayoutManager
+    val layoutManager: GridLayoutManager
 ) : RecyclerView.OnScrollListener() {
 
     private var previousTotal = 0
@@ -18,7 +19,7 @@ class InfiniteScrollHorizonListener(
 
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
         super.onScrolled(recyclerView, dx, dy)
-        if (dx > 0) {
+        if (dy > 0) {
             visibleItemCount = recyclerView.childCount
             totalItemCount = layoutManager.itemCount
             firstVisibleItem = layoutManager.findFirstVisibleItemPosition()

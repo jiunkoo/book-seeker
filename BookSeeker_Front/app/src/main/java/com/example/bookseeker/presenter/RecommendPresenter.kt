@@ -3,14 +3,13 @@ package com.example.bookseeker.presenter
 import android.content.Context
 import android.util.Log
 import com.example.bookseeker.contract.RecommendContract
-import com.example.bookseeker.model.data.BookData
-import com.example.bookseeker.model.data.BookList
 import com.example.bookseeker.model.data.EvaluationCreate
 import com.example.bookseeker.network.RetrofitClient
 import com.example.bookseeker.network.RetrofitClient.retrofitInterface
 import com.google.gson.JsonObject
 import io.reactivex.Observable
 import okhttp3.OkHttpClient
+
 
 class RecommendPresenter : RecommendContract.Presenter{
     private var recommendView: RecommendContract.View? = null
@@ -20,8 +19,8 @@ class RecommendPresenter : RecommendContract.Presenter{
         recommendView = view
     }
 
-    // booksSearchObservable : SearchDetailPresenter에서 모든 검색 결과를 요청하는 함수
-    fun getRecommendObservable(context: Context, genre: String, page: Int, limit: Int): Observable<JsonObject> {
+    // getRecommendObservable : 추천 받을 도서 목록 제약 조건을 서버로 보내고 관찰하는 함수
+    override fun getRecommendObservable(context: Context, genre: String, page: Int, limit: Int): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
         val retrofitInterface = retrofitInterface(client)
 
@@ -40,8 +39,8 @@ class RecommendPresenter : RecommendContract.Presenter{
         }
     }
 
-    // createEvaluationObservable : 하나의 평가 데이터 생성 요청을 관찰하는 함수
-    fun createEvaluationObservable(context: Context, evaluationCreate: EvaluationCreate): Observable<JsonObject> {
+    // createEvaluationObservable : 도서 평가 데이터를 서버로 보내고 관찰하는 함수
+    override fun createEvaluationObservable(context: Context, evaluationCreate: EvaluationCreate): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
         val retrofitInterface = RetrofitClient.retrofitInterface(client)
 

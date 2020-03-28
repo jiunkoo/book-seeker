@@ -9,6 +9,7 @@ import com.google.gson.JsonObject
 import io.reactivex.Observable
 import okhttp3.OkHttpClient
 
+
 class MyPagePresenter : MypageContract.Presenter {
     private var mypageView: MypageContract.View? = null
 
@@ -17,8 +18,8 @@ class MyPagePresenter : MypageContract.Presenter {
         mypageView = view
     }
 
-    // getCountGenreObservable : MypagePresenter에서 내 정보 요청하는 함수
-    fun getMineObservable(context: Context): Observable<JsonObject> {
+    // getMineObservable : 내 정보 요청을 서버로 보내고 관찰하는 함수
+    override fun getMineObservable(context: Context): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
         val retrofitInterface = retrofitInterface(client)
 
@@ -37,8 +38,8 @@ class MyPagePresenter : MypageContract.Presenter {
         }
     }
 
-    // getCountGenreObservable : MypagePresenter에서 장르별 도서 평가 개수를 요청하는 함수
-    fun getCountGenreObservable(context: Context): Observable<JsonObject> {
+    // getCountGenreObservable : 장르별 도서 평가 개수 요청을 서버로 보내고 관찰하는 함수
+    override fun getCountGenreObservable(context: Context): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
         val retrofitInterface = retrofitInterface(client)
 
@@ -57,8 +58,8 @@ class MyPagePresenter : MypageContract.Presenter {
         }
     }
 
-    // getCountStateObservable : MypagePresenter에서 장르별 도서 상태 개수를 요청하는 함수
-    fun getCountStateObservable(context: Context): Observable<JsonObject> {
+    // getCountStateObservable : 상태별 도서 평가 개수 요청을 서버로 보내고 관찰하는 함수
+    override fun getCountStateObservable(context: Context): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "addCookie")
         val retrofitInterface = retrofitInterface(client)
 

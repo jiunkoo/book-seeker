@@ -7,7 +7,6 @@ import com.example.bookseeker.model.data.Login
 import com.example.bookseeker.network.RetrofitClient
 import com.google.gson.JsonObject
 import io.reactivex.Observable
-import io.reactivex.Observer
 import okhttp3.OkHttpClient
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -21,7 +20,7 @@ class LoginPresenter : LoginContract.Presenter {
         loginView = view
     }
 
-    // checkRegEx : LoginPresenter에서 EditText의 RegEx를 검사하는 함수
+    // checkRegEx : EditText의 RegEx를 검사하는 함수
     override fun checkRegEx(txtv: String, etxt: String): String {
         var checkRegExResult = "NONE"
         var matcher: Matcher
@@ -50,8 +49,8 @@ class LoginPresenter : LoginContract.Presenter {
         return checkRegExResult
     }
 
-    // login : View에서 Login Data를 가져와 로그인 여부를 결정하는 함수
-    fun loginObservable(context: Context, login : Login): Observable<JsonObject> {
+    // login : 로그인 데이터를 서버로 보내고 응답을 관찰하는 함수
+    override fun loginObservable(context: Context, login : Login): Observable<JsonObject> {
         val client: OkHttpClient = RetrofitClient.getClient(context, "receiveCookie")
         val retrofitInterface = RetrofitClient.retrofitInterface(client)
 

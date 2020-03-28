@@ -7,26 +7,33 @@ import com.example.bookseeker.view.BaseView
 import com.google.gson.JsonObject
 import io.reactivex.Observable
 
+
 interface LoginContract {
     interface View : BaseView {
-        // setLoginButtonEventListener : LoginActivity에서 Button Event를 처리하는 함수
+        // setLoginButtonEventListener : Button 이벤트를 처리하는 함수
         fun setButtonEventListener()
 
-        // setTextViewEventListener : LoginActivity에서 TextView Event를 처리하는 함수
+        // setTextViewEventListener : TextView 이벤트를 처리하는 함수
         fun setTextViewEventListener()
 
-        // setEditTextEventListener : SignUpActivity에서 EditText Event를 처리하는 함수
+        // setEditTextEventListener : EditText 이벤트를 처리하는 함수
         fun setEditTextEventListener()
 
-        // startSearchActivity : LoginActivity에서 SearchActivity로 넘어가는 함수
+        // startSearchActivity : SearchActivity로 넘어가는 함수
         fun startSearchActivity()
 
-        // startRegisterActivity : LoginActivity에서 SignUpActivity로 넘어가는 함수
+        // startRegisterActivity : RegisterActivity로 넘어가는 함수
         fun startRegisterActivity()
+
+        // loginSubscribe : 관찰자에게서 로그인 데이터를 가져오는 함수
+        fun loginSubscribe(login: Login)
     }
 
     interface Presenter : BasePresenter<View> {
         // checkRegEx : LoginPresenter에서 EditText의 RegEx를 검사하는 함수
         fun checkRegEx(txtv: String, etxt: String): String
+
+        // login : 로그인 데이터를 서버로 보내고 응답을 관찰하는 함수
+        fun loginObservable(context: Context, login : Login): Observable<JsonObject>
     }
 }

@@ -7,6 +7,7 @@ import java.util.HashSet
 import okhttp3.Interceptor
 import okhttp3.Response
 
+
 class ReceivedCookiesInterceptor : Interceptor {
     internal lateinit var pref: SharedPreferences
     internal var context: Context
@@ -31,8 +32,6 @@ class ReceivedCookiesInterceptor : Interceptor {
             val editor = pref.edit()
             editor.putString("Cookie", splitCookieValue[1])
             editor.apply() // editor.commit()
-
-            println("sharedPreference에 저장된 쿠키 값은 : " + pref.getString("Cookie", "NONE"))
         }
         return originalResponse
     }

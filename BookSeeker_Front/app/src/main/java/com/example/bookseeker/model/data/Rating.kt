@@ -3,6 +3,7 @@ package com.example.bookseeker.model.data
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
+
 // 평가 데이터 생성 객체
 data class EvaluationCreate(
     @SerializedName("bsin") val bsin: String,
