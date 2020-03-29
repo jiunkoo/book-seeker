@@ -47,13 +47,11 @@ router.post('/register', clientIp, async (req, res, next) => {
     // 사용자 조회에 실패한 경우
     // 중복이 아니므로 회원가입
     else {
-      // uuid 생성 및 비밀번호 암호화
-      const user_uid = await bcrypt.hash(email, 12);
+      // 비밀번호 암호화
       const encrypt_pw = await bcrypt.hash(password, 12);
 
       // 새로운 사용자 생성
       await User.create({
-        user_uid: user_uid,
         email: email,
         nickname: nickname,
         password: encrypt_pw
@@ -61,10 +59,8 @@ router.post('/register', clientIp, async (req, res, next) => {
 
       // 생성한 사용자 정보 저장 객체 생성
       const returnData = new Object();
-      returnData.user_uid = user_uid;
       returnData.email = email;
       returnData.nickname = nickname;
-      returnData.tutorial = false;
 
       // 회원가입 성공 메세지 반환
       const result = new Object();
@@ -161,16 +157,13 @@ router.post('/login', clientIp, async (req, res, next) => {
 // 내 정보
 router.get('/mine', clientIp, isLoggedIn, async (req, res, next) => {
   try {
-    const user_email = req.user.email;
+    const email = req.user.email;
 
-    winston.log('info', `[USER][${req.clientIp}|${user_email}] 내 정보 Request`);
+    winston.log('info', `[USER][${req.clientIp}|${email}] 내 정보 Request`);
 
     let json_user = {
       email: req.user.email,
-      nickname: req.user.nickname,
-      portrait: req.user.portrait,
-      introduction: req.user.introduction,
-      tutorial: req.user.tutorial
+      nickname: req.user.nickname
     }
 
     // 로그인 성공 메세지 리턴
@@ -178,7 +171,7 @@ router.get('/mine', clientIp, isLoggedIn, async (req, res, next) => {
     result.success = true;
     result.data = json_user;
     result.message = '로그인 한 사용자의 데이터를 불러왔습니다.';
-    winston.log('info', `[USER][${req.clientIp}|${user_email}] ${result.message}`);
+    winston.log('info', `[USER][${req.clientIp}|${email}] ${result.message}`);
     return res.status(200).send(result);
   } catch (e) {
     winston.log('error', `[USER][${req.clientIp}|${req.user.email}] 내 정보 Exception`);
@@ -196,9 +189,9 @@ router.get('/mine', clientIp, isLoggedIn, async (req, res, next) => {
 // 로그아웃
 router.get('/logout', clientIp, isLoggedIn, (req, res) => {
   try {
-    const user_email = req.user.email;
+    const email = req.user.email;
 
-    winston.log('info', `[USER][${req.clientIp}|${user_email}] 로그아웃 Request`);
+    winston.log('info', `[USER][${req.clientIp}|${email}] 로그아웃 Request`);
 
     // 로그아웃
     req.logout();
@@ -208,7 +201,7 @@ router.get('/logout', clientIp, isLoggedIn, (req, res) => {
     result.success = true;
     result.data = 'NONE';
     result.message = '로그아웃을 완료했습니다.';
-    winston.log('info', `[USER][${req.clientIp}|${user_email}] ${result.message}`);
+    winston.log('info', `[USER][${req.clientIp}|${email}] ${result.message}`);
     return res.status(200).send(result);
   } catch (e) {
     winston.log('error', `[USER][${req.clientIp}|${req.user.email}] 로그아웃 Exception`);
@@ -226,9 +219,9 @@ router.get('/logout', clientIp, isLoggedIn, (req, res) => {
 // 회원 탈퇴
 router.delete('/unregister', clientIp, isLoggedIn, async (req, res, next) => {
   try {
-    const user_email = req.user.email;
+    const email = req.user.email;
 
-    winston.log('info', `[USER][${req.clientIp}|${user_email}] 회원 탈퇴 Request`);
+    winston.log('info', `[USER][${req.clientIp}|${email}] 회원 탈퇴 Request`);
 
     // 회원 탈퇴 작성 필요
 

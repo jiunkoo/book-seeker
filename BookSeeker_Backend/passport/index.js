@@ -11,7 +11,7 @@ const winston = require('../config/winston');
 module.exports = (passport) => {
     passport.serializeUser((user, done) => {
         winston.log('info', '[PASSPORT] SerializeUser 호출');
-        done(null, user.user_uid);
+        done(null, user.email);
     });
 
     passport.deserializeUser(async (id, done) => {
@@ -20,7 +20,7 @@ module.exports = (passport) => {
 
             // 사용자 정보 불러옴
             const user = await User.findOne({
-                where: { user_uid: id },
+                where: { email: id },
             });
 
             return done(null, user);

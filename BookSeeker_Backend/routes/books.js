@@ -33,15 +33,15 @@ if (config.use_env_variable) {
 // 도서 검색
 router.post('/search/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res, next) => {
     try {
-        const user_email = req.user.email;
+        const email = req.user.email;
 
         const filter = parseInt(req.params.filter);
         const page = parseInt(req.params.page);
         const limit = parseInt(req.params.limit);
         const keyword = req.body.keyword;
 
-        winston.log('info', `[BOOK][${req.clientIp}|${user_email}] 도서 검색 Request`);
-        winston.log('info', `[BOOK][${req.clientIp}|${user_email}] filter : ${filter}, page : ${page}, limit : ${limit}, keyword : ${keyword}`);
+        winston.log('info', `[BOOK][${req.clientIp}|${email}] 도서 검색 Request`);
+        winston.log('info', `[BOOK][${req.clientIp}|${email}] filter : ${filter}, page : ${page}, limit : ${limit}, keyword : ${keyword}`);
 
         let offset = 0;
         let order = 'publication_date ASC';
@@ -77,7 +77,7 @@ router.post('/search/:filter/:page/:limit', clientIp, isLoggedIn, async (req, re
         result.success = true;
         result.data = bookList;
         result.message = '도서 검색을 성공했습니다.';
-        winston.log('info', `[BOOK][${req.clientIp}|${user_email}] ${result.message}`);
+        winston.log('info', `[BOOK][${req.clientIp}|${email}] ${result.message}`);
         return res.status(200).send(result);
     } catch (e) {
         winston.log('error', `[BOOK][${req.clientIp}|${req.body.email}] 전체 만화 목록 조회 Exception`);
@@ -95,16 +95,15 @@ router.post('/search/:filter/:page/:limit', clientIp, isLoggedIn, async (req, re
 // 전체 만화|판타지|로맨스 목록 조회
 router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res, next) => {
     try {
-        const user_email = req.user.email;
-        const user_uid = req.user.user_uid;
+        const email = req.user.email;
 
         const genre = req.params.genre;
         const filter = parseInt(req.params.filter);
         const page = parseInt(req.params.page);
         const limit = parseInt(req.params.limit);
 
-        winston.log('info', `[BOOK][${req.clientIp}|${user_email}] 전체 ${genre} 목록 조회 Request`);
-        winston.log('info', `[BOOK][${req.clientIp}|${user_email}] genre: ${genre}, filter : ${filter}, page : ${page}, limit : ${limit}`);
+        winston.log('info', `[BOOK][${req.clientIp}|${email}] 전체 ${genre} 목록 조회 Request`);
+        winston.log('info', `[BOOK][${req.clientIp}|${email}] genre: ${genre}, filter : ${filter}, page : ${page}, limit : ${limit}`);
 
         let offset = 0;
         let order = '';
@@ -127,11 +126,11 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
                     'bsin NOT IN(' +
                     'SELECT bsin ' +
                     'FROM bookhistories ' +
-                    'WHERE user_uid=:user_uid' +
+                    'WHERE email=:email' +
                     ') AND bsin NOT IN(' +
                     'SELECT bsin ' +
                     'FROM evaluations ' +
-                    'WHERE user_uid=:user_uid ' +
+                    'WHERE email=:email ' +
                     'AND deletedAt IS NULL) ' +
                     'ORDER BY :order ' +
                     'LIMIT :limit ' +
@@ -139,7 +138,7 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
 
                 const bookList = await sequelize.query(query, {
                     replacements: {
-                        user_uid: user_uid,
+                        email: email,
                         genre: genre,
                         order: Sequelize.literal(order),
                         limit: limit,
@@ -152,7 +151,7 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
                 // 불러온 데이터를 임시 테이블에 저장
                 for (let i = 0; i < bookList.length; i++) {
                     await BookHistory.create({
-                        user_uid: user_uid,
+                        email: email,
                         title: bookList[i].title,
                         bsin: bookList[i].bsin,
                         genre: bookList[i].genre
@@ -164,7 +163,7 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
                 result.success = true;
                 result.data = bookList;
                 result.message = `전체 ${genre} 목록 조회를 성공했습니다.`;
-                winston.log('info', `[BOOK][${req.clientIp}|${user_email}] ${result.message}`);
+                winston.log('info', `[BOOK][${req.clientIp}|${email}] ${result.message}`);
                 return res.status(200).send(result);
             }
             // 요청받은 페이지가 1인 경우
@@ -172,7 +171,7 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
                 // 임시 테이블에 저장한 데이터 전부 삭제
                 await BookHistory.destroy({
                     where: {
-                        user_uid: user_uid,
+                        email: email,
                         genre: genre
                     }
                 });
@@ -185,7 +184,7 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
                     'AND bsin NOT IN(' +
                     'SELECT bsin ' +
                     'FROM evaluations ' +
-                    'WHERE user_uid=:user_uid ' +
+                    'WHERE email=:email ' +
                     'AND deletedAt IS NULL) ' +
                     'ORDER BY :order ' +
                     'LIMIT :limit ' +
@@ -193,7 +192,7 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
 
                 const bookList = await sequelize.query(query, {
                     replacements: {
-                        user_uid: user_uid,
+                        email: email,
                         genre: genre,
                         order: Sequelize.literal(order),
                         limit: limit,
@@ -206,7 +205,7 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
                 // 불러온 데이터를 임시 테이블에 저장
                 for (let i = 0; i < bookList.length; i++) {
                     await BookHistory.create({
-                        user_uid: user_uid,
+                        email: email,
                         title: bookList[i].title,
                         bsin: bookList[i].bsin,
                         genre: bookList[i].genre
@@ -218,7 +217,7 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
                 result.success = true;
                 result.data = bookList;
                 result.message = `전체 ${genre} 목록 조회를 성공했습니다.`;
-                winston.log('info', `[BOOK][${req.clientIp}|${user_email}] ${result.message}`);
+                winston.log('info', `[BOOK][${req.clientIp}|${email}] ${result.message}`);
                 return res.status(200).send(result);
             }
         }
@@ -238,7 +237,7 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
             // 임시 테이블에 저장한 데이터 전부 삭제
             await BookHistory.destroy({
                 where: {
-                    user_uid: user_uid
+                    email: email
                 }
             });
 
@@ -256,7 +255,7 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
                 'bsin NOT IN(' +
                 'SELECT bsin ' +
                 'FROM evaluations ' +
-                'WHERE user_uid=:user_uid ' +
+                'WHERE email=:email ' +
                 'AND deletedAt IS NULL) ' +
                 'ORDER BY :order ' +
                 'LIMIT :limit ' +
@@ -264,7 +263,7 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
 
             const bookList = await sequelize.query(query, {
                 replacements: {
-                    user_uid: user_uid,
+                    email: email,
                     genre: genre,
                     order: Sequelize.literal(order),
                     limit: limit,
@@ -298,13 +297,12 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
 // 개별 도서 조회
 router.get('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
     try {
-        const user_email = req.user.email;
-        const user_uid = req.user.user_uid;
+        const email = req.user.email;
 
         const bsin = parseInt(req.params.bsin);
 
-        winston.log('info', `[BOOK][${req.clientIp}|${user_email}] 개별 도서 조회 Request`);
-        winston.log('info', `[BOOK][${req.clientIp}|${user_email}]  bsin: ${bsin}`);
+        winston.log('info', `[BOOK][${req.clientIp}|${email}] 개별 도서 조회 Request`);
+        winston.log('info', `[BOOK][${req.clientIp}|${email}]  bsin: ${bsin}`);
 
         let query =
             'SELECT b.*, e.rating, e.state, e.count, e.average ' +
@@ -313,7 +311,7 @@ router.get('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
             'FROM (' +
             'SELECT * ' +
             'FROM evaluations ' +
-            'WHERE user_uid=:user_uid ' +
+            'WHERE email=:email ' +
             'AND bsin=:bsin ' +
             'AND deletedAt IS NULL' +
             ') AS e1 ' +
@@ -332,7 +330,7 @@ router.get('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
         const book = await sequelize.query(query, {
             replacements: {
                 bsin: bsin,
-                user_uid: user_uid
+                email: email
             },
             type: Sequelize.QueryTypes.SELECT,
             raw: true
@@ -343,7 +341,7 @@ router.get('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
         result.success = true;
         result.data = book;
         result.message = '개별 도서 조회를 성공했습니다.';
-        winston.log('info', `[BOOK][${req.clientIp}|${user_email}] ${result.message}`);
+        winston.log('info', `[BOOK][${req.clientIp}|${email}] ${result.message}`);
         return res.status(200).send(result);
     } catch (e) {
         winston.log('error', `[BOOK][${req.clientIp}|${req.user.email}] 개별 도서 조회 Exception`);
@@ -361,18 +359,17 @@ router.get('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
 // 도서 평가 키워드 조회
 router.get('/keyword/:limit', clientIp, isLoggedIn, async (req, res, next) => {
     try {
-        const user_email = req.user.email;
-        const user_uid = req.user.user_uid;
+        const email = req.user.email;
 
         const limit = req.params.limit;
 
-        winston.log('info', `[BOOK][${req.clientIp}|${user_email}] 도서 평가 키워드 조회 Request`);
-        winston.log('info', `[BOOK][${req.clientIp}|${user_email}] limit : ${limit}`);
+        winston.log('info', `[BOOK][${req.clientIp}|${email}] 도서 평가 키워드 조회 Request`);
+        winston.log('info', `[BOOK][${req.clientIp}|${email}] limit : ${limit}`);
  
         let query =
             'SELECT b.keyword ' +
             'FROM books AS b, evaluations AS e ' +
-            'WHERE user_uid=:user_uid ' +
+            'WHERE email=:email ' +
             'AND b.bsin = e.bsin ' +
             'AND e.deletedAt IS NULL ' +
             'ORDER BY e.createdAt DESC ' +
@@ -381,7 +378,7 @@ router.get('/keyword/:limit', clientIp, isLoggedIn, async (req, res, next) => {
 
         const userEvaluationKeyword = await sequelize.query(query, {
             replacements: {
-                user_uid: user_uid
+                email: email
             },
             type: Sequelize.QueryTypes.SELECT,
             raw: true
@@ -418,7 +415,7 @@ router.get('/keyword/:limit', clientIp, isLoggedIn, async (req, res, next) => {
         result.success = true;
         result.data = returnData;
         result.message = '도서 평가 키워드 조회를 성공했습니다.';
-        winston.log('info', `[BOOK][${req.clientIp}|${user_email}] ${result.message}`);
+        winston.log('info', `[BOOK][${req.clientIp}|${email}] ${result.message}`);
         return res.status(200).send(result);
     } catch (e) {
         winston.log('error', `[BOOK][${req.clientIp}|${req.user.email}] 도서 평가 키워드 조회 Exception`);

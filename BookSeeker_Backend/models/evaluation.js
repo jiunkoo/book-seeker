@@ -1,7 +1,7 @@
 // Mapping Rating Table
 module.exports = (sequelize, DataTypes) => (
     sequelize.define('evaluation', {
-        user_uid: {
+        email: {
             type: DataTypes.STRING(100),
             allowNull: false,
         },

@@ -1,11 +1,8 @@
 // 웹 프레임워크
 const express = require('express');
 
-// 인증
-const bcrypt = require('bcrypt');
-
 // 모델 및 미들웨어 선언
-const { User, Book, Rating } = require('../models');
+const { User, Book, Evaluation } = require('../models');
 const { clientIp, isLoggedIn } = require('./middlewares');
 
 // 파일 시스템 접근
@@ -22,17 +19,17 @@ const router = express.Router();
 // 도서 데이터 파싱
 router.post('/parsing/book', clientIp, isLoggedIn, async (req, res, next) => {
     try {
-        const user_email = req.user.email;
-        winston.log('info', `[ADMIN][${req.clientIp}|${user_email}] 도서 데이터 파싱`);
+        const email = req.user.email;
+        winston.log('info', `[ADMIN][${req.clientIp}|${email}] 도서 데이터 파싱`);
 
         // 관리자가 아닌 경우
-        if (user_email != process.env.ADMIN) {
+        if (email != process.env.ADMIN) {
             // 접근 불가 메세지 반환
             const result = new Object();
             result.success = false;
             result.data = 'NONE';
             result.message = '관리자만 접근할 수 있습니다.';
-            winston.log('info', `[ADMIN][${req.clientIp}|${user_email}] ${result.message}`);
+            winston.log('info', `[ADMIN][${req.clientIp}|${email}] ${result.message}`);
             return res.status(200).send(result);
         } else {
             // json 데이터 불러오기
@@ -102,7 +99,7 @@ router.post('/parsing/book', clientIp, isLoggedIn, async (req, res, next) => {
             result.success = true;
             result.data = 'NONE';
             result.message = '도서 데이터 파싱에 성공했습니다.';
-            winston.log('info', `[ADMIN][${req.clientIp}|${user_email}] ${result.message}`);
+            winston.log('info', `[ADMIN][${req.clientIp}|${email}] ${result.message}`);
             return res.status(201).send(result);
         }
     } catch (e) {
@@ -121,18 +118,18 @@ router.post('/parsing/book', clientIp, isLoggedIn, async (req, res, next) => {
 // 사용자 데이터 파싱
 router.post('/parsing/user', clientIp, isLoggedIn, async (req, res, next) => {
     try {
-        const user_email = req.user.email;
+        const email = req.user.email;
 
-        winston.log('info', `[ADMIN][${req.clientIp}|${user_email}] 사용자 데이터 파싱`);
+        winston.log('info', `[ADMIN][${req.clientIp}|${email}] 사용자 데이터 파싱`);
 
         // 관리자가 아닌 경우
-        if (user_email != process.env.ADMIN) {
+        if (email != process.env.ADMIN) {
             // 접근 불가 메세지 반환
             const result = new Object();
             result.success = false;
             result.data = 'NONE';
             result.message = '관리자만 접근할 수 있습니다.';
-            winston.log('info', `[ADMIN][${req.clientIp}|${user_email}] ${result.message}`);
+            winston.log('info', `[ADMIN][${req.clientIp}|${email}] ${result.message}`);
             return res.status(200).send(result);
         } else {
             // json 데이터 불러오기
@@ -142,15 +139,12 @@ router.post('/parsing/user', clientIp, isLoggedIn, async (req, res, next) => {
 
             // 파일 길이만큼 반복문 돌기
             for (let i = 0; i < parsingUserData.length; i++) {
-                const user_uid = await bcrypt.hash(parsingUserData[i].email, 12);
-                const encrypt_pw = await bcrypt.hash(parsingUserData[i].password, 12);
 
                 // 사용자 평가 데이터 생성
                 await User.create({
-                    user_uid: user_uid,
                     email: parsingUserData[i].email,
                     nickname: parsingUserData[i].name,
-                    password: encrypt_pw
+                    password: parsingUserData[i].password
                 });
             }
 
@@ -159,7 +153,7 @@ router.post('/parsing/user', clientIp, isLoggedIn, async (req, res, next) => {
             result.success = true;
             result.data = 'NONE';
             result.message = '사용자 데이터 파싱에 성공했습니다.';
-            winston.log('info', `[ADMIN][${req.clientIp}|${user_email}] ${result.message}`);
+            winston.log('info', `[ADMIN][${req.clientIp}|${email}] ${result.message}`);
             return res.status(201).send(result);
         }
     } catch (e) {
@@ -178,18 +172,18 @@ router.post('/parsing/user', clientIp, isLoggedIn, async (req, res, next) => {
 // 평가 데이터 파싱
 router.post('/parsing/rating', clientIp, isLoggedIn, async (req, res, next) => {
     try {
-        const user_email = req.user.email;
+        const email = req.user.email;
 
-        winston.log('info', `[ADMIN][${req.clientIp}|${user_email}] 평가 데이터 파싱`);
+        winston.log('info', `[ADMIN][${req.clientIp}|${email}] 평가 데이터 파싱`);
 
         // 관리자가 아닌 경우
-        if (user_email != process.env.ADMIN) {
+        if (email != process.env.ADMIN) {
             // 접근 불가 메세지 반환
             const result = new Object();
             result.success = false;
             result.data = 'NONE';
             result.message = '관리자만 접근할 수 있습니다.';
-            winston.log('info', `[ADMIN][${req.clientIp}|${user_email}] ${result.message}`);
+            winston.log('info', `[ADMIN][${req.clientIp}|${email}] ${result.message}`);
             return res.status(200).send(result);
         } else {
             // json 데이터 불러오기
@@ -203,11 +197,9 @@ router.post('/parsing/rating', clientIp, isLoggedIn, async (req, res, next) => {
 
             // 파일 길이만큼 반복문 돌기
             for (let i = 0; i < parsingComicRatingData.length; i++) {
-                const user_uid = await bcrypt.hash(parsingComicRatingData[i].email, 12);
-
                 // 코믹스 평가 데이터 생성
-                await Rating.create({
-                    user_uid: user_uid,
+                await Evaluation.create({
+                    email: parsingComicRatingData[i].email,
                     bsin: parsingComicRatingData[i].bsin,
                     genre: 'COMIC',
                     rating: parsingComicRatingData[i].rating
@@ -216,11 +208,9 @@ router.post('/parsing/rating', clientIp, isLoggedIn, async (req, res, next) => {
 
             // 파일 길이만큼 반복문 돌기
             for (let i = 0; i < parsingRomanceRatingData.length; i++) {
-                const user_uid = await bcrypt.hash(parsingRomanceRatingData[i].email, 12);
-
                 // 로맨스 평가 데이터 생성
-                await Rating.create({
-                    user_uid: user_uid,
+                await Evaluation.create({
+                    email: parsingRomanceRatingData[i].email,
                     bsin: parsingRomanceRatingData[i].bsin,
                     genre: 'ROMANCE',
                     rating: parsingRomanceRatingData[i].rating
@@ -229,11 +219,9 @@ router.post('/parsing/rating', clientIp, isLoggedIn, async (req, res, next) => {
 
             // 파일 길이만큼 반복문 돌기
             for (let i = 0; i < parsingFantasyRatingData.length; i++) {
-                const user_uid = await bcrypt.hash(parsingFantasyRatingData[i].email, 12);
-
                 // 판타지 평가 데이터 생성
-                await Rating.create({
-                    user_uid: user_uid,
+                await Evaluation.create({
+                    email: parsingFantasyRatingData[i].email,
                     bsin: parsingFantasyRatingData[i].bsin,
                     genre: 'FANTASY',
                     rating: parsingFantasyRatingData[i].rating
@@ -245,7 +233,7 @@ router.post('/parsing/rating', clientIp, isLoggedIn, async (req, res, next) => {
             result.success = true;
             result.data = 'NONE';
             result.message = '도서 데이터 파싱에 성공했습니다.';
-            winston.log('info', `[ADMIN][${req.clientIp}|${user_email}] ${result.message}`);
+            winston.log('info', `[ADMIN][${req.clientIp}|${email}] ${result.message}`);
             return res.status(201).send(result);
         }
     } catch (e) {
