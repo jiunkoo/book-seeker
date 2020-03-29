@@ -37,7 +37,6 @@ if (config.use_env_variable) {
 router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) => {
     try {
         const user_email = req.user.email;
-        const user_uid = req.user.user_uid;
 
         const genre = req.params.genre;
         const page = parseInt(req.params.page);
@@ -50,12 +49,12 @@ router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) 
         let userQuery =
             'SELECT * ' +
             'FROM evaluations ' +
-            'WHERE user_uid=:user_uid ' +
+            'WHERE user_email=:user_email ' +
             'AND deletedAt IS NULL;';
 
         const userList = await sequelize.query(userQuery, {
             replacements: {
-                user_uid: user_uid
+                user_email: user_email
             },
             type: Sequelize.QueryTypes.SELECT,
             raw: true
@@ -76,7 +75,7 @@ router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) 
             '(SELECT id ' +
             'FROM evaluations ' +
             'WHERE genre=:genre ' +
-            'AND user_uid=:user_uid ' +
+            'AND user_email=:user_email ' +
             'AND state=0) ' +
             'AND rating > 0 ' +
             'AND deletedAt IS NULL;';
@@ -84,7 +83,7 @@ router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) 
         const evaluationList = await sequelize.query(evaluationQuery, {
             replacements: {
                 genre: genre,
-                user_uid: user_uid
+                user_email: user_email
             },
             type: Sequelize.QueryTypes.SELECT,
             raw: true
@@ -109,13 +108,13 @@ router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) 
             '(SELECT bsin ' +
             'FROM evaluations ' +
             'WHERE genre=:genre ' +
-            'AND user_uid=:user_uid ' +
+            'AND user_email=:user_email ' +
             'AND (state=0 OR state=3) ' +
             'AND deletedAt IS NULL))';
 
         const unEvaluationList = await sequelize.query(unEvaluationQuery, {
             replacements: {
-                user_uid: user_uid,
+                user_email: user_email,
                 genre: genre
             },
             type: Sequelize.QueryTypes.SELECT,
@@ -123,7 +122,7 @@ router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) 
         });
 
         const trainedDataSet = await RF.trainingDataSet(userList, evaluationList, unEvaluationList);
-        const bookRecommend = await RF.bookRecommend(user_uid, trainedDataSet, page, limit);
+        const bookRecommend = await RF.bookRecommend(user_email, trainedDataSet, page, limit);
 
         // Database에서 검사할 BsinList
         let bookBsinList = [];
@@ -141,12 +140,12 @@ router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) 
             'WHERE bsin IN ( ' + bookBsinList.join() + ')) AS b ' +
             'LEFT OUTER JOIN evaluations AS e ' +
             'ON b.bsin = e.bsin ' +
-            'AND e.user_uid=:user_uid ' +
+            'AND e.user_email=:user_email ' +
             'AND e.deletedAt IS NULL';
 
         const recommendBookList = await sequelize.query(bookQuery, {
             replacements: {
-                user_uid: user_uid
+                user_email: user_email
             },
             type: Sequelize.QueryTypes.SELECT,
             raw: true

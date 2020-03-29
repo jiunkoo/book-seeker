@@ -1,12 +1,6 @@
 //Mapping User Table
 module.exports = (sequelize, DataTypes) => (
     sequelize.define('user', {
-        user_uid: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            unique: true,
-            primaryKey: true,
-        }, 
         email: {
             type: DataTypes.STRING(50),
             allowNull: false,

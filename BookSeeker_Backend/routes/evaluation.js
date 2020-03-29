@@ -32,15 +32,14 @@ if (config.use_env_variable) {
 // 도서 평가
 router.post('/', clientIp, isLoggedIn, async (req, res, next) => {
     try {
-        const user_email = req.user.email;
-        const user_uid = req.user.user_uid;
+        const email = req.user.email;
 
         const { bsin, genre } = req.body;
         const rating = parseFloat(req.body.rating);
         const state = parseInt(req.body.state);
 
-        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] 도서 평가 Request`);
-        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] bsin : ${bsin}, genre : ${genre}, rating : ${rating}, state : ${state}`);
+        winston.log('info', `[EVALUATION][${req.clientIp}|${email}] 도서 평가 Request`);
+        winston.log('info', `[EVALUATION][${req.clientIp}|${email}] bsin : ${bsin}, genre : ${genre}, rating : ${rating}, state : ${state}`);
 
         // 별점이 -1점 미만이거나 5점을 초과하는 경우
         if (rating > 5 || rating <= -2) {
@@ -49,7 +48,7 @@ router.post('/', clientIp, isLoggedIn, async (req, res, next) => {
             result.success = false;
             result.data = 'NONE';
             result.message = '별점이 잘못되었습니다.';
-            winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] ${result.message}`);
+            winston.log('info', `[EVALUATION][${req.clientIp}|${email}] ${result.message}`);
             return res.status(200).send(result);
         }
 
@@ -57,11 +56,11 @@ router.post('/', clientIp, isLoggedIn, async (req, res, next) => {
         let searchQuery =
             'SELECT * ' +
             'FROM evaluations ' +
-            'WHERE user_uid=:user_uid AND bsin=:bsin; ';
+            'WHERE email=:email AND bsin=:bsin; ';
 
         const evaluation = await sequelize.query(searchQuery, {
             replacements: {
-                user_uid: user_uid,
+                email: email,
                 bsin: bsin
             },
             type: Sequelize.QueryTypes.SELECT,
@@ -74,11 +73,11 @@ router.post('/', clientIp, isLoggedIn, async (req, res, next) => {
             let updateQuery =
                 'UPDATE evaluations ' +
                 'SET rating=:rating, state=:state, deletedAt=null ' +
-                'WHERE user_uid=:user_uid AND bsin=:bsin; ';
+                'WHERE email=:email AND bsin=:bsin; ';
 
             await sequelize.query(updateQuery, {
                 replacements: {
-                    user_uid: user_uid,
+                    email: email,
                     bsin: bsin,
                     rating: rating,
                     state: state
@@ -117,14 +116,14 @@ router.post('/', clientIp, isLoggedIn, async (req, res, next) => {
             result.success = true;
             result.data = returnData;
             result.message = '도서 평가를 성공했습니다.';
-            winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] ${result.message}`);
+            winston.log('info', `[EVALUATION][${req.clientIp}|${email}] ${result.message}`);
             return res.status(200).send(result);
         }
         // 평가 데이터가 없는 경우
         else {
             // 평가 데이터 생성
             await Evaluation.create({
-                user_uid: user_uid,
+                email: email,
                 bsin: bsin,
                 genre: genre,
                 rating: rating,
@@ -159,7 +158,7 @@ router.post('/', clientIp, isLoggedIn, async (req, res, next) => {
             result.success = true;
             result.data = returnData;
             result.message = '도서 평가를 성공했습니다.';
-            winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] ${result.message}`);
+            winston.log('info', `[EVALUATION][${req.clientIp}|${email}] ${result.message}`);
             return res.status(201).send(result);
         }
     } catch (e) {
@@ -178,16 +177,15 @@ router.post('/', clientIp, isLoggedIn, async (req, res, next) => {
 // 전체 평가 도서 목록 조회
 router.get('/:genre/:state/:page/:limit', clientIp, isLoggedIn, async (req, res, next) => {
     try {
-        const user_email = req.user.email;
-        const user_uid = req.user.user_uid;
+        const email = req.user.email;
 
         const genre = req.params.genre;
         const state = parseInt(req.params.state);
         const page = parseInt(req.params.page);
         const limit = parseInt(req.params.limit);
 
-        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] 전체 평가 도서 목록 Request`);
-        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}]  genre: ${genre},  state : ${state}, page : ${page}, limit : ${limit}`);
+        winston.log('info', `[EVALUATION][${req.clientIp}|${email}] 전체 평가 도서 목록 Request`);
+        winston.log('info', `[EVALUATION][${req.clientIp}|${email}]  genre: ${genre},  state : ${state}, page : ${page}, limit : ${limit}`);
 
         let offset = 0;
 
@@ -200,7 +198,7 @@ router.get('/:genre/:state/:page/:limit', clientIp, isLoggedIn, async (req, res,
             'SELECT b.*, e.rating ' +
             'FROM books AS b, evaluations AS e ' +
             'WHERE b.bsin = e.bsin ' +
-            'AND e.user_uid=:user_uid ' +
+            'AND e.email=:email ' +
             'AND e.genre = :genre ' +
             'AND e.state = :state ' +
             'AND e.deletedAt IS NULL ' +
@@ -210,7 +208,7 @@ router.get('/:genre/:state/:page/:limit', clientIp, isLoggedIn, async (req, res,
 
         const bookList = await sequelize.query(query, {
             replacements: {
-                user_uid: user_uid,
+                email: email,
                 genre: genre,
                 state: state,
                 limit: limit,
@@ -225,7 +223,7 @@ router.get('/:genre/:state/:page/:limit', clientIp, isLoggedIn, async (req, res,
         result.success = true;
         result.data = bookList;
         result.message = '전체 평가 도서 목록 조회를 성공했습니다.';
-        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] ${result.message}`);
+        winston.log('info', `[EVALUATION][${req.clientIp}|${email}] ${result.message}`);
         return res.status(200).send(result);
     } catch (e) {
         winston.log('error', `[EVALUATION][${req.clientIp}|${req.user.email}] 전체 평가 도서 목록 조회 Exception`);
@@ -243,10 +241,9 @@ router.get('/:genre/:state/:page/:limit', clientIp, isLoggedIn, async (req, res,
 // 장르별 도서 평가 개수 조회
 router.get('/count/genre', clientIp, isLoggedIn, async (req, res, next) => {
     try {
-        const user_email = req.user.email;
-        const user_uid = req.user.user_uid;
+        const email = req.user.email;
 
-        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] 장르별 도서 평가 개수 조회 Request`);
+        winston.log('info', `[EVALUATION][${req.clientIp}|${email}] 장르별 도서 평가 개수 조회 Request`);
 
         let countQuery =
             'SELECT ' +
@@ -254,12 +251,12 @@ router.get('/count/genre', clientIp, isLoggedIn, async (req, res, next) => {
             'COUNT(IF (genre="ROMANCE", genre, NULL)) AS count_romance, ' +
             'COUNT(IF (genre="FANTASY", genre, NULL)) AS count_fantasy ' +
             'FROM evaluations ' +
-            'WHERE user_uid=:user_uid ' +
+            'WHERE email=:email ' +
             'AND deletedAt IS NULL;';
         
         const countGenre = await sequelize.query(countQuery, {
             replacements: {
-                user_uid: user_uid
+                email: email
             },
             type: Sequelize.QueryTypes.SELECT,
             raw: true
@@ -275,7 +272,7 @@ router.get('/count/genre', clientIp, isLoggedIn, async (req, res, next) => {
         result.success = true;
         result.data = returnData;
         result.message = '장르별 도서 평가 개수 조회를 성공했습니다.';
-        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] ${result.message}`);
+        winston.log('info', `[EVALUATION][${req.clientIp}|${email}] ${result.message}`);
         return res.status(200).send(result);
     } catch (e) {
         winston.log('error', `[EVALUATION][${req.clientIp}|${req.user.email}] 장르별 도서 평가 개수 조회 Exception`);
@@ -293,10 +290,9 @@ router.get('/count/genre', clientIp, isLoggedIn, async (req, res, next) => {
 // 상태별 도서 평가 개수 조회
 router.get('/count/state', clientIp, isLoggedIn, async (req, res, next) => {
     try {
-        const user_email = req.user.email;
-        const user_uid = req.user.user_uid;
+        const email = req.user.email;
 
-        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] 상태별 도서 평가 개수 조회 Request`);
+        winston.log('info', `[EVALUATION][${req.clientIp}|${email}] 상태별 도서 평가 개수 조회 Request`);
 
         let countQuery =
             'SELECT IFNULL(genre, "COMIC") AS genre, ' +
@@ -305,7 +301,7 @@ router.get('/count/state', clientIp, isLoggedIn, async (req, res, next) => {
             'COUNT(IF(state=2, state, NULL)) AS count_reading, ' +
             'COUNT(IF(state=3, state, NULL)) AS count_read ' +
             'FROM evaluations ' +
-            'WHERE user_uid=:user_uid ' +
+            'WHERE email=:email ' +
             'AND genre="COMIC" ' +
             'AND deletedAt IS NULL ' +
             'UNION ' +
@@ -315,7 +311,7 @@ router.get('/count/state', clientIp, isLoggedIn, async (req, res, next) => {
             'COUNT(IF(state=2, state, NULL)) AS count_reading, ' +
             'COUNT(IF(state=3, state, NULL)) AS count_read ' +
             'FROM evaluations ' +
-            'WHERE user_uid=:user_uid ' +
+            'WHERE email=:email ' +
             'AND genre="ROMANCE" ' +
             'AND deletedAt IS NULL ' +
             'UNION ' +
@@ -325,14 +321,14 @@ router.get('/count/state', clientIp, isLoggedIn, async (req, res, next) => {
             'COUNT(IF(state=2, state, NULL)) AS count_reading, ' +
             'COUNT(IF(state=3, state, NULL)) AS count_read ' +
             'FROM evaluations ' +
-            'WHERE user_uid=:user_uid ' +
+            'WHERE email=:email ' +
             'AND genre="FANTASY" ' +
             'AND deletedAt IS NULL;';
         
 
         const countState = await sequelize.query(countQuery, {
             replacements: {
-                user_uid: user_uid
+                email: email
             },
             type: Sequelize.QueryTypes.SELECT,
             raw: true
@@ -359,7 +355,7 @@ router.get('/count/state', clientIp, isLoggedIn, async (req, res, next) => {
         result.success = true;
         result.data = returnData;
         result.message = '상태별 도서 평가 개수 조회를 성공했습니다.';
-        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] ${result.message}`);
+        winston.log('info', `[EVALUATION][${req.clientIp}|${email}] ${result.message}`);
         return res.status(200).send(result);
     } catch (e) {
         winston.log('error', `[EVALUATION][${req.clientIp}|${req.user.email}] 상태별 도서 평가 개수 조회 Exception`);
@@ -377,10 +373,9 @@ router.get('/count/state', clientIp, isLoggedIn, async (req, res, next) => {
 // 평점별 도서 평가 개수 조회
 router.get('/count/rating', clientIp, isLoggedIn, async (req, res, next) => {
     try {
-        const user_email = req.user.email;
-        const user_uid = req.user.user_uid;
+        const email = req.user.email;
 
-        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] 평점별 도서 평가 개수 조회 Request`);
+        winston.log('info', `[EVALUATION][${req.clientIp}|${email}] 평점별 도서 평가 개수 조회 Request`);
 
         let countQuery =
         'SELECT ' +
@@ -395,14 +390,14 @@ router.get('/count/rating', clientIp, isLoggedIn, async (req, res, next) => {
         'COUNT(IF(rating=4.5, rating, NULL)) AS "rating_45", ' +
         'COUNT(IF(rating=5.0, rating, NULL)) AS "rating_50" ' +
         'FROM evaluations ' +
-        'WHERE user_uid=:user_uid ' +
+        'WHERE email=:email ' +
         'AND rating > 0 ' +
         'AND deletedAt IS NULL;';
         
 
         const countRating = await sequelize.query(countQuery, {
             replacements: {
-                user_uid: user_uid
+                email: email
             },
             type: Sequelize.QueryTypes.SELECT,
             raw: true
@@ -425,7 +420,7 @@ router.get('/count/rating', clientIp, isLoggedIn, async (req, res, next) => {
         result.success = true;
         result.data = returnData;
         result.message = '상태별 도서 평가 개수 조회를 성공했습니다.';
-        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] ${result.message}`);
+        winston.log('info', `[EVALUATION][${req.clientIp}|${email}] ${result.message}`);
         return res.status(200).send(result);
     } catch (e) {
         winston.log('error', `[EVALUATION][${req.clientIp}|${req.user.email}] 상태별 도서 평가 개수 조회 Exception`);
@@ -443,15 +438,14 @@ router.get('/count/rating', clientIp, isLoggedIn, async (req, res, next) => {
 // 도서 평가 수정
 router.patch('/', clientIp, isLoggedIn, async (req, res, next) => {
     try {
-        const user_email = req.user.email;
-        const user_uid = req.user.user_uid;
+        const email = req.user.email;
 
         const bsin = req.body.bsin;
         const rating = req.body.rating;
         const state = req.body.state;
 
-        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] 도서 평가 수정 Request`);
-        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] bsin : ${bsin}, rating : ${rating}, state : ${state}`);
+        winston.log('info', `[EVALUATION][${req.clientIp}|${email}] 도서 평가 수정 Request`);
+        winston.log('info', `[EVALUATION][${req.clientIp}|${email}] bsin : ${bsin}, rating : ${rating}, state : ${state}`);
 
         // 도서 평가 수정
         await Evaluation.update({
@@ -459,7 +453,7 @@ router.patch('/', clientIp, isLoggedIn, async (req, res, next) => {
             state: state
         }, {
             where: {
-                user_uid: user_uid,
+                email: email,
                 bsin: bsin
             }
         });
@@ -492,7 +486,7 @@ router.patch('/', clientIp, isLoggedIn, async (req, res, next) => {
         result.success = true;
         result.data = returnData;
         result.message = '도서 평가 수정을 성공했습니다.';
-        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] ${result.message}`);
+        winston.log('info', `[EVALUATION][${req.clientIp}|${email}] ${result.message}`);
         return res.status(200).send(result);
     } catch (e) {
         winston.log('error', `[EVALUATION][${req.clientIp}|${req.user.email}] 도서 평가 수정 Exception`);
@@ -510,20 +504,19 @@ router.patch('/', clientIp, isLoggedIn, async (req, res, next) => {
 // 도서 평가 삭제
 router.delete('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
     try {
-        const user_email = req.user.email;
-        const user_uid = req.user.user_uid;
+        const email = req.user.email;
 
         const bsin = req.params.bsin;
 
-        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] 도서 평가 삭제 Request`);
-        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] bsin : ${bsin}`);
+        winston.log('info', `[EVALUATION][${req.clientIp}|${email}] 도서 평가 삭제 Request`);
+        winston.log('info', `[EVALUATION][${req.clientIp}|${email}] bsin : ${bsin}`);
 
         // 도서 평가 변경
         await Evaluation.update({
             rating: -1
         }, {
             where: {
-                user_uid: user_uid,
+                email: email,
                 bsin: bsin
             }
         });
@@ -531,7 +524,7 @@ router.delete('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
         // 도서 평가 삭제
         await Evaluation.destroy({
             where: {
-                user_uid: user_uid,
+                email: email,
                 bsin: bsin
             }
         });
@@ -564,7 +557,7 @@ router.delete('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
         result.success = true;
         result.data = returnData;
         result.message = '도서 평가 삭제를 성공했습니다.';
-        winston.log('info', `[EVALUATION][${req.clientIp}|${user_email}] ${result.message}`);
+        winston.log('info', `[EVALUATION][${req.clientIp}|${email}] ${result.message}`);
         return res.status(200).send(result);
     } catch (e) {
         winston.log('error', `[EVALUATION][${req.clientIp}|${req.user.email}] 도서 평가 삭제 Exception`);
