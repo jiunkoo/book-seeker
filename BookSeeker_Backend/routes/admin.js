@@ -138,7 +138,7 @@ router.post('/parsing/user', clientIp, isLoggedIn, async (req, res, next) => {
             const parsingUserData = JSON.parse(userData);
 
             // 파일 길이만큼 반복문 돌기
-            for (let i = 49; i < parsingUserData.length; i++) {
+            for (let i = 0; i < parsingUserData.length; i++) {
 
                 // 사용자 평가 데이터 생성
                 await User.create({
