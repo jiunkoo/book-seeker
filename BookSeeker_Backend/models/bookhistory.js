@@ -1,7 +1,7 @@
 // Mapping Book Table
 module.exports = (sequelize, DataTypes) => (
     sequelize.define('bookhistory', {
-        user_uid: {
+        email: {
             type: DataTypes.STRING,
             allowNull: false,
         },
