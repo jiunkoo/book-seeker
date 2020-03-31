@@ -335,7 +335,7 @@ class BookInfoActivity : BaseActivity(), BookInfoContract.View, Serializable {
                             var publication_date = jsonObject.get("publication_date").toString().replace("\"", "")
                             var introduction = jsonObject.get("introduction").toString()
                                 .replace("\"", "").replace("\\n", "\n")
-                            var myRating = jsonObject.get("rating").toString().replace("\"", "").toFloat()
+                            var myRating = jsonObject.get("rating").toString().replace("\"", "").format("%.1f").toFloat()
                             var myState = jsonObject.get("state").toString().replace("\"", "").toInt()
                             var allAverage = jsonObject.get("average").toString().replace("\"", "").toFloat()
                             var allCount = jsonObject.get("count").toString().replace("\"", "").toInt()
