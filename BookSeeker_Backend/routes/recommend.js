@@ -36,25 +36,25 @@ if (config.use_env_variable) {
 // 추천 도서 목록을 반환
 router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) => {
     try {
-        const user_email = req.user.email;
+        const email = req.user.email;
 
         const genre = req.params.genre;
         const page = parseInt(req.params.page);
         const limit = parseInt(req.params.limit);
 
-        winston.log('info', `[RECOMMEND][${req.clientIp}|${user_email}]  추천 ${genre} 목록 조회 Request`);
-        winston.log('info', `[RECOMMEND][${req.clientIp}|${user_email}] genre: ${genre}, page : ${page}, limit : ${limit}`);
+        winston.log('info', `[RECOMMEND][${req.clientIp}|${email}]  추천 ${genre} 목록 조회 Request`);
+        winston.log('info', `[RECOMMEND][${req.clientIp}|${email}] genre: ${genre}, page : ${page}, limit : ${limit}`);
 
         // 사용자가 평가한 도서 목록 불러오기
         let userQuery =
             'SELECT * ' +
             'FROM evaluations ' +
-            'WHERE user_email=:user_email ' +
+            'WHERE email=:email ' +
             'AND deletedAt IS NULL;';
 
         const userList = await sequelize.query(userQuery, {
             replacements: {
-                user_email: user_email
+                email: email
             },
             type: Sequelize.QueryTypes.SELECT,
             raw: true
@@ -75,7 +75,7 @@ router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) 
             '(SELECT id ' +
             'FROM evaluations ' +
             'WHERE genre=:genre ' +
-            'AND user_email=:user_email ' +
+            'AND email=:email ' +
             'AND state=0) ' +
             'AND rating > 0 ' +
             'AND deletedAt IS NULL;';
@@ -83,7 +83,7 @@ router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) 
         const evaluationList = await sequelize.query(evaluationQuery, {
             replacements: {
                 genre: genre,
-                user_email: user_email
+                email: email
             },
             type: Sequelize.QueryTypes.SELECT,
             raw: true
@@ -108,13 +108,13 @@ router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) 
             '(SELECT bsin ' +
             'FROM evaluations ' +
             'WHERE genre=:genre ' +
-            'AND user_email=:user_email ' +
+            'AND email=:email ' +
             'AND (state=0 OR state=3) ' +
             'AND deletedAt IS NULL))';
 
         const unEvaluationList = await sequelize.query(unEvaluationQuery, {
             replacements: {
-                user_email: user_email,
+                email: email,
                 genre: genre
             },
             type: Sequelize.QueryTypes.SELECT,
@@ -122,7 +122,7 @@ router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) 
         });
 
         const trainedDataSet = await RF.trainingDataSet(userList, evaluationList, unEvaluationList);
-        const bookRecommend = await RF.bookRecommend(user_email, trainedDataSet, page, limit);
+        const bookRecommend = await RF.bookRecommend(email, trainedDataSet, page, limit);
 
         // Database에서 검사할 BsinList
         let bookBsinList = [];
@@ -140,12 +140,12 @@ router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) 
             'WHERE bsin IN ( ' + bookBsinList.join() + ')) AS b ' +
             'LEFT OUTER JOIN evaluations AS e ' +
             'ON b.bsin = e.bsin ' +
-            'AND e.user_email=:user_email ' +
+            'AND e.email=:email ' +
             'AND e.deletedAt IS NULL';
 
         const recommendBookList = await sequelize.query(bookQuery, {
             replacements: {
-                user_email: user_email
+                email: email
             },
             type: Sequelize.QueryTypes.SELECT,
             raw: true
@@ -176,7 +176,7 @@ router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) 
         result.success = true;
         result.data = returnData;
         result.message = `추천 ${genre} 목록 조회를 성공했습니다.`;
-        winston.log('info', `[RECOMMEND][${req.clientIp}|${user_email}] ${result.message}`);
+        winston.log('info', `[RECOMMEND][${req.clientIp}|${email}] ${result.message}`);
         return res.status(200).send(result);
     } catch (e) {
         winston.log('error', `[RECOMMEND][${req.clientIp}|${req.user.email}] 추천 도서 목록 조회 Exception`);
