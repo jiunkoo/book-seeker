@@ -278,7 +278,7 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
             result.success = true;
             result.data = bookList;
             result.message = `전체 ${genre} 목록 조회를 성공했습니다.`;
-            winston.log('info', `[BOOK][${req.clientIp}|${user_email}] ${result.message}`);
+            winston.log('info', `[BOOK][${req.clientIp}|${email}] ${result.message}`);
             return res.status(200).send(result);
         }
     } catch (e) {
