@@ -111,9 +111,6 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
 
         // 랜덤으로 페이지를 불러오는 경우
         if (filter == 0) {
-            // 정렬기준 설정
-            order = 'rand()';
-
             // 요청받은 페이지가 2 이상인 경우
             if (page > 1) {
                 // offset 설정
@@ -133,7 +130,7 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
                     'FROM evaluations ' +
                     'WHERE user_uid=:user_uid ' +
                     'AND deletedAt IS NULL) ' +
-                    'ORDER BY :order ' +
+                    'ORDER BY rand() ' +
                     'LIMIT :limit ' +
                     'OFFSET :offset;';
 
@@ -141,7 +138,6 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
                     replacements: {
                         user_uid: user_uid,
                         genre: genre,
-                        order: Sequelize.literal(order),
                         limit: limit,
                         offset: offset
                     },
@@ -187,7 +183,7 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
                     'FROM evaluations ' +
                     'WHERE user_uid=:user_uid ' +
                     'AND deletedAt IS NULL) ' +
-                    'ORDER BY :order ' +
+                    'ORDER BY rand() ' +
                     'LIMIT :limit ' +
                     'OFFSET :offset;';
 
@@ -195,7 +191,6 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
                     replacements: {
                         user_uid: user_uid,
                         genre: genre,
-                        order: Sequelize.literal(order),
                         limit: limit,
                         offset: offset
                     },
@@ -224,15 +219,60 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
         }
         // 그 외의 경우
         else {
+            let query = '';
             // 정렬 기준 설정
             if (filter == 1) {
-                order = 'publication_date ASC';
+                query =
+                'SELECT * ' +
+                'FROM books ' +
+                'WHERE genre=:genre AND ' +
+                'bsin NOT IN(' +
+                'SELECT bsin ' +
+                'FROM evaluations ' +
+                'WHERE user_uid=:user_uid ' +
+                'AND deletedAt IS NULL) ' +
+                'ORDER BY publication_date DESC ' +
+                'LIMIT :limit ' +
+                'OFFSET :offset;';
             } else if (filter == 2) {
-                order = 'publication_date DESC';
+                query =
+                'SELECT * ' +
+                'FROM books ' +
+                'WHERE genre=:genre AND ' +
+                'bsin NOT IN(' +
+                'SELECT bsin ' +
+                'FROM evaluations ' +
+                'WHERE user_uid=:user_uid ' +
+                'AND deletedAt IS NULL) ' +
+                'ORDER BY publication_date ASC ' +
+                'LIMIT :limit ' +
+                'OFFSET :offset;';
             } else if (filter == 3) {
-                order = 'title ASC';
+                query =
+                'SELECT * ' +
+                'FROM books ' +
+                'WHERE genre=:genre AND ' +
+                'bsin NOT IN(' +
+                'SELECT bsin ' +
+                'FROM evaluations ' +
+                'WHERE user_uid=:user_uid ' +
+                'AND deletedAt IS NULL) ' +
+                'ORDER BY title ASC ' +
+                'LIMIT :limit ' +
+                'OFFSET :offset;';
             } else {
-                order = 'title DESC';
+                query =
+                'SELECT * ' +
+                'FROM books ' +
+                'WHERE genre=:genre AND ' +
+                'bsin NOT IN(' +
+                'SELECT bsin ' +
+                'FROM evaluations ' +
+                'WHERE user_uid=:user_uid ' +
+                'AND deletedAt IS NULL) ' +
+                'ORDER BY title DESC ' +
+                'LIMIT :limit ' +
+                'OFFSET :offset;';
             }
 
             // 임시 테이블에 저장한 데이터 전부 삭제
@@ -249,24 +289,10 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
             }
 
             // 페이징 적용 데이터 불러오기(내가 평가하지 않은 도서)
-            let query =
-                'SELECT * ' +
-                'FROM books ' +
-                'WHERE genre=:genre AND ' +
-                'bsin NOT IN(' +
-                'SELECT bsin ' +
-                'FROM evaluations ' +
-                'WHERE user_uid=:user_uid ' +
-                'AND deletedAt IS NULL) ' +
-                'ORDER BY :order ' +
-                'LIMIT :limit ' +
-                'OFFSET :offset;';
-
             const bookList = await sequelize.query(query, {
                 replacements: {
                     user_uid: user_uid,
                     genre: genre,
-                    order: Sequelize.literal(order),
                     limit: limit,
                     offset: offset
                 },

@@ -141,7 +141,7 @@ router.post('/parsing/user', clientIp, isLoggedIn, async (req, res, next) => {
             const parsingUserData = JSON.parse(userData);
 
             // 파일 길이만큼 반복문 돌기
-            for (let i = 0; i < parsingUserData.length; i++) {
+            for (let i = 0; i < 50; i++) {
                 const user_uid = await bcrypt.hash(parsingUserData[i].email, 12);
                 const encrypt_pw = await bcrypt.hash(parsingUserData[i].password, 12);
 
@@ -202,7 +202,7 @@ router.post('/parsing/rating', clientIp, isLoggedIn, async (req, res, next) => {
             const parsingFantasyRatingData = JSON.parse(fantasyRatingData);
 
             // 파일 길이만큼 반복문 돌기
-            for (let i = 0; i < parsingComicRatingData.length; i++) {
+            for (let i = 0; i < 1000; i++) {
                 const user_uid = await bcrypt.hash(parsingComicRatingData[i].email, 12);
 
                 // 코믹스 평가 데이터 생성
