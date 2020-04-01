@@ -6,6 +6,7 @@ module.exports = {
         // userBasedData : 사용자별 도서 평가 데이터 객체
         // bookBasedData : 도서별 도서 평가 사용자 데이터 객체
         // bookRatingRank : 도서별 평점 합계 객체
+        // ratingCount : 예상 도서 평점 개수 계산 객체
         let trainedDataSet = {}, userState = {}, userBasedData = {}, bookBasedData = {}, bookRatingRank = {}, ratingCount = {};
 
         // trainSet : 도서 목록에서 추출한 학습 데이터 배열
@@ -89,7 +90,7 @@ module.exports = {
                 continue; // push 생략
             } else {
                 numerator = bookRatingRank[bsin]
-                denominator = ratignCount[bsin];
+                denominator = ratingCount[bsin];
 
                 if (denominator != 0) {
                     returnData.push({ bsin: bsin, rating: numerator / denominator });
@@ -120,6 +121,7 @@ module.exports = {
             // completionEvaluation : 특정 사용자의 도서 평가 목록(유사도 계산이 끝난 도서 목록)
             // similarUsers : 특정 사용자와 같은 도서를 평가한 비슷한 사용자 유사도 목록 객체
             // estimatedEvaluation : 계산한 예상 도서 평점 목록 객체
+            // ratingCount : 예상 도서 평점 개수 계산 객체
             let completionEvaluation = {}, similarUsers = {}, estimatedEvaluation = {}, ratingCount = {};
 
             // relatedUsers : 전체 유사도 계산을 바탕으로 한 특정 사용자와 비슷한 사용자 간 유사도 배열
@@ -127,7 +129,6 @@ module.exports = {
             let relatedUsers = [], returnData = [];
 
             // estimatedEvaluationCount : 예상 도서 평점 목록 객체 개수
-            // ratingCount : 예상 도서 평점 계산 개수
             let estimatedEvaluationCount = 0;
 
             // 반복문을 돌려 특정 사용자와 같은 도서를 평가한 비슷한 사용자 목록 추출
@@ -183,7 +184,7 @@ module.exports = {
                     continue; // push 생략
                 } else {
                     numerator = estimatedEvaluation[bsin];
-                    denominator = ratignCount[bsin];
+                    denominator = ratingCount[bsin];
 
                     if (denominator != 0) {
                         returnData.push({ bsin: bsin, rating: numerator / denominator });
