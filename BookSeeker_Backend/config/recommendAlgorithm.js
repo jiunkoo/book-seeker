@@ -111,13 +111,14 @@ module.exports = {
             // completionEvaluation : 특정 사용자의 도서 평가 목록(유사도 계산이 끝난 도서 목록)
             // similarUsers : 특정 사용자와 같은 도서를 평가한 비슷한 사용자 유사도 목록 객체
             // estimatedEvaluation : 계산한 예상 도서 평점 목록 객체
-            completionEvaluation = {}, similarUsers = {}, estimatedEvaluation = {};
+            let completionEvaluation = {}, similarUsers = {}, estimatedEvaluation = {};
 
             // relatedUsers : 전체 유사도 계산을 바탕으로 한 특정 사용자와 비슷한 사용자 간 유사도 배열
             // returnData : 프론트에 반환할 결과값이 들어갈 배열
             let relatedUsers = [], returnData = [];
 
             // estimatedEvaluationCount : 예상 도서 평점 목록 객체 개수
+            // ratingCount : 예상 도서 평점 계산 개수
             let estimatedEvaluationCount = 0;
 
             // 반복문을 돌려 특정 사용자와 같은 도서를 평가한 비슷한 사용자 목록 추출
@@ -167,7 +168,7 @@ module.exports = {
             // 예상 평점 목록을 결과 배열에 넣고 내림차순으로 정렬
             for (let bsin in estimatedEvaluation) {
                 // 특정 사용자 평가가 있는 경우
-                if (trainedDataset.userState[bsin]) {
+                if (trainedDataSet.userState[bsin]) {
                     continue; // push 생략
                 } else {
                     returnData.push({ bsin: bsin, rating: Math.round(Math.log(estimatedEvaluation[bsin] + 1) * 100) / 100 });
@@ -190,18 +191,18 @@ module.exports = {
             // 전체 예상 평점 개수가 요청하는 페이지의 마지막 원소 번호와 같거나 큰 경우
             if (estimatedEvaluationCount >= start + 9) {
                 // limit 개수만큼 slice
-                returnData.splice(start, limit);
+                returnData = returnData.splice(start, limit);
             }
             // 전체 예상 평점 개수가 요청하는 페이지의 마지막 원소 번호보다 작은 경우
             else {
                 // 예상 평점의 몫과 나머지
-                let quotient = estimatedEvaluationCount / limit;
+                let quotient = parseInt(estimatedEvaluationCount / limit);
                 let remainder = estimatedEvaluationCount % limit + 1;
 
                 // 예상 평점의 몫과 페이지가 같은 경우
                 if (quotient == page) {
                     // 나머지만큼 slice 후 남은 건 ranking으로 채우기
-                    returnData.splice(start, limit);
+                    returnData = returnData.splice(start, limit);
 
                     // 반복문을 돌려 특정 개수만큼 채움
                     for (let i = 0; i < trainedDataSet.bookRankingList.length; i++) {
