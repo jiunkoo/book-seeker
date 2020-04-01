@@ -173,7 +173,14 @@ module.exports = {
                 if (trainedDataSet.userState[bsin]) {
                     continue; // push 생략
                 } else {
-                    returnData.push({ bsin: bsin, rating: (Math.round(Math.log(estimatedEvaluation[bsin] + 1) * 100) / 100)/ratingCount[bsin] });
+                    numerator = Math.round(Math.log(estimatedEvaluation[bsin] + 1) * 100) / 100;
+                    denominator = ratignCount[bsin];
+
+                    if (denominator != 0) {
+                        returnData.push({ bsin: bsin, rating: numerator / denominator });
+                    } else {
+                        returnData.push({ bsin: bsin, rating: numerator });
+                    }
 
                     // 정렬 과정에서 중복되는 값 랭킹 배열에서 제거
                     const itemToFind = trainedDataSet.bookRankingList.find(function (item) { return item.bsin === bsin })
