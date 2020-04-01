@@ -251,7 +251,7 @@ class MyEvaluationActivity : BaseActivity(), MyEvaluationContract.View, MyEvalua
                                     jsonObject.get("adult").toString().replace("\"", ""),
                                     jsonObject.get("genre").toString().replace("\"", ""),
                                     jsonObject.get("publication_date").toString().replace("\"", ""),
-                                    -1f,
+                                    jsonObject.get("rating").toString().replace("\"", "").toFloat(),
                                     -1
                                 )
                                 bookDataArray.add(bookData)

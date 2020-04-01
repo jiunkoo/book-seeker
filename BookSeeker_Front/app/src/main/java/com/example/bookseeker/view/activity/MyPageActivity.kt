@@ -186,30 +186,39 @@ class MyPageActivity : BaseActivity(), MypageContract.View {
                     { result ->
                         if ((result.get("success").toString()).equals("true")) {
                             val jsonObject = (result.get("data")).asJsonObject
+                            val comicNothing = jsonObject.get("comic_nothing").toString().replace("\"", "")
                             val comicBoring = jsonObject.get("comic_boring").toString().replace("\"", "")
                             val comicInteresting = jsonObject.get("comic_interesting").toString().replace("\"", "")
                             val comicReading = jsonObject.get("comic_reading").toString().replace("\"", "")
                             val comicRead = jsonObject.get("comic_read").toString().replace("\"", "")
+                            val romanceNothing = jsonObject.get("romance_nothing").toString().replace("\"", "")
                             val romanceBoring = jsonObject.get("romance_boring").toString().replace("\"", "")
                             val romanceInteresting = jsonObject.get("romance_interesting").toString().replace("\"", "")
                             val romanceReading = jsonObject.get("romance_reading").toString().replace("\"", "")
                             val romanceRead = jsonObject.get("romance_read").toString().replace("\"", "")
+                            val fantasyNothing = jsonObject.get("comic_boring").toString().replace("\"", "")
                             val fantasyBoring = jsonObject.get("fantasy_boring").toString().replace("\"", "")
                             val fantasyInteresting = jsonObject.get("fantasy_interesting").toString().replace("\"", "")
                             val fantasyReading = jsonObject.get("fantasy_reading").toString().replace("\"", "")
                             val fantasyRead = jsonObject.get("fantasy_read").toString().replace("\"", "")
 
-                            val comicState = "관심없어요" + comicBoring + "\n" +
+                            val comicState =
+                                    "분류 없음" + comicNothing + "\n" +
+                                    "관심 없어요" + comicBoring + "\n" +
                                     "읽고 싶어요" + comicInteresting + "\n" +
                                     "읽고 있어요" + comicReading + "\n" +
                                     "완독 했어요" + comicRead
 
-                            val romanceState = "관심없어요" + romanceBoring + "\n" +
+                            val romanceState =
+                                    "분류 없음" + romanceNothing + "\n" +
+                                    "관심없어요" + romanceBoring + "\n" +
                                     "읽고 싶어요" + romanceInteresting + "\n" +
                                     "읽고 있어요" + romanceReading + "\n" +
                                     "완독 했어요" + romanceRead
 
-                            val fantasyState = "관심없어요" + fantasyBoring + "\n" +
+                            val fantasyState =
+                                    "분류 없음" + fantasyNothing + "\n" +
+                                    "관심없어요" + fantasyBoring + "\n" +
                                     "읽고 싶어요" + fantasyInteresting + "\n" +
                                     "읽고 있어요" + fantasyReading + "\n" +
                                     "완독 했어요" + fantasyRead
