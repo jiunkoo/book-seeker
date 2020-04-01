@@ -197,7 +197,7 @@ module.exports = {
             // 전체 예상 평점 개수가 요청하는 페이지의 마지막 원소 번호와 같거나 큰 경우
             if (estimatedEvaluationCount >= start + 9) {
                 // limit 개수만큼 slice
-                returnData.splice(start, limit);
+                returnData = returnData.splice(start, limit);
             }
             // 전체 예상 평점 개수가 요청하는 페이지의 마지막 원소 번호보다 작은 경우
             else {
@@ -208,7 +208,7 @@ module.exports = {
                 // 예상 평점의 몫과 페이지가 같은 경우
                 if (quotient == page) {
                     // 나머지만큼 slice 후 남은 건 ranking으로 채우기
-                    returnData.splice(start, limit);
+                    returnData = returnData.splice(start, limit);
 
                     // 반복문을 돌려 특정 개수만큼 채움
                     for (let i = 0; i < trainedDataSet.bookRankingList.length; i++) {
