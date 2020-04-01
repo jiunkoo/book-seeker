@@ -93,9 +93,9 @@ module.exports = {
                 denominator = ratingCount[bsin];
 
                 if (denominator != 0) {
-                    returnData.push({ bsin: bsin, rating: numerator / denominator });
+                    bookRankingList.push({ bsin: bsin, rating: numerator / denominator });
                 } else {
-                    returnData.push({ bsin: bsin, rating: numerator });
+                    bookRankingList.push({ bsin: bsin, rating: numerator });
                 }
             }
         }
