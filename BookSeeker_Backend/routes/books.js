@@ -424,7 +424,7 @@ router.get('/keyword/:limit', clientIp, isLoggedIn, async (req, res, next) => {
             'AND b.bsin = e.bsin ' +
             'AND e.deletedAt IS NULL ' +
             'ORDER BY e.createdAt DESC ' +
-            'LIMIT 100 ';
+            'LIMIT 100;';
 
 
         const userEvaluationKeyword = await sequelize.query(query, {
