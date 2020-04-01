@@ -6,7 +6,7 @@ module.exports = {
         // userBasedData : 사용자별 도서 평가 데이터 객체
         // bookBasedData : 도서별 도서 평가 사용자 데이터 객체
         // bookRatingRank : 도서별 평점 합계 객체
-        let trainedDataSet = {}, userState = {}, userBasedData = {}, bookBasedData = {}, bookRatingRank = {};
+        let trainedDataSet = {}, userState = {}, userBasedData = {}, bookBasedData = {}, bookRatingRank = {}, ratingCount = {};
 
         // trainSet : 도서 목록에서 추출한 학습 데이터 배열
         // testSet : 도서 목록에서 추출한 테스트 데이터 베열
@@ -56,8 +56,10 @@ module.exports = {
             // 도서가 bookRatingRank에 없는 경우 평가 데이터 합계를 저장
             if (!bookRatingRank[bsin]) {
                 bookRatingRank[bsin] = 0;
+                ratingCount[bsin] = 0;
             }
             bookRatingRank[bsin] += rating;
+            ratingCount[bsin] += 1;
         }
 
         // 특정 사용자의 도서 평가 목록을 불러옴
@@ -86,7 +88,14 @@ module.exports = {
             if (userState[bsin]) {
                 continue; // push 생략
             } else {
-                bookRankingList.push({ bsin: bsin, rating: bookRatingRank[bsin] });
+                numerator = bookRatingRank[bsin]
+                denominator = ratignCount[bsin];
+
+                if (denominator != 0) {
+                    returnData.push({ bsin: bsin, rating: numerator / denominator });
+                } else {
+                    returnData.push({ bsin: bsin, rating: numerator });
+                }
             }
         }
         bookRankingList.sort((a, b) => b.rating - a.rating);
@@ -173,7 +182,7 @@ module.exports = {
                 if (trainedDataSet.userState[bsin]) {
                     continue; // push 생략
                 } else {
-                    numerator = Math.round(Math.log(estimatedEvaluation[bsin] + 1) * 100) / 100;
+                    numerator = estimatedEvaluation[bsin];
                     denominator = ratignCount[bsin];
 
                     if (denominator != 0) {
