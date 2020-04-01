@@ -111,7 +111,7 @@
                     app:layout_constraintBottom_toTopOf="@id/bookinfo_view_line3"/>
             <Button
                     android:id="@+id/bookinfo_btn_interesting"
-                    android:text="관심\n있어요"
+                    android:text="읽고\n싶어요"
                     android:textStyle="bold"
                     android:textColor="@color/basicWhite"
                     android:textSize="20sp"
