@@ -183,7 +183,7 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
                     'FROM evaluations ' +
                     'WHERE user_uid=:user_uid ' +
                     'AND deletedAt IS NULL) ' +
-                    'ORDER BY raind() ' +
+                    'ORDER BY rand() ' +
                     'LIMIT :limit ' +
                     'OFFSET :offset;';
 
