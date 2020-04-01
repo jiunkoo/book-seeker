@@ -69,7 +69,7 @@
                     android:layout_height="match_parent"/>
             <TextView
                     android:id="@+id/search_etxt_search"
-                    android:text="제목, 저자, 출판사 검색"
+                    android:text="제목 검색"
                     android:textSize="18sp"
                     android:padding="@dimen/activity_margin"
                     android:drawablePadding="@dimen/activity_margin"
