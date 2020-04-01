@@ -168,7 +168,7 @@ router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) 
             jsonObject.publication_date = recommendBookList[i].publication_date;
             jsonObject.rating = recommendBookList[i].rating;
             jsonObject.state = recommendBookList[i].state;
-            jsonObject.expect_rating = bookRecommend[i].rating;
+            jsonObject.expect_rating = bookRecommend[i].rating.toFixed(1);
             returnData[i] = jsonObject;
         }
 

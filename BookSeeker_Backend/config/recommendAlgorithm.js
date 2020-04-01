@@ -167,7 +167,7 @@ module.exports = {
             // 예상 평점 목록을 결과 배열에 넣고 내림차순으로 정렬
             for (let bsin in estimatedEvaluation) {
                 // 특정 사용자 평가가 있는 경우
-                if (trainedDataset.userState[bsin]) {
+                if (trainedDataSet.userState[bsin]) {
                     continue; // push 생략
                 } else {
                     returnData.push({ bsin: bsin, rating: Math.round(Math.log(estimatedEvaluation[bsin] + 1) * 100) / 100 });
@@ -195,7 +195,7 @@ module.exports = {
             // 전체 예상 평점 개수가 요청하는 페이지의 마지막 원소 번호보다 작은 경우
             else {
                 // 예상 평점의 몫과 나머지
-                let quotient = estimatedEvaluationCount / limit;
+                let quotient = parseInt(estimatedEvaluationCount / limit);
                 let remainder = estimatedEvaluationCount % limit + 1;
 
                 // 예상 평점의 몫과 페이지가 같은 경우
