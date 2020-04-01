@@ -182,7 +182,7 @@ router.get('/:genre/:state/:page/:limit', clientIp, isLoggedIn, async (req, res,
         const user_uid = req.user.user_uid;
 
         const genre = req.params.genre;
-        const state = parseInt(req.params.state);
+        const state = parseInt(req.params.state)-1;
         const page = parseInt(req.params.page);
         const limit = parseInt(req.params.limit);
 
@@ -300,6 +300,7 @@ router.get('/count/state', clientIp, isLoggedIn, async (req, res, next) => {
 
         let countQuery =
             'SELECT IFNULL(genre, "COMIC") AS genre, ' +
+            'COUNT(IF(state=-1, state, NULL)) AS count_nothing, ' +
             'COUNT(IF(state=0, state, NULL)) AS count_boring, ' +
             'COUNT(IF(state=1, state, NULL)) AS count_interesting, ' +
             'COUNT(IF(state=2, state, NULL)) AS count_reading, ' +
@@ -310,6 +311,7 @@ router.get('/count/state', clientIp, isLoggedIn, async (req, res, next) => {
             'AND deletedAt IS NULL ' +
             'UNION ' +
             'SELECT IFNULL(genre, "ROMANCE") AS genre, ' +
+            'COUNT(IF(state=-1, state, NULL)) AS count_nothing, ' +
             'COUNT(IF(state=0, state, NULL)) AS count_boring, ' +
             'COUNT(IF(state=1, state, NULL)) AS count_interesting, ' +
             'COUNT(IF(state=2, state, NULL)) AS count_reading, ' +
@@ -320,6 +322,7 @@ router.get('/count/state', clientIp, isLoggedIn, async (req, res, next) => {
             'AND deletedAt IS NULL ' +
             'UNION ' +
             'SELECT IFNULL(genre, "FANTASY") AS genre, ' +
+            'COUNT(IF(state=-1, state, NULL)) AS count_nothing, ' +
             'COUNT(IF(state=0, state, NULL)) AS count_boring, ' +
             'COUNT(IF(state=1, state, NULL)) AS count_interesting, ' +
             'COUNT(IF(state=2, state, NULL)) AS count_reading, ' +
@@ -339,16 +342,19 @@ router.get('/count/state', clientIp, isLoggedIn, async (req, res, next) => {
         });
 
         returnData = new Object();
+        returnData.comic_nothing = countState[0].count_nothing;
         returnData.comic_boring = countState[0].count_boring;
         returnData.comic_interesting = countState[0].count_interesting;
         returnData.comic_reading = countState[0].count_reading;
         returnData.comic_read = countState[0].count_read;
 
+        returnData.romance_nothing = countState[1].count_nothing;
         returnData.romance_boring = countState[1].count_boring;
         returnData.romance_interesting = countState[1].count_interesting;
         returnData.romance_reading = countState[1].count_reading;
         returnData.romance_read = countState[1].count_read;
 
+        returnData.fantasy_nothing = countState[2].count_nothing;
         returnData.fantasy_boring = countState[2].count_boring;
         returnData.fantasy_interesting = countState[2].count_interesting;
         returnData.fantasy_reading = countState[2].count_reading;
