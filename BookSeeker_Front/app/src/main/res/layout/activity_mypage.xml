@@ -115,7 +115,7 @@
                         android:layout_height="0dp"/>
                 <TextView
                         android:id="@+id/mypage_txtv_comic_state"
-                        android:text="관심 없어요 0\n읽고 싶어요 0\n읽고 있어요 0\n완독 했어요 0"
+                        android:text="분류 없음 0\n관심 없어요 0\n읽고 싶어요 0\n읽고 있어요 0\n완독 했어요 0"
                         android:textSize="16sp"
                         android:textColor="@color/lightAshblue"
                         android:gravity="center"
@@ -162,7 +162,7 @@
                         android:layout_height="0dp"/>
                 <TextView
                         android:id="@+id/mypage_txtv_romance_state"
-                        android:text="관심 없어요 0\n읽고 싶어요 0\n읽고 있어요 0\n완독 했어요 0"
+                        android:text="분류 없음 0\n관심 없어요 0\n읽고 싶어요 0\n읽고 있어요 0\n완독 했어요 0"
                         android:textSize="16sp"
                         android:textColor="@color/lightAshblue"
                         android:gravity="center"
@@ -209,7 +209,7 @@
                         android:layout_height="0dp"/>
                 <TextView
                         android:id="@+id/mypage_txtv_fantasy_state"
-                        android:text="관심 없어요 0\n읽고 싶어요 0\n읽고 있어요 0\n완독 했어요 0"
+                        android:text="분류 없음 0\n관심 없어요 0\n읽고 싶어요 0\n읽고 있어요 0\n완독 했어요 0"
                         android:textSize="16sp"
                         android:textColor="@color/lightAshblue"
                         android:gravity="center"

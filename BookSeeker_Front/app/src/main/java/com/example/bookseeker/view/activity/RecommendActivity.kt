@@ -364,7 +364,7 @@ class RecommendActivity : BaseActivity(), RecommendContract.View, RecommendCardv
                                     jsonObject.get("adult").toString().replace("\"", ""),
                                     jsonObject.get("genre").toString().replace("\"", ""),
                                     jsonObject.get("publication_date").toString().replace("\"", ""),
-                                    jsonObject.get("rating").toString().replace("\"", "").toFloat(),
+                                    jsonObject.get("rating").toString().replace("\"", "").format("%.1f").toFloat(),
                                     jsonObject.get("state").toString().replace("\"", "").toInt(),
                                     jsonObject.get("expect_rating").toString().replace("\"", "").toFloat()
                                 )

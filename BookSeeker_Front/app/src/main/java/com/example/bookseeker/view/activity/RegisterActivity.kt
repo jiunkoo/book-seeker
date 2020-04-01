@@ -204,8 +204,8 @@ class RegisterActivity : BaseActivity(), RegisterContract.View {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { result ->
+                    showMessage(result.get("message").toString())
                     if((result.get("success").toString()).equals("true")) {
-                        showMessage(result.get("message").toString())
                         startLoginActivity()
                     }
                     executionLog("[INFO][REGISTER]", result.get("message").toString())

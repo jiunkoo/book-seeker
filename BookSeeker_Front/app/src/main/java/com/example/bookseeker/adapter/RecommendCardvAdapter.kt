@@ -40,8 +40,8 @@ class RecommendCardvAdapter(
     @View(R.id.cardv_recommend_item_txtv_publisher)
     lateinit var publisher: TextView
 
-    @View(R.id.cardv_recommend_item_txtv_expect_rating)
-    lateinit var expectRating: TextView
+//    @View(R.id.cardv_recommend_item_txtv_expect_rating)
+//    lateinit var expectRating: TextView
 
     @View(R.id.cardv_recommend_item_cardview_star)
     lateinit var cardviewStar: CardView
@@ -70,7 +70,7 @@ class RecommendCardvAdapter(
         title.text = recommendData.title
         author.text = recommendData.author
         publisher.text = recommendData.publisher
-        expectRating.text = recommendData.expect_rating.toString()
+//        expectRating.text = recommendData.expect_rating.toString()
         ratingBar.rating = recommendData.rating
 
         when (recommendData.state) {
