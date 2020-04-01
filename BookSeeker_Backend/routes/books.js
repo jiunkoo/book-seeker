@@ -137,7 +137,6 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
                     replacements: {
                         user_uid: user_uid,
                         genre: genre,
-                        order: Sequelize.literal(order),
                         limit: limit,
                         offset: offset
                     },
@@ -191,7 +190,6 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
                     replacements: {
                         user_uid: user_uid,
                         genre: genre,
-                        order: Sequelize.literal(order),
                         limit: limit,
                         offset: offset
                     },
@@ -224,60 +222,60 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
             // 정렬 기준 설정
             if (filter == 1) {
                 query =
-                'SELECT * ' +
-                'FROM books ' +
-                'WHERE genre=:genre AND ' +
-                'bsin NOT IN(' +
-                'SELECT bsin ' +
-                'FROM evaluations ' +
-                'WHERE user_uid=:user_uid ' +
-                'AND deletedAt IS NULL) ' +
-                'ORDER BY publication_date DESC ' +
-                'LIMIT :limit ' +
-                'OFFSET :offset;';
+                    'SELECT * ' +
+                    'FROM books ' +
+                    'WHERE genre=:genre AND ' +
+                    'bsin NOT IN(' +
+                    'SELECT bsin ' +
+                    'FROM evaluations ' +
+                    'WHERE user_uid=:user_uid ' +
+                    'AND deletedAt IS NULL) ' +
+                    'ORDER BY publication_date DESC ' +
+                    'LIMIT :limit ' +
+                    'OFFSET :offset;';
 
                 order = 'publication_date ASC';
             } else if (filter == 2) {
                 query =
-                'SELECT * ' +
-                'FROM books ' +
-                'WHERE genre=:genre AND ' +
-                'bsin NOT IN(' +
-                'SELECT bsin ' +
-                'FROM evaluations ' +
-                'WHERE user_uid=:user_uid ' +
-                'AND deletedAt IS NULL) ' +
-                'ORDER BY publication_date ASC ' +
-                'LIMIT :limit ' +
-                'OFFSET :offset;';
+                    'SELECT * ' +
+                    'FROM books ' +
+                    'WHERE genre=:genre AND ' +
+                    'bsin NOT IN(' +
+                    'SELECT bsin ' +
+                    'FROM evaluations ' +
+                    'WHERE user_uid=:user_uid ' +
+                    'AND deletedAt IS NULL) ' +
+                    'ORDER BY publication_date ASC ' +
+                    'LIMIT :limit ' +
+                    'OFFSET :offset;';
 
                 order = 'publication_date DESC';
             } else if (filter == 3) {
                 query =
-                'SELECT * ' +
-                'FROM books ' +
-                'WHERE genre=:genre AND ' +
-                'bsin NOT IN(' +
-                'SELECT bsin ' +
-                'FROM evaluations ' +
-                'WHERE user_uid=:user_uid ' +
-                'AND deletedAt IS NULL) ' +
-                'ORDER BY title ASC ' +
-                'LIMIT :limit ' +
-                'OFFSET :offset;';
+                    'SELECT * ' +
+                    'FROM books ' +
+                    'WHERE genre=:genre AND ' +
+                    'bsin NOT IN(' +
+                    'SELECT bsin ' +
+                    'FROM evaluations ' +
+                    'WHERE user_uid=:user_uid ' +
+                    'AND deletedAt IS NULL) ' +
+                    'ORDER BY title ASC ' +
+                    'LIMIT :limit ' +
+                    'OFFSET :offset;';
             } else {
                 query =
-                'SELECT * ' +
-                'FROM books ' +
-                'WHERE genre=:genre AND ' +
-                'bsin NOT IN(' +
-                'SELECT bsin ' +
-                'FROM evaluations ' +
-                'WHERE user_uid=:user_uid ' +
-                'AND deletedAt IS NULL) ' +
-                'ORDER BY title DESC ' +
-                'LIMIT :limit ' +
-                'OFFSET :offset;';
+                    'SELECT * ' +
+                    'FROM books ' +
+                    'WHERE genre=:genre AND ' +
+                    'bsin NOT IN(' +
+                    'SELECT bsin ' +
+                    'FROM evaluations ' +
+                    'WHERE user_uid=:user_uid ' +
+                    'AND deletedAt IS NULL) ' +
+                    'ORDER BY title DESC ' +
+                    'LIMIT :limit ' +
+                    'OFFSET :offset;';
             }
 
             // 임시 테이블에 저장한 데이터 전부 삭제
@@ -298,7 +296,6 @@ router.get('/:genre/:filter/:page/:limit', clientIp, isLoggedIn, async (req, res
                 replacements: {
                     user_uid: user_uid,
                     genre: genre,
-                    order: Sequelize.literal(order),
                     limit: limit,
                     offset: offset
                 },
@@ -370,7 +367,24 @@ router.get('/:bsin', clientIp, isLoggedIn, async (req, res, next) => {
             raw: true
         });
 
-        book[0].rating = book[0].rating.toFixed(1);
+        // 도서 평균 평점, 인원 수 조회
+        let averageQuery =
+            'SELECT IFNULL(AVG(rating), 0) as average, COUNT(bsin) AS count ' +
+            'FROM evaluations ' +
+            'WHERE bsin=:bsin ' +
+            'AND rating > 0 ' +
+            'AND deletedAt IS NULL';
+
+        const average = await sequelize.query(averageQuery, {
+            replacements: {
+                bsin: bsin
+            },
+            type: Sequelize.QueryTypes.SELECT,
+            raw: true
+        });
+
+        book[0].average = average[0].average.toFixed(1);
+        book[0].count = average[0].count;
 
         // 도서 검색 성공 메세지 반환
         const result = new Object();
@@ -402,7 +416,7 @@ router.get('/keyword/:limit', clientIp, isLoggedIn, async (req, res, next) => {
 
         winston.log('info', `[BOOK][${req.clientIp}|${user_email}] 도서 평가 키워드 조회 Request`);
         winston.log('info', `[BOOK][${req.clientIp}|${user_email}] limit : ${limit}`);
- 
+
         let query =
             'SELECT b.keyword ' +
             'FROM books AS b, evaluations AS e ' +
@@ -442,7 +456,7 @@ router.get('/keyword/:limit', clientIp, isLoggedIn, async (req, res, next) => {
 
         // 키워드 목록을 결과 배열에 넣고 내림차순으로 정렬 후 40개로 컷
         for (let keyword in keywordList) {
-            returnData.push({ keyword: keyword, size: keywordList[keyword]});
+            returnData.push({ keyword: keyword, size: keywordList[keyword] });
         }
         returnData.sort((a, b) => b.size - a.size);
         returnData.splice(limit);

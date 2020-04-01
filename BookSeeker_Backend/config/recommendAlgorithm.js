@@ -111,13 +111,14 @@ module.exports = {
             // completionEvaluation : 특정 사용자의 도서 평가 목록(유사도 계산이 끝난 도서 목록)
             // similarUsers : 특정 사용자와 같은 도서를 평가한 비슷한 사용자 유사도 목록 객체
             // estimatedEvaluation : 계산한 예상 도서 평점 목록 객체
-            completionEvaluation = {}, similarUsers = {}, estimatedEvaluation = {};
+            let completionEvaluation = {}, similarUsers = {}, estimatedEvaluation = {}, ratingCount = {};
 
             // relatedUsers : 전체 유사도 계산을 바탕으로 한 특정 사용자와 비슷한 사용자 간 유사도 배열
             // returnData : 프론트에 반환할 결과값이 들어갈 배열
             let relatedUsers = [], returnData = [];
 
             // estimatedEvaluationCount : 예상 도서 평점 목록 객체 개수
+            // ratingCount : 예상 도서 평점 계산 개수
             let estimatedEvaluationCount = 0;
 
             // 반복문을 돌려 특정 사용자와 같은 도서를 평가한 비슷한 사용자 목록 추출
@@ -158,9 +159,11 @@ module.exports = {
                     // 아직 예상 평점 계산을 하지 않은 도서의 경우 평점 계산
                     if (!estimatedEvaluation[relatedUserList[j].bsin]) {
                         estimatedEvaluation[relatedUserList[j].bsin] = 0;
+                        ratingCount[relatedUserList[j].bsin] = 0;
                         estimatedEvaluationCount++;
                     }
                     estimatedEvaluation[relatedUserList[j].bsin] += related_rating;
+                    ratingCount[relatedUserList[j].bsin] += 1;
                 }
             }
 
@@ -170,7 +173,7 @@ module.exports = {
                 if (trainedDataSet.userState[bsin]) {
                     continue; // push 생략
                 } else {
-                    returnData.push({ bsin: bsin, rating: Math.round(Math.log(estimatedEvaluation[bsin] + 1) * 100) / 100 });
+                    returnData.push({ bsin: bsin, rating: (estimatedEvaluation[bsin]/ratingCount[bsin]).toFixed(1) });
 
                     // 정렬 과정에서 중복되는 값 랭킹 배열에서 제거
                     const itemToFind = trainedDataSet.bookRankingList.find(function (item) { return item.bsin === bsin })
