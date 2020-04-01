@@ -39,11 +39,10 @@ Watcher를 벤치마킹한 만화 및 장르소설 추천 서비스입니다.
 -----------
 * ### 회원 가입, 로그인
   ![register](https://user-images.githubusercontent.com/52573800/78158302-019c2b00-747c-11ea-9391-d482688e10cd.gif)
+  ![login](https://user-images.githubusercontent.com/52573800/78158252-f517d280-747b-11ea-8852-bca3ec418537.gif)  
   - 회원가입 시 이메일과 별명, 비밀번호를 입력합니다.
     + 중복되지 않는 이메일이고, 비밀번호와 비밀번호 확인이 일치하면 회원가입이 완료됩니다.
-    
-  ![login](https://user-images.githubusercontent.com/52573800/78158252-f517d280-747b-11ea-8852-bca3ec418537.gif)  
-    -  로그인 시 이메일과 비밀번호를 입력해서 회원 정보와 일치하면 메인화면으로 넘어갑니다.
+  - 로그인 시 이메일과 비밀번호를 입력해서 회원 정보와 일치하면 메인화면으로 넘어갑니다.
 
 * ### 검색 
   ![search](https://user-images.githubusercontent.com/52573800/78158303-0234c180-747c-11ea-8e4f-c0104156f704.gif)
