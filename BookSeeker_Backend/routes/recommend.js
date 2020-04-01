@@ -111,7 +111,8 @@ router.get('/:genre/:page/:limit', clientIp, isLoggedIn, async (req, res, next) 
             'WHERE genre=:genre ' +
             'AND user_uid=:user_uid ' +
             'AND (state=0 OR state=3) ' +
-            'AND deletedAt IS NULL))';
+            'AND deletedAt IS NULL)) ' +
+            'ORDER BY publication_date DESC;';
 
         const unEvaluationList = await sequelize.query(unEvaluationQuery, {
             replacements: {
