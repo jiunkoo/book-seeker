@@ -196,7 +196,7 @@ class MyPageActivity : BaseActivity(), MypageContract.View {
                             val romanceInteresting = jsonObject.get("romance_interesting").toString().replace("\"", "")
                             val romanceReading = jsonObject.get("romance_reading").toString().replace("\"", "")
                             val romanceRead = jsonObject.get("romance_read").toString().replace("\"", "")
-                            val fantasyNothing = jsonObject.get("comic_boring").toString().replace("\"", "")
+                            val fantasyNothing = jsonObject.get("fantasy_nothing").toString().replace("\"", "")
                             val fantasyBoring = jsonObject.get("fantasy_boring").toString().replace("\"", "")
                             val fantasyInteresting = jsonObject.get("fantasy_interesting").toString().replace("\"", "")
                             val fantasyReading = jsonObject.get("fantasy_reading").toString().replace("\"", "")
