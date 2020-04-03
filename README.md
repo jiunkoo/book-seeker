@@ -19,7 +19,7 @@ Watcher를 벤치마킹한 만화 및 장르소설 추천 서비스입니다.
 - IDE : AndroidStudio
 - 언어 : Kotlin
 - HTTP 통신 : Retrofit2
-- Reactive : RxJava
+- Reactive : ReactiveX 
 
 > 백엔드
 - IDE : VSCode
