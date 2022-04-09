@@ -20,7 +20,7 @@
     "http-errors": "~1.6.3",
     "https": "^1.0.0",
     "mariadb": "^2.2.0",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "moment-timezone": "^0.5.27",
     "nodemon": "^2.0.2",
     "passport": "^0.4.1",
